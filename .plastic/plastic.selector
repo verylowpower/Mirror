@@ -1,0 +1,4 @@
+repository "S Project@Vitancuc@cloud"
+  path "/"
+    br "/main"
+    co "/main"

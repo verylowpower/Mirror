@@ -1,0 +1,43 @@
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class _Character_Move : MonoBehaviour
+{
+    [Header("Stat")]
+    [SerializeField] private float _speed = 3.0f;
+
+    private PlayerInputAct inputActions;
+    private Rigidbody2D _rb;
+    private Vector2 moveInput;
+
+    public void Awake()
+    {
+        _rb = GetComponent<Rigidbody2D>();
+        inputActions = new PlayerInputAct();
+        inputActions.PlayerControl.Move.performed += OnMove;
+        inputActions.PlayerControl.Move.canceled += OnMove;
+    }
+
+    private void OnEnable()
+    {
+        inputActions.Enable();
+    }
+
+    private void OnDisable()
+    {
+        inputActions.Disable();
+    }
+
+    private void OnMove(InputAction.CallbackContext context)
+    {
+        moveInput = context.ReadValue<Vector2>();
+    }
+
+
+    public void FixedUpdate()
+    {
+        Vector2 newPositon = _rb.position + moveInput * _speed * Time.fixedDeltaTime;
+
+        _rb.MovePosition(newPositon);
+    }
+}
