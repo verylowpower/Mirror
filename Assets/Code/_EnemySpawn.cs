@@ -26,7 +26,7 @@ public class _EnemySpawn : MonoBehaviour
 
     private void SetSpawnTime()
     {
-        _spawnTime = Random.Range(_minSpawnTime, _maxSpawnTime);
+        _spawnTime = Random.Range(_minSpawnTime, _maxSpawnTime); //comment
     }
 
 }
