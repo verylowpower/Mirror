@@ -1,32 +1,38 @@
 using UnityEngine;
 
-public class _EnemySpawn : MonoBehaviour
+public class EnemySpawn : MonoBehaviour
 {
-
-    [SerializeField] GameObject _enemyPrefap;
+    [SerializeField] private GameObject _enemyPrefab;
     [SerializeField] private float _spawnTime = 0f;
-    [SerializeField] private float _minSpawnTime = 0f;
-    [SerializeField] private float _maxSpawnTime = 0f;
+    [SerializeField] private float _minSpawnTime = 1f; // Set sensible default values
+    [SerializeField] private float _maxSpawnTime = 3f;
     [SerializeField] private int _spawnCount = 0;
-    public BoxCollider2D colliderArea;
+    [SerializeField] private BoxCollider2D colliderArea; // Ensure it's assigned
 
     void Awake()
     {
+        if (colliderArea == null)
+        {
+            Debug.LogError("ColliderArea is not assigned! Please assign it in the Inspector.");
+            enabled = false;
+            return;
+        }
+
         SetSpawnTime();
     }
 
-
     void Update()
     {
-        var randomSpawnPos = GetRandomPosition();
         _spawnTime -= Time.deltaTime;
         if (_spawnTime <= 0f)
         {
-            Instantiate(_enemyPrefap, randomSpawnPos, Quaternion.identity);
+            Vector2 randomSpawnPos = GetRandomPosition();
+            Instantiate(_enemyPrefab, randomSpawnPos, Quaternion.identity);
+            _spawnCount++; // Keep track of spawned enemies
             SetSpawnTime();
         }
-    }   
-    
+    }
+
     private void SetSpawnTime()
     {
         _spawnTime = Random.Range(_minSpawnTime, _maxSpawnTime);
@@ -34,12 +40,22 @@ public class _EnemySpawn : MonoBehaviour
 
     private Vector2 GetRandomPosition()
     {
-        var basePos = colliderArea.transform.position;
-        var size = colliderArea.size;
-        var posX = basePos.x + Random.Range(-size.x, size.x);
-        var posY = basePos.x + Random.Range(-size.y, size.y);
+        if (colliderArea == null) return Vector2.zero; // Safety check
+        Bounds boxBounds = colliderArea.bounds;
+        Vector2 spawnPos;
+        do
+        {
+            float posX = Random.Range(boxBounds.min.x, boxBounds.max.x);
+            float posy = Random.Range(boxBounds.min.y, boxBounds.max.y);
+            spawnPos = new Vector2(posX, posy);
+        } while (CheckInsideCamera(spawnPos));
 
-        var spawnPos = new Vector2(posX, posY);
         return spawnPos;
+    }
+
+    private bool CheckInsideCamera(Vector2 positon)
+    {
+        Vector3 viewportPos = Camera.main.WorldToViewportPoint(positon);
+        return viewportPos.x > 0 && viewportPos.x < 1 && viewportPos.y > 0 && viewportPos.y < 1;
     }
 }

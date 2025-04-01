@@ -175,12 +175,20 @@ MonoBehaviour:
   m_Graph: {fileID: 4736556364564493531, guid: 3fc3c7301b7a77048be942ba83dfddd9, type: 2}
   m_BlackboardVariableOverridesList:
   - rid: 5676876879722709029
-  - rid: 5676876879722709030
+  - rid: 3464908615813955719
   m_IsInitialised: 0
   m_IsStarted: 0
   references:
     version: 2
     RefIds:
+    - rid: 3464908615813955719
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 9599394494474238469
+          m_Value1: 12316385437930698266
+        Name: Target
+        m_Value: {fileID: 0}
     - rid: 5676876879722709029
       type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -189,14 +197,6 @@ MonoBehaviour:
           m_Value1: 0
         Name: Self
         m_Value: {fileID: 2322608764563794003}
-    - rid: 5676876879722709030
-      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 9599394494474238469
-          m_Value1: 12316385437930698266
-        Name: Target
-        m_Value: {fileID: 0}
 --- !u!50 &4978881550584770520
 Rigidbody2D:
   serializedVersion: 5

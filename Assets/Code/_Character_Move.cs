@@ -39,5 +39,15 @@ public class _Character_Move : MonoBehaviour
         Vector2 newPositon = _rb.position + moveInput * _speed * Time.fixedDeltaTime;
 
         _rb.MovePosition(newPositon);
+
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mousePosition.z = 0f; // Đảm bảo không thay đổi trục Z
+
+        // Tính toán góc quay từ nhân vật đến chuột
+        Vector2 direction = (mousePosition - transform.position).normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        // Gán góc quay cho nhân vật
+        _rb.rotation = angle;
     }
 }
