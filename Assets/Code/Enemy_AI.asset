@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5c02bb70996b49eba31d0c206e28da24, type: 3}
-  m_Name: _Enemy Blackboard
+  m_Name: Enemy_AI Blackboard
   m_EditorClassIdentifier: 
   VersionTimestamp: 638791197909190170
   AssetID:
@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2dd922ae02c94c87a66e46a10a7319b9, type: 3}
-  m_Name: _Enemy Blackboard
+  m_Name: Enemy_AI Blackboard
   m_EditorClassIdentifier: 
   AssetID:
     m_Value0: 321860155581383487
@@ -95,7 +95,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bad8f2220607dac4db5082ff333fafb8, type: 3}
-  m_Name: _Enemy
+  m_Name: Enemy_AI
   m_EditorClassIdentifier: 
   Blackboard: {fileID: -2838509121898946899}
   m_Description: 
@@ -381,7 +381,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5b27bb6d9a2c8d540a10dff10acc543e, type: 3}
-  m_Name: _Enemy Debug Info
+  m_Name: Enemy_AI Debug Info
   m_EditorClassIdentifier: 
   m_CodeBreakPointsList: []
 --- !u!114 &4736556364564493531
@@ -394,7 +394,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: db920e62f70f420bb33c771449926fa4, type: 3}
-  m_Name: _Enemy
+  m_Name: Enemy_AI
   m_EditorClassIdentifier: 
   Graphs:
   - rid: 3464908615813955706
@@ -412,7 +412,7 @@ MonoBehaviour:
         AuthoringAssetID:
           m_Value0: 321860155581383487
           m_Value1: 15698949632942074251
-        m_DebugInfo: {fileID: 0}
+        m_DebugInfo: {fileID: 536460285662262959}
         Root:
           rid: 3464908615813955707
         BlackboardReference:

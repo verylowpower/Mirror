@@ -1,14 +1,13 @@
 using UnityEngine;
 
-public class EnemySpawn : MonoBehaviour
+public class GameController : MonoBehaviour
 {
     [SerializeField] private GameObject _enemyPrefab;
     [SerializeField] private float _spawnTime = 0f;
-    [SerializeField] private float _minSpawnTime = 1f; // Set sensible default values
+    [SerializeField] private float _minSpawnTime = 1f;
     [SerializeField] private float _maxSpawnTime = 3f;
     [SerializeField] private int _spawnCount = 0;
-    [SerializeField] private BoxCollider2D colliderArea; // Ensure it's assigned
-
+    [SerializeField] private BoxCollider2D colliderArea;
     void Awake()
     {
         if (colliderArea == null)
@@ -23,22 +22,24 @@ public class EnemySpawn : MonoBehaviour
 
     void Update()
     {
+        //spawn enemy
         _spawnTime -= Time.deltaTime;
         if (_spawnTime <= 0f)
         {
             Vector2 randomSpawnPos = GetRandomPosition();
             Instantiate(_enemyPrefab, randomSpawnPos, Quaternion.identity);
-            _spawnCount++; // Keep track of spawned enemies
+            _spawnCount++; //track spawned enemies
             SetSpawnTime();
         }
     }
 
+    //spawn enemy
     private void SetSpawnTime()
     {
         _spawnTime = Random.Range(_minSpawnTime, _maxSpawnTime);
     }
 
-    private Vector2 GetRandomPosition()
+    private Vector2 GetRandomPosition() //random pos to spawn
     {
         if (colliderArea == null) return Vector2.zero; // Safety check
         Bounds boxBounds = colliderArea.bounds;
@@ -48,12 +49,12 @@ public class EnemySpawn : MonoBehaviour
             float posX = Random.Range(boxBounds.min.x, boxBounds.max.x);
             float posy = Random.Range(boxBounds.min.y, boxBounds.max.y);
             spawnPos = new Vector2(posX, posy);
-        } while (CheckInsideCamera(spawnPos));
+        } while (CheckInsideCamera(spawnPos)); // enemy can't spawn inside camera area
 
         return spawnPos;
     }
 
-    private bool CheckInsideCamera(Vector2 positon)
+    private bool CheckInsideCamera(Vector2 positon) //check camera area
     {
         Vector3 viewportPos = Camera.main.WorldToViewportPoint(positon);
         return viewportPos.x > 0 && viewportPos.x < 1 && viewportPos.y > 0 && viewportPos.y < 1;

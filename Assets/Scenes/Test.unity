@@ -282,7 +282,6 @@ GameObject:
   - component: {fileID: 1069716622}
   - component: {fileID: 1069716621}
   - component: {fileID: 1069716623}
-  - component: {fileID: 1069716624}
   m_Layer: 0
   m_Name: EnemySpawn
   m_TagString: Untagged
@@ -304,8 +303,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _enemyPrefab: {fileID: 2322608764563794003, guid: 2db7ff8a18655634eaffa3230844b9d1, type: 3}
   _spawnTime: 0
-  _minSpawnTime: 0.5
-  _maxSpawnTime: 1.5
+  _minSpawnTime: 0.3
+  _maxSpawnTime: 1
   _spawnCount: 1
   colliderArea: {fileID: 1069716623}
 --- !u!4 &1069716622
@@ -369,42 +368,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 5.41, y: 3.82}
   m_EdgeRadius: 0
---- !u!58 &1069716624
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1069716620}
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Radius: 13
 --- !u!1 &1328882843
 GameObject:
   m_ObjectHideFlags: 0
