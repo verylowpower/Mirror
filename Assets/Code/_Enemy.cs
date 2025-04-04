@@ -1,5 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.Behavior;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -11,8 +14,10 @@ public class Enemy : MonoBehaviour
         set { batchId = value; }
     }
 
-    public float movementSpeed = 3f;
-    Vector3 currentMovementDirection = Vector3.zero;
+
+    public float movementSpeed = 7f;
+    //private BehaviorGraph behaviorGraph;
+    //Vector3 currentMovementDirection = Vector3.zero;
     public int spatialGroup = 0;
 
     int health = 10;
@@ -23,61 +28,93 @@ public class Enemy : MonoBehaviour
         set { damage = value; }
     }
 
-    void Update()
+    // void Start()
+    // {
+    //     // Lấy biến Blackboard của GameObject
+    //     var blackboard = behaviorGraph.BlackboardReference;
+
+    //     // Khai báo biến BlackboardVariable để lưu trữ giá trị lấy từ Blackboard
+    //     BlackboardVariable enemySpeed;
+
+    //     if (blackboard.GetVariable("enemySpeed", out enemySpeed))
+    //     {
+    //         // Kiểm tra xem biến này có phải là BlackboardVariable<float> không
+    //         if (enemySpeed is BlackboardVariable<float> speedVariable)
+    //         {
+    //             movementSpeed = speedVariable.value;  // Truy cập giá trị trong BlackboardVariable<float>
+    //             Debug.Log("Enemy Speed from Behavior Graph: " + movementSpeed);
+    //         }
+    //         else
+    //         {
+    //             Debug.LogWarning("The 'enemySpeed' variable is not a float.");
+    //         }
+    //     }
+    //     else
+    //     {
+    //         Debug.LogWarning("Variable 'enemySpeed' not found in Behavior Graph Blackboard.");
+    //     }
+    // }
+
+
+
+    void FixedUpdate()
     {
-        // Removed RunLogic since behavior and NavMesh control movement now
+        RunLogic();
     }
 
-    public void ChangeHealth(int amount)
+    void RunLogic()
     {
-        health += amount;
-
-        if (health <= 0)
+        PushEnemyNearby();
+        int newSpatialGroup = GameController.instance.GetSpatialGroup(transform.position.x, transform.position.y); // GET spatial group
+        if (newSpatialGroup != spatialGroup)
         {
-            KillEnemy();
+            GameController.instance.enemySpatialGroups[spatialGroup].Remove(this); // REMOVE from old spatial group
+
+            spatialGroup = newSpatialGroup; // UPDATE current spatial group
+            GameController.instance.enemySpatialGroups[spatialGroup].Add(this); // ADD to new spatial group
         }
     }
 
-    public void KillEnemy()
+    private void PushEnemyNearby()
     {
-        GameController.instance.UpdateBatchOnUnitDeath("enemy", batchId);
-        GameController.instance.enemySpatialGroups[spatialGroup].Remove(this);
+        List<Enemy> currAreaEnemy = GameController.instance.enemySpatialGroups[spatialGroup].ToList();
 
-        // Drop experience points with a chance
-        if (Random.Range(0, 100) < 25)
-            GameController.instance.DropExperiencePoint(transform.position, 1);
+        foreach (Enemy enemy in currAreaEnemy)
+        {
+            if (enemy == null) continue;
+            if (enemy == this) continue;
 
-        Destroy(gameObject);
+            float distance = Mathf.Abs(transform.position.x - enemy.transform.position.x) +
+            Mathf.Abs(transform.position.y - enemy.transform.position.y);
+            if (distance < 0.2f)
+            {
+                Vector3 direction = transform.position - enemy.transform.position;
+                direction.Normalize();
+                enemy.transform.position -= 5 * movementSpeed * Time.deltaTime * direction;
+            }
+
+        }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "Enemy")
+        if (collision.gameObject.tag == "enemy")
         {
-            // Push this enemy away (if collided with another enemy)
             Vector3 direction = transform.position - collision.transform.position;
             direction.Normalize();
-            collision.transform.position += direction * Time.deltaTime * movementSpeed;
+            collision.transform.position += movementSpeed * Time.deltaTime * direction;
         }
     }
 
-    void PushNearbyEnemies()
-    {
-        List<Enemy> currAreaEnemies = GameController.instance.enemySpatialGroups[spatialGroup].ToList(); // Enemies in the same spatial group
+    // public void ChangeHealth()
+    // {
 
-        // Check each enemy and push if too close
-        foreach (Enemy enemy in currAreaEnemies)
-        {
-            if (enemy == null || enemy == this) continue;
+    // }
 
-            float distance = Mathf.Abs(transform.position.x - enemy.transform.position.x) + Mathf.Abs(transform.position.y - enemy.transform.position.y);
-            if (distance < 0.2f)
-            {
-                // Push this enemy away
-                Vector3 direction = transform.position - enemy.transform.position;
-                direction.Normalize();
-                enemy.transform.position -= direction * Time.deltaTime * movementSpeed * 5;
-            }
-        }
-    }
+    // public void KillEnemy()
+    // {
+
+    // }
+
+
 }

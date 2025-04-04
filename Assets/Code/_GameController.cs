@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//use to control enemy spawn and remove enemy
 public class GameController : MonoBehaviour
 {
     [SerializeField] private GameObject _enemyPrefab;
@@ -122,7 +123,7 @@ public class GameController : MonoBehaviour
     }
 
     // Get spatial group based on position
-    private int GetSpatialGroup(float x, float y)
+    public int GetSpatialGroup(float x, float y)
     {
         int width = SpatialGroupWidth;
         int height = SpatialGroupHeight;

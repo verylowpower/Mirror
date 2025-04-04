@@ -15,9 +15,11 @@ GameObject:
   - component: {fileID: 4978881550584770520}
   - component: {fileID: 2044554667826913382}
   - component: {fileID: 4211153218070639921}
+  - component: {fileID: -5223753828125647118}
+  - component: {fileID: -4916995370710154673}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -130,6 +132,7 @@ MonoBehaviour:
   m_BlackboardVariableOverridesList:
   - rid: 5676876879722709029
   - rid: 3464908615813955719
+  - rid: 3464908691320078411
   m_IsInitialised: 0
   m_IsStarted: 0
   references:
@@ -143,6 +146,14 @@ MonoBehaviour:
           m_Value1: 12316385437930698266
         Name: Target
         m_Value: {fileID: 0}
+    - rid: 3464908691320078411
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 10466135811474443426
+          m_Value1: 16308694207749334625
+        Name: enemySpeed
+        m_Value: 7
     - rid: 5676876879722709029
       type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -226,3 +237,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e39f6090724e4a4a8aadeb042afa2bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-5223753828125647118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2322608764563794003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5cefceb3f2f622488b52851fd0cb55e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-4916995370710154673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2322608764563794003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb04a95e88e142d479813b955ca8456c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movementSpeed: 3
+  spatialGroup: 0

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+//use to render spatial group
 public class EnemyHelper : MonoBehaviour
 {
     public static List<int> GetExpandedSpatialGroupsV2(int spatialGroup, int radious = 1)
