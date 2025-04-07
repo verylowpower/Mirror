@@ -1,35 +1,173 @@
-using System.Collections;
 using System.Collections.Generic;
+using Mono.Cecil.Cil;
 using UnityEngine;
+using UnityEngine.Rendering;
 
-//use to control enemy spawn and remove enemy
 public class GameController : MonoBehaviour
 {
-    [SerializeField] private GameObject _enemyPrefab;
-    [SerializeField] private float _spawnTime = 0f;
-    [SerializeField] private float _minSpawnTime = 1f;
-    [SerializeField] private float _maxSpawnTime = 3f;
-    [SerializeField] private int _spawnCount = 0;
+
+
     [SerializeField] private BoxCollider2D colliderArea;
 
+    //player
     public static GameController instance;
+    public Transform player;
+    CharacterController charScript;
+    public CharacterController CharScript { get { return charScript; } }
 
-    // Spatial Partitioning
-    int spatialGroupWidth = 100;
-    public int SpatialGroupWidth { get { return spatialGroupWidth; } }
-    int spatialGroupHeight = 100;
-    public int SpatialGroupHeight { get { return spatialGroupHeight; } }
-    int numberOfPartition = 10000;
-    public int NumberOfPartition { get { return numberOfPartition; } }
+    //enemy
+    public GameObject _enemyPrefab;
+    public Transform _enemyHolder;
+    public float _spawnTime = 0f;
+    public float _minSpawnTime = 1f;
+    public float _maxSpawnTime = 3f;
+    public int _spawnCount = 0;
+    public int _maxCount = 100000;
 
-    // Enemy groups in spatial partition
-    [HideInInspector] public Dictionary<int, HashSet<Enemy>> enemySpatialGroups = new();
+    //enemy logic
+    Dictionary<int, List<Enemy>> enemyBatch = new(); //store enemy list for handle
+    float runLogicTimer = 0f;
+    float runLogicTimerCD = 1f;
 
-    // Enemy batch management (Optional)
-    public Dictionary<int, List<Enemy>> enemyBatches = new();
+    //spatital patitioning
+    int spatitalGroupWidth = 100; //split map to cell to handle
+    public int SpatitalGroupWidth { get { return spatitalGroupWidth; } }
+    int spatitalGroupHeight = 100;
+    public int SpatitalGroupHeight { get { return spatitalGroupHeight; } }
+    int numberOfPatition = 1000;
+    public int numberOfPatitions { get { return numberOfPatition; } }
+    //border of the map
+    int mapWidthMin = -1;
+    public int MapWidthMin { get { return mapWidthMin; } }
+    int mapWidthMax = -1;
+    public int MapWidthMax { get { return mapWidthMax; } }
+    int mapHeightMin = -1;
+    public int MapHeightMin { get { return mapHeightMin; } }
+    int mapHeightMax = -1;
+    public int MapHeightMax { get { return mapHeightMax; } }
+
+    //for enemy
+    [HideInInspector] public Dictionary<int, HashSet<Enemy>> enemySpatitalGroups = new Dictionary<int, HashSet<Enemy>>();
+    //[HideInInspector] public Dictionary<int, HashSet<Bullet>> bulletSpatitalGroups = new Dictionary<int, HashSet<Bullet>>();
+
+    //exp 
+    public GameObject experiencePoint;
+    public Transform experiencePointHolder;
+
+    //get spatital group static 
+    int Cell_Per_Row_Static;
+    int Cell_Per_Col_Static;
+    float Cell_Width_Static;
+    float Cell_Height_Static;
+    int Half_Width_Static;
+    int Half_Height_Static;
+
+    //min heap for batch
+    /*func: 
+        handle enemy in batch
+        find batch to spawn enemy
+    */
+    public class BatchScore : System.IComparable<BatchScore>
+    {
+        public int BatchId { get; }
+        public int Score { get; set; }
+
+        public BatchScore(int batchId, int score)
+        {
+            BatchId = batchId;
+            Score = score; //number of enemy
+        }
+
+        public void UpdateScore(int delta)
+        {
+            Score += delta;
+        }
+
+        public int CompareTo(BatchScore other)
+        {
+            int scoreComparison = Score.CompareTo(other.Score);
+            if (scoreComparison == 0)
+            {
+                //if score equal, compare to batchId
+                return BatchId.CompareTo(other.BatchId);
+            }
+            return scoreComparison;
+        }
+    }
+    //sort batch store list
+    SortedSet<BatchScore> batchQueue_Enemy = new();
+
+    //track current score of each batch
+    Dictionary<int, BatchScore> batchScoreMap_Enemy = new Dictionary<int, BatchScore>();
+    public void AddEnemyToBatch(int batchId, Enemy enemy)
+    {
+        enemyBatch[batchId].Add(enemy);
+    }
+
+    public void UpdateEnemyOnUnitDeath(string option, int batchId)
+    {
+        if (option == "enemy")
+        {
+            UpdateEnemyOnDeathRaw(batchQueue_Enemy, batchScoreMap_Enemy, batchId);
+        }
+    }
+
+    void UpdateEnemyOnDeathRaw(SortedSet<BatchScore> batchQueue, Dictionary<int, BatchScore> batchScoreMap, int batchId)
+    {
+        if (batchScoreMap.ContainsKey(batchId))
+        {
+            BatchScore batchScore = batchScoreMap[batchId];
+            batchQueue.Remove(batchScore);
+            batchScore.UpdateScore(-1);
+            batchQueue.Add(batchScore);
+        }
+        else
+        {
+            Debug.Log("BUG AT UPDATE ENEMY ON DEATH RAW");
+        }
+    }
+
+    public int GetBestBatch(string option)
+    {
+        if (option == "enemy")
+        {
+            return GetBestBatchRaw(batchQueue_Enemy);
+        }
+        else return -1;
+    }
+
+    int GetBestBatchRaw(SortedSet<BatchScore> batchQueue)
+    {
+        BatchScore leastLoadBatch = batchQueue.Min;
+
+        if (leastLoadBatch == null)
+        {
+            Debug.Log("BUG GET BEST BATCH RAW, NULL LEAST LOAD BATCH");
+            return 0;
+        }
+        batchQueue.Remove(leastLoadBatch); //remove old batch
+        leastLoadBatch.UpdateScore(1); //add 
+        batchQueue.Add(leastLoadBatch); //update
+
+        return leastLoadBatch.BatchId;
+    }
+
+    void IntitalizeBatches()
+    {
+        for (int i = 0; i < 50; i++)
+        {
+            BatchScore batchScore = new(i, 0);
+
+            enemyBatch.Add(i, new List<Enemy>()); //create enemy list of each batch
+            batchScoreMap_Enemy.Add(i, batchScore); //update score for each batch
+            batchQueue_Enemy.Add(batchScore);//add batch have least score to leastLoadBatch for spawn enemy
+        }
+    }
+
 
     void Awake()
     {
+        instance = this;
         if (colliderArea == null)
         {
             Debug.LogError("ColliderArea is not assigned! Please assign it in the Inspector.");
@@ -38,59 +176,28 @@ public class GameController : MonoBehaviour
         }
 
         SetSpawnTime();
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
     }
 
     void Update()
     {
-        // Spawn enemy
+        //spawn enemy
         _spawnTime -= Time.deltaTime;
         if (_spawnTime <= 0f)
         {
-            SpawnEnemy();
+            Vector2 randomSpawnPos = GetRandomPosition();
+            Instantiate(_enemyPrefab, randomSpawnPos, Quaternion.identity);
+            _spawnCount++; //track spawned enemies
             SetSpawnTime();
         }
     }
 
-    // Spawn enemy at random position
-    private void SpawnEnemy()
-    {
-        Vector2 spawnPosition = GetRandomPosition();
-        GameObject enemyGO = Instantiate(_enemyPrefab, spawnPosition, Quaternion.identity);
-        _spawnCount++;
-
-        Enemy enemyScript = enemyGO.GetComponent<Enemy>();
-        if (enemyScript != null)
-        {
-            int spatialGroup = GetSpatialGroup(spawnPosition.x, spawnPosition.y);
-            enemyScript.spatialGroup = spatialGroup;
-            AddToSpatialGroup(spatialGroup, enemyScript);
-
-            int batchID = GetBestBatch();
-            enemyScript.BatchID = batchID;
-            if (!enemyBatches.ContainsKey(batchID))
-            {
-                enemyBatches[batchID] = new List<Enemy>();
-            }
-            enemyBatches[batchID].Add(enemyScript);
-        }
-    }
-
-    // Set spawn time
+    //spawn enemy
     private void SetSpawnTime()
     {
         _spawnTime = Random.Range(_minSpawnTime, _maxSpawnTime);
     }
 
-    // Get random spawn position within collider area
-    private Vector2 GetRandomPosition()
+    private Vector2 GetRandomPosition() //random pos to spawn
     {
         if (colliderArea == null) return Vector2.zero; // Safety check
         Bounds boxBounds = colliderArea.bounds;
@@ -98,54 +205,16 @@ public class GameController : MonoBehaviour
         do
         {
             float posX = Random.Range(boxBounds.min.x, boxBounds.max.x);
-            float posY = Random.Range(boxBounds.min.y, boxBounds.max.y);
-            spawnPos = new Vector2(posX, posY);
+            float posy = Random.Range(boxBounds.min.y, boxBounds.max.y);
+            spawnPos = new Vector2(posX, posy);
         } while (CheckInsideCamera(spawnPos)); // enemy can't spawn inside camera area
 
         return spawnPos;
     }
 
-    // Check if the position is inside camera view
-    private bool CheckInsideCamera(Vector2 position)
+    private bool CheckInsideCamera(Vector2 positon) //check camera area
     {
-        Vector3 viewportPos = Camera.main.WorldToViewportPoint(position);
+        Vector3 viewportPos = Camera.main.WorldToViewportPoint(positon);
         return viewportPos.x > 0 && viewportPos.x < 1 && viewportPos.y > 0 && viewportPos.y < 1;
-    }
-
-    // Add enemy to spatial group
-    private void AddToSpatialGroup(int spatialGroup, Enemy enemy)
-    {
-        if (!enemySpatialGroups.ContainsKey(spatialGroup))
-        {
-            enemySpatialGroups[spatialGroup] = new HashSet<Enemy>();
-        }
-        enemySpatialGroups[spatialGroup].Add(enemy);
-    }
-
-    // Get spatial group based on position
-    public int GetSpatialGroup(float x, float y)
-    {
-        int width = SpatialGroupWidth;
-        int height = SpatialGroupHeight;
-        return (int)(x / width) + (int)(y / height) * width;
-    }
-
-    // Get best batch ID (example function, can be adjusted to your logic)
-    private int GetBestBatch()
-    {
-        return 0; // Example: Return a batch ID based on custom logic
-    }
-
-    // Remove enemy from spatial group (when destroyed)
-    public void RemoveEnemy(Enemy enemy)
-    {
-        if (enemySpatialGroups.TryGetValue(enemy.spatialGroup, out var group))
-        {
-            group.Remove(enemy);
-            if (group.Count == 0)
-            {
-                enemySpatialGroups.Remove(enemy.spatialGroup);
-            }
-        }
     }
 }
