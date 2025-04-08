@@ -5,13 +5,13 @@ using UnityEngine.Rendering;
 
 public class GameController : MonoBehaviour
 {
-
+    public bool demo;
 
     [SerializeField] private BoxCollider2D colliderArea;
 
     //player
     public static GameController instance;
-    public Transform player;
+    public Transform character;
     CharacterController charScript;
     public CharacterController CharScript { get { return charScript; } }
 
@@ -34,8 +34,8 @@ public class GameController : MonoBehaviour
     public int SpatitalGroupWidth { get { return spatitalGroupWidth; } }
     int spatitalGroupHeight = 100;
     public int SpatitalGroupHeight { get { return spatitalGroupHeight; } }
-    int numberOfPatition = 1000;
-    public int numberOfPatitions { get { return numberOfPatition; } }
+    int numberOfPartitions = 1000;
+    public int NumberOfPartitions { get { return numberOfPartitions; } }
     //border of the map
     int mapWidthMin = -1;
     public int MapWidthMin { get { return mapWidthMin; } }
@@ -168,53 +168,167 @@ public class GameController : MonoBehaviour
     void Awake()
     {
         instance = this;
-        if (colliderArea == null)
+
+    }
+
+    void Start()
+    {
+        //static get spatial group
+        Cell_Per_Col_Static = (int)Mathf.Sqrt(numberOfPartitions);
+        Cell_Per_Row_Static = Cell_Per_Col_Static;
+        Cell_Height_Static = spatitalGroupHeight / Cell_Per_Col_Static;
+        Cell_Width_Static = spatitalGroupWidth / Cell_Per_Row_Static;
+        Half_Height_Static = spatitalGroupHeight / 2;
+        Half_Width_Static = spatitalGroupWidth / 2;
+
+        charScript = character.GetComponent<CharacterController>();
+
+        IntitalizeBatches();
+
+        for (int i = 0; i < numberOfPartitions; i++)
         {
-            Debug.LogError("ColliderArea is not assigned! Please assign it in the Inspector.");
-            enabled = false;
-            return;
+            enemySpatitalGroups.Add(i, new HashSet<Enemy>());
+            //bulletSpatitalGroups.Add(i, new HashSet<Bullet>());
+
         }
 
-        SetSpawnTime();
-    }
-
-    void Update()
-    {
-        //spawn enemy
-        _spawnTime -= Time.deltaTime;
-        if (_spawnTime <= 0f)
+        int initEnemySpawn = demo ? 100 : 1000000;
+        _maxCount = demo ? 100 : 1000000;
+        for (int i = 0; i < initEnemySpawn; i++)
         {
-            Vector2 randomSpawnPos = GetRandomPosition();
-            Instantiate(_enemyPrefab, randomSpawnPos, Quaternion.identity);
-            _spawnCount++; //track spawned enemies
-            SetSpawnTime();
+            SpawnEnemy();
         }
+
+        _spawnTime = 0f;
+
     }
 
-    //spawn enemy
-    private void SetSpawnTime()
+    void SpawnEnemy()
     {
-        _spawnTime = Random.Range(_minSpawnTime, _maxSpawnTime);
+        int batchToAdd = GetBestBatch("enemy");
+
+        
+        
+
     }
 
-    private Vector2 GetRandomPosition() //random pos to spawn
+
+    public int GetSpatitalGroup(float xPos, float yPos)
     {
-        if (colliderArea == null) return Vector2.zero; // Safety check
-        Bounds boxBounds = colliderArea.bounds;
-        Vector2 spawnPos;
-        do
-        {
-            float posX = Random.Range(boxBounds.min.x, boxBounds.max.x);
-            float posy = Random.Range(boxBounds.min.y, boxBounds.max.y);
-            spawnPos = new Vector2(posX, posy);
-        } while (CheckInsideCamera(spawnPos)); // enemy can't spawn inside camera area
-
-        return spawnPos;
+        return GetSpatitalGroupDynamic(xPos, yPos, spatitalGroupWidth, spatitalGroupHeight, numberOfPartitions);
     }
 
-    private bool CheckInsideCamera(Vector2 positon) //check camera area
+    public int GetSpatitalGroupStatic(float xPos, float yPos)
     {
-        Vector3 viewportPos = Camera.main.WorldToViewportPoint(positon);
-        return viewportPos.x > 0 && viewportPos.x < 1 && viewportPos.y > 0 && viewportPos.y < 1;
+        float adjustedX = xPos + Half_Width_Static;
+        float adjustedY = yPos + Half_Height_Static;
+
+        int xIndex = (int)(adjustedX / Cell_Width_Static);
+        int yIndex = (int)(adjustedY / Cell_Height_Static);
+
+        return xIndex + yIndex * Cell_Per_Row_Static;
+
     }
+
+    public int GetSpatitalGroupDynamic(float xPos, float yPos, float mapWidth, float mapHeight, int totalPartitions)
+    {
+        //calculate number of cells
+        int cellsPerRow = (int)Mathf.Sqrt(totalPartitions);
+        int cellsPerCol = cellsPerRow;
+        //calculate size of cell
+        float cellWidth = mapWidth / cellsPerCol;
+        float cellHeight = mapHeight / cellsPerRow;
+
+        float adjustedX = xPos + (mapWidth / 2);
+        float adjustedY = yPos + (mapHeight / 2);
+
+        int xIndex = (int)(adjustedX / cellWidth);
+        int yIndex = (int)(adjustedY / cellHeight);
+
+        xIndex = Mathf.Clamp(xIndex, 0, cellsPerRow - 1);
+        yIndex = Mathf.Clamp(yIndex, 0, cellsPerCol - 1);
+
+        return xIndex + yIndex * cellsPerRow;
+    }
+
+    Vector2 GetPatitionCenterDynamic(int partition, float mapWidth, float mapHeight, int totalPartitions)
+    {
+        int cellPerRow = (int)Mathf.Sqrt(totalPartitions);
+        int cellPerCol = cellPerRow;
+
+        float cellWidth = mapWidth / cellPerCol;
+        float cellHeight = mapHeight / cellPerRow;
+
+        int rowIndex = partition / cellPerRow; // row index of partition 
+        int colIndex = partition % cellPerCol;
+
+        /*example: 0 1 2
+                   3 4 5
+                   6 7 8 
+                   partition = 7 rowIndex = 7/3 = 2 colIndex = 7%3 = 2 with 1 
+        because the spatital is square
+        */
+
+        float centerX = (colIndex + 0.5f) * cellWidth - (mapWidth / 2);
+        float centerY = (rowIndex + 0.5f) * cellHeight - (mapHeight / 2);
+
+        return new Vector2(centerX, centerY);
+    }
+
+    public void AddToSpatitalGroup(int spatialGroupId, Enemy enemy)
+    {
+        enemySpatitalGroups[spatialGroupId].Add(enemy);
+    }
+
+    public void RemoveFromSpatitalGroup(int spatialGroupId, Enemy enemy)
+    {
+        enemySpatitalGroups[spatialGroupId].Remove(enemy);
+    }
+
+
+
+    // public void DropExp()
+    // {
+
+    // }
+
+    // void Update()
+    // {
+    //     //spawn enemy
+    //     _spawnTime -= Time.deltaTime;
+    //     if (_spawnTime <= 0f)
+    //     {
+    //         Vector2 randomSpawnPos = GetRandomPosition();
+    //         Instantiate(_enemyPrefab, randomSpawnPos, Quaternion.identity);
+    //         _spawnCount++; //track spawned enemies
+    //         SetSpawnTime();
+    //     }
+    // }
+
+    // //spawn enemy
+    // private void SetSpawnTime()
+    // {
+    //     _spawnTime = Random.Range(_minSpawnTime, _maxSpawnTime);
+    // }
+
+    // private Vector2 GetRandomPosition() //random pos to spawn
+    // {
+    //     if (colliderArea == null) return Vector2.zero; // Safety check
+    //     Bounds boxBounds = colliderArea.bounds;
+    //     Vector2 spawnPos;
+    //     do
+    //     {
+    //         float posX = Random.Range(boxBounds.min.x, boxBounds.max.x);
+    //         float posy = Random.Range(boxBounds.min.y, boxBounds.max.y);
+    //         spawnPos = new Vector2(posX, posy);
+    //     } while (CheckInsideCamera(spawnPos)); // enemy can't spawn inside camera area
+
+    //     return spawnPos;
+    // }
+
+    // private bool CheckInsideCamera(Vector2 positon) //check camera area
+    // {
+    //     Vector3 viewportPos = Camera.main.WorldToViewportPoint(positon);
+    //     return viewportPos.x > 0 && viewportPos.x < 1 && viewportPos.y > 0 && viewportPos.y < 1;
+    // }
 }

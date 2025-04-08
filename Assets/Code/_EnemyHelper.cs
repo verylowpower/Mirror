@@ -9,9 +9,9 @@ public class EnemyHelper : MonoBehaviour
     public static List<int> GetExpandedSpatialGroupsV2(int spatialGroup, int radious = 1)
     {
         List<int> expandedSpatialGroups = new(); //list to save parition
-        int widthRange = GameController.instance.SpatialGroupWidth;
-        int heightRange = GameController.instance.SpatialGroupHeight;
-        int numberOfPartition = GameController.instance.NumberOfPartition;
+        int widthRange = GameController.instance.SpatitalGroupWidth;
+        int heightRange = GameController.instance.SpatitalGroupHeight;
+        int numberOfPartition = GameController.instance.NumberOfPartitions;
 
         //check each partition
         for (int dx = -radious; dx <= radious; dx++)
@@ -39,10 +39,10 @@ public class EnemyHelper : MonoBehaviour
     public static List<int> GetExpandedSpatialGroups(int spatialGroup, int numberOfPartitions = -1)
     {
         List<int> expandedSpatialGroups = new(); //list to add
-        int widthRange = GameController.instance.SpatialGroupWidth;
-        int heightRange = GameController.instance.SpatialGroupHeight;
+        int widthRange = GameController.instance.SpatitalGroupWidth;
+        int heightRange = GameController.instance.SpatitalGroupHeight;
         if (numberOfPartitions == -1) //check partition, if not add from GameController
-            numberOfPartitions = GameController.instance.NumberOfPartition;
+            numberOfPartitions = GameController.instance.NumberOfPartitions;
         int sqrtOfPartitions = (int)Mathf.Sqrt(numberOfPartitions); // calculate grid size of map
         int numberOfRows = sqrtOfPartitions; //row and col are same -> map square
         int partitionPerRows = sqrtOfPartitions;
@@ -74,7 +74,7 @@ public class EnemyHelper : MonoBehaviour
 
         foreach (int spatialGroup in spatialGroups)
         {
-            enemies.AddRange(GameController.instance.enemySpatialGroups[spatialGroup]);
+            enemies.AddRange(GameController.instance.enemySpatitalGroups[spatialGroup]);
         }
         return enemies;
     }

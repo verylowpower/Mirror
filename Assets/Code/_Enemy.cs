@@ -65,19 +65,19 @@ public class Enemy : MonoBehaviour
     void RunLogic()
     {
         PushEnemyNearby();
-        int newSpatialGroup = GameController.instance.GetSpatialGroup(transform.position.x, transform.position.y); // GET spatial group
+        int newSpatialGroup = GameController.instance.GetSpatitalGroup(transform.position.x, transform.position.y); // GET spatial group
         if (newSpatialGroup != spatialGroup)
         {
-            GameController.instance.enemySpatialGroups[spatialGroup].Remove(this); // REMOVE from old spatial group
+            GameController.instance.enemySpatitalGroups[spatialGroup].Remove(this); // REMOVE from old spatial group
 
             spatialGroup = newSpatialGroup; // UPDATE current spatial group
-            GameController.instance.enemySpatialGroups[spatialGroup].Add(this); // ADD to new spatial group
+            GameController.instance.enemySpatitalGroups[spatialGroup].Add(this); // ADD to new spatial group
         }
     }
 
     private void PushEnemyNearby()
     {
-        List<Enemy> currAreaEnemy = GameController.instance.enemySpatialGroups[spatialGroup].ToList();
+        List<Enemy> currAreaEnemy = GameController.instance.enemySpatitalGroups[spatialGroup].ToList();
 
         foreach (Enemy enemy in currAreaEnemy)
         {
