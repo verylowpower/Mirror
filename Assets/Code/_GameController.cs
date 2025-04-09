@@ -207,11 +207,38 @@ public class GameController : MonoBehaviour
     {
         int batchToAdd = GetBestBatch("enemy");
 
-        
-        
+        int charQuadrant = GetSpatitalGroupDynamic(character.position.x, character.position.y, spatitalGroupHeight, spatitalGroupWidth, 25);
+
+        List<int> expandedSpatitalGroup = EnemyHelper.GetExpandedSpatialGroups(charQuadrant, 0);
+
+        expandedSpatitalGroup.Remove(charQuadrant);
+
+        int randomSpatitalGroup = expandedSpatitalGroup[Random.Range(0, expandedSpatitalGroup.Count)];
+
+        Vector2 centerOfSpatitalGroup = GetPatitionCenterDynamic(randomSpatitalGroup, spatitalGroupWidth, spatitalGroupHeight, 25);
+
+        float sizeOfOneSpatitalGroup = spatitalGroupWidth / 5;
+        float valX = Random.Range(centerOfSpatitalGroup.x - sizeOfOneSpatitalGroup / 2,
+                                 centerOfSpatitalGroup.y + sizeOfOneSpatitalGroup / 2);
+        float valY = Random.Range(centerOfSpatitalGroup.y - sizeOfOneSpatitalGroup / 2,
+                                 centerOfSpatitalGroup.y + sizeOfOneSpatitalGroup / 2);
+
+        GameObject enemyGO = Instantiate(_enemyPrefab, _enemyHolder);
+
+        enemyGO.transform.position = new Vector3(valX, valY, 0);
+        enemyGO.transform.parent = _enemyHolder;
+
+        Enemy enemyScript = enemyGO.GetComponent<Enemy>();
+
+        int spatialGroup = GetSpatitalGroup(enemyGO.transform.position.x, enemyGO.transform.position.y);
+        enemyScript.spatialGroup = spatialGroup;
+
+        AddToSpatitalGroup(spatialGroup, enemyScript);
+
+        enemyScript.BatchID = batchToAdd;
+        enemyBatch[batchToAdd].Add(enemyScript);
 
     }
-
 
     public int GetSpatitalGroup(float xPos, float yPos)
     {
