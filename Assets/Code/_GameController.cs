@@ -7,7 +7,7 @@ public class GameController : MonoBehaviour
 {
     public bool demo;
 
-    [SerializeField] private BoxCollider2D colliderArea;
+    //[SerializeField] private BoxCollider2D colliderArea;
 
     //player
     public static GameController instance;
@@ -19,10 +19,10 @@ public class GameController : MonoBehaviour
     public GameObject _enemyPrefab;
     public Transform _enemyHolder;
     public float _spawnTime = 0f;
-    public float _minSpawnTime = 1f;
-    public float _maxSpawnTime = 3f;
-    public int _spawnCount = 0;
-    public int _maxCount = 100000;
+    //public float _minSpawnTime = 1f;
+    //public float _maxSpawnTime = 3f;
+    //public int _spawnCount = 0;
+    public int _maxCount = 1000;
 
     //enemy logic
     Dictionary<int, List<Enemy>> enemyBatch = new(); //store enemy list for handle
@@ -51,8 +51,8 @@ public class GameController : MonoBehaviour
     //[HideInInspector] public Dictionary<int, HashSet<Bullet>> bulletSpatitalGroups = new Dictionary<int, HashSet<Bullet>>();
 
     //exp 
-    public GameObject experiencePoint;
-    public Transform experiencePointHolder;
+    // public GameObject experiencePoint;
+    // public Transform experiencePointHolder;
 
     //get spatital group static 
     int Cell_Per_Row_Static;
@@ -192,8 +192,8 @@ public class GameController : MonoBehaviour
 
         }
 
-        int initEnemySpawn = demo ? 100 : 1000000;
-        _maxCount = demo ? 100 : 1000000;
+        int initEnemySpawn = demo ? 10 : 1000;
+        _maxCount = demo ? 10 : 1000;
         for (int i = 0; i < initEnemySpawn; i++)
         {
             SpawnEnemy();
@@ -209,11 +209,16 @@ public class GameController : MonoBehaviour
 
         int charQuadrant = GetSpatitalGroupDynamic(character.position.x, character.position.y, spatitalGroupHeight, spatitalGroupWidth, 25);
 
-        List<int> expandedSpatitalGroup = EnemyHelper.GetExpandedSpatialGroups(charQuadrant, 0);
+        List<int> expandedSpatitalGroup = EnemyHelper.GetExpandedSpatialGroups(charQuadrant, 1);
 
         expandedSpatitalGroup.Remove(charQuadrant);
 
         int randomSpatitalGroup = expandedSpatitalGroup[Random.Range(0, expandedSpatitalGroup.Count)];
+        if (expandedSpatitalGroup.Count == 0)
+        {
+            Debug.LogWarning("[GameController] No valid expanded spatial groups found.");
+            return;
+        }
 
         Vector2 centerOfSpatitalGroup = GetPatitionCenterDynamic(randomSpatitalGroup, spatitalGroupWidth, spatitalGroupHeight, 25);
 

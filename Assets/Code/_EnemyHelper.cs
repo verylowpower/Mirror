@@ -43,6 +43,11 @@ public class EnemyHelper : MonoBehaviour
         int heightRange = GameController.instance.SpatitalGroupHeight;
         if (numberOfPartitions == -1) //check partition, if not add from GameController
             numberOfPartitions = GameController.instance.NumberOfPartitions;
+        if (numberOfPartitions <= 0)
+        {
+            Debug.LogError($"[EnemyHelper] Invalid numberOfPartitions: {numberOfPartitions}. Cannot proceed.");
+            return expandedSpatialGroups;
+        }
         int sqrtOfPartitions = (int)Mathf.Sqrt(numberOfPartitions); // calculate grid size of map
         int numberOfRows = sqrtOfPartitions; //row and col are same -> map square
         int partitionPerRows = sqrtOfPartitions;

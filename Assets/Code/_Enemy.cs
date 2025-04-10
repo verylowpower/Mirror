@@ -28,36 +28,7 @@ public class Enemy : MonoBehaviour
         set { damage = value; }
     }
 
-    // void Start()
-    // {
-    //     // Lấy biến Blackboard của GameObject
-    //     var blackboard = behaviorGraph.BlackboardReference;
-
-    //     // Khai báo biến BlackboardVariable để lưu trữ giá trị lấy từ Blackboard
-    //     BlackboardVariable enemySpeed;
-
-    //     if (blackboard.GetVariable("enemySpeed", out enemySpeed))
-    //     {
-    //         // Kiểm tra xem biến này có phải là BlackboardVariable<float> không
-    //         if (enemySpeed is BlackboardVariable<float> speedVariable)
-    //         {
-    //             movementSpeed = speedVariable.value;  // Truy cập giá trị trong BlackboardVariable<float>
-    //             Debug.Log("Enemy Speed from Behavior Graph: " + movementSpeed);
-    //         }
-    //         else
-    //         {
-    //             Debug.LogWarning("The 'enemySpeed' variable is not a float.");
-    //         }
-    //     }
-    //     else
-    //     {
-    //         Debug.LogWarning("Variable 'enemySpeed' not found in Behavior Graph Blackboard.");
-    //     }
-    // }
-
-
-
-    void FixedUpdate()
+    void Update()
     {
         RunLogic();
     }

@@ -1,14 +1,50 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class _Character_Move : MonoBehaviour
 {
+    public bool shootRandom = false;
+
     [Header("Stat")]
     [SerializeField] private float _speed = 3.0f;
+    public int _health;
+    public int _maxHealth;
+
+    [Header("Spatital Group")]
+    int spatialGroup = -1;
+    public int SpatitalGroup { get { return spatialGroup; } }
+
+    [Header("Take DMG")] //take from every enemy
+    int takeDmgEveryXFrame = 0;
+    int takeDmgEveryXFrameCD = 10;
+    float hitBoxRadius = 0.1f;
+
+    //check nearest enemy for gun
+    Vector2 nearestEnemy = Vector2.zero;
+    public Vector2 NearestEnemy
+    {
+        get { return nearestEnemy; }
+        set { nearestEnemy = value; }
+    }
+
+    bool noEnemyNearby = false;
+    public bool NoEnemyNearby
+    {
+        get{ return noEnemyNearby; }  
+        set{ noEnemyNearby = value; }
+    }
+
 
     private PlayerInputAct inputActions;
     private Rigidbody2D _rb;
     private Vector2 moveInput;
+
+
+    void Start()
+    {
+        spatialGroup = GameController.instance.GetSpatitalGroup(transform.position.x, transform.position.y);
+    }
 
     public void Awake()
     {

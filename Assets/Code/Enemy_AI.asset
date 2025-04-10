@@ -122,7 +122,7 @@ MonoBehaviour:
   m_Nodes:
   - rid: 5676876879722708992
   - rid: 5676876879722708997
-  m_VersionTimestamp: 638794082368713179
+  m_VersionTimestamp: 638799163198357670
   m_DebugInfo: {fileID: 536460285662262959}
   m_RuntimeGraph: {fileID: 4736556364564493531}
   AssetID:
@@ -466,7 +466,7 @@ MonoBehaviour:
         AuthoringAssetID:
           m_Value0: 321860155581383487
           m_Value1: 15698949632942074251
-        m_DebugInfo: {fileID: 0}
+        m_DebugInfo: {fileID: 536460285662262959}
         Root:
           rid: 3464908691320078443
         BlackboardReference:
@@ -478,7 +478,7 @@ MonoBehaviour:
           rid: 3464908691320078445
         m_EndedNodes:
           rid: 3464908691320078446
-        m_VersionTimestamp: 638794082368713179
+        m_VersionTimestamp: 638799163198357670
     - rid: 3464908691320078443
       type: {class: Start, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
