@@ -305,8 +305,9 @@ MonoBehaviour:
   character: {fileID: 1511386264}
   _enemyPrefab: {fileID: 2322608764563794003, guid: 2db7ff8a18655634eaffa3230844b9d1, type: 3}
   _enemyHolder: {fileID: 1620215859}
-  _spawnTime: 0
-  _maxCount: 1000
+  _spawnTime: 1
+  _spawnTimeCD: 5
+  _maxCount: 100
 --- !u!4 &1069716622
 Transform:
   m_ObjectHideFlags: 0
@@ -317,10 +318,10 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 8.9590645, y: 8.9590645, z: 8.9590645}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1511386264}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &1069716623
 BoxCollider2D:
@@ -461,9 +462,9 @@ GameObject:
   - component: {fileID: 1511386262}
   - component: {fileID: 1511386261}
   - component: {fileID: 1511386260}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: 'Square '
-  m_TagString: Player
+  m_TagString: player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -624,8 +625,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 8.9590645, y: 8.9590645, z: 8.9590645}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1069716622}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1587845816
@@ -770,5 +770,6 @@ SceneRoots:
   - {fileID: 519420032}
   - {fileID: 1587845818}
   - {fileID: 1328882846}
+  - {fileID: 1069716622}
   - {fileID: 1511386264}
   - {fileID: 1620215859}

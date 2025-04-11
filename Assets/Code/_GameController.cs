@@ -20,7 +20,7 @@ public class GameController : MonoBehaviour
     public Transform _enemyHolder;
     public float _spawnTime = 0f;
     //public float _minSpawnTime = 1f;
-    //public float _maxSpawnTime = 3f;
+    public float _spawnTimeCD = 3f;
     //public int _spawnCount = 0;
     public int _maxCount = 1000;
 
@@ -192,24 +192,81 @@ public class GameController : MonoBehaviour
 
         }
 
-        int initEnemySpawn = demo ? 10 : 1000;
-        _maxCount = demo ? 10 : 1000;
+        int initEnemySpawn = demo ? 10 : 10;
+        _maxCount = demo ? 100 : 1000;
         for (int i = 0; i < initEnemySpawn; i++)
         {
             SpawnEnemy();
         }
 
-        _spawnTime = 0f;
+        mapWidthMin = -spatitalGroupWidth / 2;
+        mapWidthMax = spatitalGroupWidth / 2;
+        mapHeightMin = -spatitalGroupHeight / 2;
+        mapHeightMax = spatitalGroupHeight / 2;
+    }
+
+
+    void FixedUpdate()
+    {
+        if (instance.character == null) return;
+
+        runLogicTimer += Time.deltaTime;
+
+        // if(runLogicTimer>runLogicTimerCD)
+        // {
+        //     //bullet code
+        //     return;
+        // }
+
+        SpawnEnemies();
+        int batchId = (int)(runLogicTimer * 50) % 50; // <-- giới hạn trong 0–49
+        RunBatchLogic(batchId);
 
     }
+
+    // void BulletCode(){}
+
+    private void RunBatchLogic(int batchId)
+    {
+        Debug.Log($"[Batch] Running logic for batch {batchId}");
+
+        if (!enemyBatch.ContainsKey(batchId)) return;
+
+        foreach (Enemy enemy in enemyBatch[batchId])
+        {
+            if (enemy) enemy.RunLogic();
+        }
+    }
+
+
+    void SpawnEnemies()
+    {
+        _spawnTime += Time.deltaTime;
+
+        if (_spawnTime > _spawnTimeCD && _enemyHolder.childCount < _maxCount)
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                SpawnEnemy();
+            }
+            _spawnTime = 0;
+        }
+    }
+
 
     void SpawnEnemy()
     {
         int batchToAdd = GetBestBatch("enemy");
 
+        if (batchToAdd == -1 || !enemyBatch.ContainsKey(batchToAdd))
+        {
+            Debug.LogError("[GameController] Invalid batch ID received from GetBestBatch.");
+            return;
+        }
+
         int charQuadrant = GetSpatitalGroupDynamic(character.position.x, character.position.y, spatitalGroupHeight, spatitalGroupWidth, 25);
 
-        List<int> expandedSpatitalGroup = EnemyHelper.GetExpandedSpatialGroups(charQuadrant, 1);
+        List<int> expandedSpatitalGroup = EnemyHelper.GetExpandedSpatialGroups(charQuadrant, 25);
 
         expandedSpatitalGroup.Remove(charQuadrant);
 
@@ -224,7 +281,7 @@ public class GameController : MonoBehaviour
 
         float sizeOfOneSpatitalGroup = spatitalGroupWidth / 5;
         float valX = Random.Range(centerOfSpatitalGroup.x - sizeOfOneSpatitalGroup / 2,
-                                 centerOfSpatitalGroup.y + sizeOfOneSpatitalGroup / 2);
+                                 centerOfSpatitalGroup.x + sizeOfOneSpatitalGroup / 2);
         float valY = Random.Range(centerOfSpatitalGroup.y - sizeOfOneSpatitalGroup / 2,
                                  centerOfSpatitalGroup.y + sizeOfOneSpatitalGroup / 2);
 
@@ -310,6 +367,7 @@ public class GameController : MonoBehaviour
     public void AddToSpatitalGroup(int spatialGroupId, Enemy enemy)
     {
         enemySpatitalGroups[spatialGroupId].Add(enemy);
+        //Debug.Log("add enemy to " + spatialGroupId);
     }
 
     public void RemoveFromSpatitalGroup(int spatialGroupId, Enemy enemy)

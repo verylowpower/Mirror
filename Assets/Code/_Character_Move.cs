@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -31,8 +32,8 @@ public class _Character_Move : MonoBehaviour
     bool noEnemyNearby = false;
     public bool NoEnemyNearby
     {
-        get{ return noEnemyNearby; }  
-        set{ noEnemyNearby = value; }
+        get { return noEnemyNearby; }
+        set { noEnemyNearby = value; }
     }
 
 
@@ -44,6 +45,7 @@ public class _Character_Move : MonoBehaviour
     void Start()
     {
         spatialGroup = GameController.instance.GetSpatitalGroup(transform.position.x, transform.position.y);
+        //LevelUp();
     }
 
     public void Awake()
@@ -85,5 +87,60 @@ public class _Character_Move : MonoBehaviour
 
         // Gán góc quay cho nhân vật
         _rb.rotation = angle;
+
+
+        //spatialGroup = GameController.instance.GetSpatitalGroup(transform.position.x, transform.position.y);
+
+
+    }
+
+
+    void CheckCollisionWithEnemy()
+    {
+        List<int> surroundingSpatitalGroup = EnemyHelper.GetExpandedSpatialGroups(spatialGroup);
+        List<Enemy> surroudingEnemy = EnemyHelper.GetAllEnemySpatialGroups(surroundingSpatitalGroup);
+
+        foreach (Enemy enemy in surroudingEnemy)
+        {
+            if (enemy == null) continue;
+
+            float distance = Vector2.Distance(transform.position, enemy.transform.position);
+            if (distance < hitBoxRadius)
+            {
+                //ModifyHealth(enemy.Dmg);
+
+                break;
+            }
+        }
+    }
+
+    void CheckNearestEnemyDirection()
+    {
+        float minDistance = 100f;
+        Vector2 closestPosition = Vector2.zero;
+
+        List<int> spatitalGroupToSearch = new List<int>() { spatialGroup };
+
+
+    }
+
+    public void ModifyExp()
+    {
+
+    }
+
+    public void LevelUp()
+    {
+
+    }
+
+    public void ModifyHealth()
+    {
+
+    }
+
+    public void KillPlayer()
+    {
+
     }
 }

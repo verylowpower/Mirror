@@ -30,10 +30,10 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        RunLogic();
+        //RunLogic();
     }
 
-    void RunLogic()
+    public void RunLogic()
     {
         PushEnemyNearby();
         int newSpatialGroup = GameController.instance.GetSpatitalGroup(transform.position.x, transform.position.y); // GET spatial group

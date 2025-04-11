@@ -68,7 +68,7 @@ MonoBehaviour:
   - rid: 5676876879722708994
   - rid: 5676876879722708996
   - rid: 3464908689458331740
-  m_VersionTimestamp: 638794082368623183
+  m_VersionTimestamp: 638800141179622121
   m_CommandBuffer:
     m_Commands: []
   m_RuntimeBlackboardAsset: {fileID: -6759734894698018797}
@@ -122,7 +122,7 @@ MonoBehaviour:
   m_Nodes:
   - rid: 5676876879722708992
   - rid: 5676876879722708997
-  m_VersionTimestamp: 638799163198357670
+  m_VersionTimestamp: 638800141179622121
   m_DebugInfo: {fileID: 536460285662262959}
   m_RuntimeGraph: {fileID: 4736556364564493531}
   AssetID:
@@ -374,7 +374,7 @@ MonoBehaviour:
           m_Value0: 0
           m_Value1: 0
         Name: 
-        m_Value: 1
+        m_Value: 0
     - rid: 5676876879722709011
       type: {class: 'BlackboardVariable`1[[System.String, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
