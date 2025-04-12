@@ -153,7 +153,7 @@ MonoBehaviour:
           m_Value0: 10466135811474443426
           m_Value1: 16308694207749334625
         Name: enemySpeed
-        m_Value: 7
+        m_Value: 3
     - rid: 5676876879722709029
       type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:

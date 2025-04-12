@@ -22,6 +22,7 @@ public class GameController : MonoBehaviour
     //public float _minSpawnTime = 1f;
     public float _spawnTimeCD = 3f;
     //public int _spawnCount = 0;
+    public int _enemyCount = 0;
     public int _maxCount = 1000;
 
     //enemy logic
@@ -120,10 +121,11 @@ public class GameController : MonoBehaviour
             batchQueue.Remove(batchScore);
             batchScore.UpdateScore(-1);
             batchQueue.Add(batchScore);
+            Debug.Log($"[Batch] Decreased score of batch {batchId} to {batchScore.Score}");
         }
         else
         {
-            Debug.Log("BUG AT UPDATE ENEMY ON DEATH RAW");
+            Debug.LogError("[Batch] ERROR: Missing batch ID in score map during enemy death.");
         }
     }
 
@@ -142,18 +144,20 @@ public class GameController : MonoBehaviour
 
         if (leastLoadBatch == null)
         {
-            Debug.Log("BUG GET BEST BATCH RAW, NULL LEAST LOAD BATCH");
+            Debug.LogError("[Batch] ERROR: leastLoadBatch is null.");
             return 0;
         }
         batchQueue.Remove(leastLoadBatch); //remove old batch
         leastLoadBatch.UpdateScore(1); //add 
         batchQueue.Add(leastLoadBatch); //update
-
+        Debug.Log($"[Batch] Chose batch {leastLoadBatch.BatchId} with updated score {leastLoadBatch.Score}");
         return leastLoadBatch.BatchId;
     }
 
     void IntitalizeBatches()
     {
+        Debug.Log("[Init] Initializing enemy batches...");
+
         for (int i = 0; i < 50; i++)
         {
             BatchScore batchScore = new(i, 0);
@@ -161,6 +165,7 @@ public class GameController : MonoBehaviour
             enemyBatch.Add(i, new List<Enemy>()); //create enemy list of each batch
             batchScoreMap_Enemy.Add(i, batchScore); //update score for each batch
             batchQueue_Enemy.Add(batchScore);//add batch have least score to leastLoadBatch for spawn enemy
+            Debug.Log($"[Init] Created batch {i}");
         }
     }
 
@@ -192,11 +197,12 @@ public class GameController : MonoBehaviour
 
         }
 
-        int initEnemySpawn = demo ? 10 : 10;
-        _maxCount = demo ? 100 : 1000;
+        int initEnemySpawn = demo ? 10 : 1000;
+        _maxCount = demo ? 100 : 10000;
         for (int i = 0; i < initEnemySpawn; i++)
         {
             SpawnEnemy();
+            //_enemyCount++;
         }
 
         mapWidthMin = -spatitalGroupWidth / 2;
@@ -234,6 +240,7 @@ public class GameController : MonoBehaviour
 
         foreach (Enemy enemy in enemyBatch[batchId])
         {
+            Debug.Log($"[Enemy] Running logic for enemy in batch {batchId}");
             if (enemy) enemy.RunLogic();
         }
     }
@@ -248,6 +255,7 @@ public class GameController : MonoBehaviour
             for (int i = 0; i < 10; i++)
             {
                 SpawnEnemy();
+
             }
             _spawnTime = 0;
         }
@@ -260,7 +268,7 @@ public class GameController : MonoBehaviour
 
         if (batchToAdd == -1 || !enemyBatch.ContainsKey(batchToAdd))
         {
-            Debug.LogError("[GameController] Invalid batch ID received from GetBestBatch.");
+            Debug.LogError("[Spawn] ERROR: Invalid batch ID received.");
             return;
         }
 
@@ -273,7 +281,7 @@ public class GameController : MonoBehaviour
         int randomSpatitalGroup = expandedSpatitalGroup[Random.Range(0, expandedSpatitalGroup.Count)];
         if (expandedSpatitalGroup.Count == 0)
         {
-            Debug.LogWarning("[GameController] No valid expanded spatial groups found.");
+            Debug.LogWarning("[Spawn] WARNING: No valid expanded spatial groups.");
             return;
         }
 
@@ -299,6 +307,7 @@ public class GameController : MonoBehaviour
 
         enemyScript.BatchID = batchToAdd;
         enemyBatch[batchToAdd].Add(enemyScript);
+        Debug.Log($"[Spawn] Spawned enemy in batch {batchToAdd} at group {spatialGroup} ({valX:F2}, {valY:F2})");
 
     }
 
@@ -367,12 +376,13 @@ public class GameController : MonoBehaviour
     public void AddToSpatitalGroup(int spatialGroupId, Enemy enemy)
     {
         enemySpatitalGroups[spatialGroupId].Add(enemy);
-        //Debug.Log("add enemy to " + spatialGroupId);
+        Debug.Log($"[Spatial] Added enemy to group {spatialGroupId}");
     }
 
     public void RemoveFromSpatitalGroup(int spatialGroupId, Enemy enemy)
     {
         enemySpatitalGroups[spatialGroupId].Remove(enemy);
+        Debug.Log($"[Spatial] Removed enemy from group {spatialGroupId}");
     }
 
 
