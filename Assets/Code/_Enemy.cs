@@ -15,9 +15,12 @@ public class Enemy : MonoBehaviour
     }
 
 
-    public float movementSpeed = 7f;
+    [SerializeField] float movementSpeed = 7f;
     //private BehaviorGraph behaviorGraph;
-    //Vector3 currentMovementDirection = Vector3.zero;
+    Vector3 currentMovementDirection = Vector3.zero;
+    Vector3 velocity = Vector3.zero;
+    Vector3 targetDirection;
+    [SerializeField] float smoothTime = 0.2f;
     public int spatialGroup = 0;
 
     int health = 10;
@@ -35,6 +38,20 @@ public class Enemy : MonoBehaviour
 
     public void RunLogic()
     {
+        // currentMovementDirection = GameController.instance.character.position - transform.position;
+        // currentMovementDirection.Normalize();
+
+        // transform.position += currentMovementDirection * Time.deltaTime * movementSpeed;
+
+        // currentMovementDirection = GameController.instance.character.position - transform.position;
+        // currentMovementDirection.Normalize();
+
+        // targetDirection = transform.position + currentMovementDirection;
+        // transform.position = Vector3.Lerp(transform.position, transform.position + currentMovementDirection, Time.deltaTime * movementSpeed);
+
+        Vector3 currentMovementDirection = GameController.instance.character.position;
+        transform.position = Vector3.MoveTowards(transform.position, currentMovementDirection, movementSpeed * Time.deltaTime);
+
         PushEnemyNearby();
         int newSpatialGroup = GameController.instance.GetSpatitalGroup(transform.position.x, transform.position.y); // GET spatial group
         if (newSpatialGroup != spatialGroup)
