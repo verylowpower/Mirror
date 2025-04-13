@@ -305,8 +305,8 @@ MonoBehaviour:
   character: {fileID: 1511386264}
   _enemyPrefab: {fileID: 2322608764563794003, guid: 2db7ff8a18655634eaffa3230844b9d1, type: 3}
   _enemyHolder: {fileID: 1620215859}
-  _spawnTime: 1
-  _spawnTimeCD: 5
+  _spawnTime: 2
+  _spawnTimeCD: 7
   _enemyCount: 0
   _maxCount: 100
 --- !u!4 &1069716622
