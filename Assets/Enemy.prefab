@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 7473473553290258956}
   - component: {fileID: 1275491552090265855}
   - component: {fileID: 9105075700259850823}
+  - component: {fileID: 4211153218070639921}
   - component: {fileID: 4978881550584770520}
   - component: {fileID: 2044554667826913382}
-  - component: {fileID: 4211153218070639921}
   - component: {fileID: -5223753828125647118}
   - component: {fileID: -4916995370710154673}
   m_Layer: 8
@@ -101,7 +101,7 @@ NavMeshAgent:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2322608764563794003}
-  m_Enabled: 1
+  m_Enabled: 0
   m_AgentTypeID: 0
   m_Radius: 0.5
   m_Speed: 30
@@ -123,7 +123,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2322608764563794003}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f0038c16c34866b4f9e25c9c0dc0f7e6, type: 3}
   m_Name: 
@@ -162,6 +162,18 @@ MonoBehaviour:
           m_Value1: 0
         Name: Self
         m_Value: {fileID: 2322608764563794003}
+--- !u!114 &4211153218070639921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2322608764563794003}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e39f6090724e4a4a8aadeb042afa2bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!50 &4978881550584770520
 Rigidbody2D:
   serializedVersion: 5
@@ -225,18 +237,6 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
---- !u!114 &4211153218070639921
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2322608764563794003}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e39f6090724e4a4a8aadeb042afa2bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &-5223753828125647118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -261,5 +261,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb04a95e88e142d479813b955ca8456c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 3
-  spatialGroup: 20
+  movementSpeed: 50
+  smoothTime: 0.2
+  spatialGroup: 0
