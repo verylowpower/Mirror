@@ -53,8 +53,8 @@ public class GameController : MonoBehaviour
     [HideInInspector] public Dictionary<int, HashSet<Bullet>> bulletSpatialGroups = new Dictionary<int, HashSet<Bullet>>();
 
     //exp 
-    // public GameObject experiencePoint;
-    // public Transform experiencePointHolder;
+    public GameObject experiencePoint;
+    public Transform experiencePointHolder;
 
     //get spatial group static 
     int Cell_Per_Row_Static;
@@ -393,6 +393,12 @@ public class GameController : MonoBehaviour
         Debug.Log($"[Spatial] Removed enemy from group {spatialGroupId}");
     }
 
+    public void DropExpPoint(Vector3 position, int amount)
+    {
+        GameObject expGO = Instantiate(experiencePoint, position, Quaternion.identity);
+        expGO.transform.parent = experiencePointHolder;
+
+    }
 
 
     // public void DropExp()
