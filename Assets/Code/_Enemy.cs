@@ -14,13 +14,13 @@ public class Enemy : MonoBehaviour
         set { batchId = value; }
     }
 
-
     [SerializeField] float movementSpeed = 7f;
+    [SerializeField] float smoothTime = 0.2f;
     //private BehaviorGraph behaviorGraph;
     Vector3 currentMovementDirection = Vector3.zero;
     Vector3 velocity = Vector3.zero;
     Vector3 targetDirection;
-    [SerializeField] float smoothTime = 0.2f;
+
     public int spatialGroup = 0;
 
     int health = 10;
@@ -50,22 +50,22 @@ public class Enemy : MonoBehaviour
         // transform.position = Vector3.Lerp(transform.position, transform.position + currentMovementDirection, Time.deltaTime * movementSpeed);
 
         Vector3 currentMovementDirection = GameController.instance.character.position;
-        transform.position = Vector3.MoveTowards(transform.position, currentMovementDirection, movementSpeed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, currentMovementDirection, movementSpeed * smoothTime * Time.deltaTime);
 
         PushEnemyNearby();
-        int newSpatialGroup = GameController.instance.GetSpatitalGroup(transform.position.x, transform.position.y); // GET spatial group
+        int newSpatialGroup = GameController.instance.GetSpatialGroup(transform.position.x, transform.position.y); // GET spatial group
         if (newSpatialGroup != spatialGroup)
         {
-            GameController.instance.enemySpatitalGroups[spatialGroup].Remove(this); // REMOVE from old spatial group
+            GameController.instance.enemySpatialGroups[spatialGroup].Remove(this); // REMOVE from old spatial group
 
             spatialGroup = newSpatialGroup; // UPDATE current spatial group
-            GameController.instance.enemySpatitalGroups[spatialGroup].Add(this); // ADD to new spatial group
+            GameController.instance.enemySpatialGroups[spatialGroup].Add(this); // ADD to new spatial group
         }
     }
 
     private void PushEnemyNearby()
     {
-        List<Enemy> currAreaEnemy = GameController.instance.enemySpatitalGroups[spatialGroup].ToList();
+        List<Enemy> currAreaEnemy = GameController.instance.enemySpatialGroups[spatialGroup].ToList();
 
         foreach (Enemy enemy in currAreaEnemy)
         {

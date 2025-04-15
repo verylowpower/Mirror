@@ -9,8 +9,8 @@ public class EnemyHelper : MonoBehaviour
     public static List<int> GetExpandedSpatialGroupsV2(int spatialGroup, int radious = 1)
     {
         List<int> expandedSpatialGroups = new(); //list to save parition
-        int widthRange = GameController.instance.SpatitalGroupWidth;
-        int heightRange = GameController.instance.SpatitalGroupHeight;
+        int widthRange = GameController.instance.SpatialGroupWidth;
+        int heightRange = GameController.instance.SpatialGroupHeight;
         int numberOfPartition = GameController.instance.NumberOfPartitions;
 
         //check each partition
@@ -39,8 +39,8 @@ public class EnemyHelper : MonoBehaviour
     public static List<int> GetExpandedSpatialGroups(int spatialGroup, int numberOfPartitions = -1)
     {
         List<int> expandedSpatialGroups = new(); //list to add
-        int widthRange = GameController.instance.SpatitalGroupWidth;
-        int heightRange = GameController.instance.SpatitalGroupHeight;
+        int widthRange = GameController.instance.SpatialGroupWidth;
+        int heightRange = GameController.instance.SpatialGroupHeight;
         if (numberOfPartitions == -1) //check partition, if not add from GameController
             numberOfPartitions = GameController.instance.NumberOfPartitions;
         if (numberOfPartitions <= 0)
@@ -72,6 +72,39 @@ public class EnemyHelper : MonoBehaviour
 
         return expandedSpatialGroups;
     }
+    
+    //take spatial around enemy movement direction
+    public static List<int> GetExpandedSpatialGroups (int spatialGroup, Vector2 direction)
+    {
+        List<int> expandedSpatialGroups = new List<int>() { spatialGroup };
+
+        bool goingRight = direction.x > 0;
+        bool goingTop = direction.y > 0;
+
+        int widthRange = GameController.instance.SpatialGroupWidth; // ex. 100
+        int heightRange = GameController.instance.SpatialGroupHeight; // ex. 100
+
+        bool isLeft = spatialGroup % widthRange == 0;
+        bool isRight = spatialGroup % widthRange == widthRange - 1;
+        bool isTop = spatialGroup / widthRange == heightRange - 1;
+        bool isBottom = spatialGroup / widthRange == 0;
+
+        // Sides
+        if (!isTop && goingTop) expandedSpatialGroups.Add(spatialGroup + widthRange);
+        if (!isBottom && !goingTop) expandedSpatialGroups.Add(spatialGroup - widthRange);
+        if (!isLeft && !goingRight) expandedSpatialGroups.Add(spatialGroup - 1);
+        if (!isRight && goingRight) expandedSpatialGroups.Add(spatialGroup + 1);
+
+        // Diagonals
+        if (!isTop && !isRight && (goingTop || goingRight)) expandedSpatialGroups.Add(spatialGroup + widthRange + 1); // top right
+        if (!isTop && !isLeft && (goingTop || !goingRight)) expandedSpatialGroups.Add(spatialGroup + widthRange - 1); // top left
+        if (!isBottom && !isRight && (!goingTop || goingRight)) expandedSpatialGroups.Add(spatialGroup - widthRange + 1); 
+        // bottom right
+        if (!isBottom && !isLeft && (!goingTop || !goingRight)) expandedSpatialGroups.Add(spatialGroup - widthRange - 1); 
+        // bottom left
+
+        return expandedSpatialGroups;
+    }
 
     public static List<Enemy> GetAllEnemySpatialGroups(List<int> spatialGroups)
     {
@@ -79,7 +112,7 @@ public class EnemyHelper : MonoBehaviour
 
         foreach (int spatialGroup in spatialGroups)
         {
-            enemies.AddRange(GameController.instance.enemySpatitalGroups[spatialGroup]);
+            enemies.AddRange(GameController.instance.enemySpatialGroups[spatialGroup]);
         }
         return enemies;
     }

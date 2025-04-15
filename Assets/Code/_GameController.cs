@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Mono.Cecil.Cil;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -23,18 +24,18 @@ public class GameController : MonoBehaviour
     public float _spawnTimeCD = 3f;
     //public int _spawnCount = 0;
     public int _enemyCount = 0;
-    public int _maxCount = 1000;
+    public int _maxCount = 10000;
 
     //enemy logic
     Dictionary<int, List<Enemy>> enemyBatch = new(); //store enemy list for handle
     float runLogicTimer = 0f;
     float runLogicTimerCD = 1f;
 
-    //spatital patitioning
-    int spatitalGroupWidth = 100; //split map to cell to handle
-    public int SpatitalGroupWidth { get { return spatitalGroupWidth; } }
-    int spatitalGroupHeight = 100;
-    public int SpatitalGroupHeight { get { return spatitalGroupHeight; } }
+    //spatial patitioning
+    int spatialGroupWidth = 100; //split map to cell to handle
+    public int SpatialGroupWidth { get { return spatialGroupWidth; } }
+    int spatialGroupHeight = 100;
+    public int SpatialGroupHeight { get { return spatialGroupHeight; } }
     int numberOfPartitions = 1000;
     public int NumberOfPartitions { get { return numberOfPartitions; } }
     //border of the map
@@ -48,14 +49,14 @@ public class GameController : MonoBehaviour
     public int MapHeightMax { get { return mapHeightMax; } }
 
     //for enemy
-    [HideInInspector] public Dictionary<int, HashSet<Enemy>> enemySpatitalGroups = new Dictionary<int, HashSet<Enemy>>();
-    //[HideInInspector] public Dictionary<int, HashSet<Bullet>> bulletSpatitalGroups = new Dictionary<int, HashSet<Bullet>>();
+    [HideInInspector] public Dictionary<int, HashSet<Enemy>> enemySpatialGroups = new Dictionary<int, HashSet<Enemy>>();
+    [HideInInspector] public Dictionary<int, HashSet<Bullet>> bulletSpatialGroups = new Dictionary<int, HashSet<Bullet>>();
 
     //exp 
     // public GameObject experiencePoint;
     // public Transform experiencePointHolder;
 
-    //get spatital group static 
+    //get spatial group static 
     int Cell_Per_Row_Static;
     int Cell_Per_Col_Static;
     float Cell_Width_Static;
@@ -181,10 +182,10 @@ public class GameController : MonoBehaviour
         //static get spatial group
         Cell_Per_Col_Static = (int)Mathf.Sqrt(numberOfPartitions);
         Cell_Per_Row_Static = Cell_Per_Col_Static;
-        Cell_Height_Static = spatitalGroupHeight / Cell_Per_Col_Static;
-        Cell_Width_Static = spatitalGroupWidth / Cell_Per_Row_Static;
-        Half_Height_Static = spatitalGroupHeight / 2;
-        Half_Width_Static = spatitalGroupWidth / 2;
+        Cell_Height_Static = spatialGroupHeight / Cell_Per_Col_Static;
+        Cell_Width_Static = spatialGroupWidth / Cell_Per_Row_Static;
+        Half_Height_Static = spatialGroupHeight / 2;
+        Half_Width_Static = spatialGroupWidth / 2;
 
         charScript = character.GetComponent<CharacterController>();
 
@@ -192,8 +193,8 @@ public class GameController : MonoBehaviour
 
         for (int i = 0; i < numberOfPartitions; i++)
         {
-            enemySpatitalGroups.Add(i, new HashSet<Enemy>());
-            //bulletSpatitalGroups.Add(i, new HashSet<Bullet>());
+            enemySpatialGroups.Add(i, new HashSet<Enemy>());
+            bulletSpatialGroups.Add(i, new HashSet<Bullet>());
 
         }
 
@@ -205,10 +206,10 @@ public class GameController : MonoBehaviour
             //_enemyCount++;
         }
 
-        mapWidthMin = -spatitalGroupWidth / 2;
-        mapWidthMax = spatitalGroupWidth / 2;
-        mapHeightMin = -spatitalGroupHeight / 2;
-        mapHeightMax = spatitalGroupHeight / 2;
+        mapWidthMin = -spatialGroupWidth / 2;
+        mapWidthMax = spatialGroupWidth / 2;
+        mapHeightMin = -spatialGroupHeight / 2;
+        mapHeightMax = spatialGroupHeight / 2;
     }
 
 
@@ -218,11 +219,12 @@ public class GameController : MonoBehaviour
 
         runLogicTimer += Time.deltaTime;
 
-        // if(runLogicTimer>runLogicTimerCD)
-        // {
-        //     //bullet code
-        //     return;
-        // }
+        if (runLogicTimer > runLogicTimerCD)
+        {
+            RunOnceASecondLogicForAllBullet();
+            runLogicTimer = 0f;
+            return;
+        }
 
         SpawnEnemies();
         int batchId = (int)(runLogicTimer * 50) % 50; // <-- giới hạn trong 0–49
@@ -230,7 +232,13 @@ public class GameController : MonoBehaviour
 
     }
 
-    // void BulletCode(){}
+    void RunOnceASecondLogicForAllBullet()
+    {
+        foreach (Bullet bullet in bulletSpatialGroups.SelectMany(x => x.Value).ToList())
+        {
+            bullet.OnceASecondLogic();
+        }
+    }
 
     private void RunBatchLogic(int batchId)
     {
@@ -272,26 +280,26 @@ public class GameController : MonoBehaviour
             return;
         }
 
-        int charQuadrant = GetSpatitalGroupDynamic(character.position.x, character.position.y, spatitalGroupHeight, spatitalGroupWidth, 25);
+        int charQuadrant = GetSpatialGroupDynamic(character.position.x, character.position.y, spatialGroupHeight, spatialGroupWidth, 25);
 
-        List<int> expandedSpatitalGroup = EnemyHelper.GetExpandedSpatialGroups(charQuadrant, 25);
+        List<int> expandedSpatialGroup = EnemyHelper.GetExpandedSpatialGroups(charQuadrant, 25);
 
-        expandedSpatitalGroup.Remove(charQuadrant);
+        expandedSpatialGroup.Remove(charQuadrant);
 
-        int randomSpatitalGroup = expandedSpatitalGroup[Random.Range(0, expandedSpatitalGroup.Count)];
-        if (expandedSpatitalGroup.Count == 0)
+        int randomSpatialGroup = expandedSpatialGroup[Random.Range(0, expandedSpatialGroup.Count)];
+        if (expandedSpatialGroup.Count == 0)
         {
             Debug.LogWarning("[Spawn] WARNING: No valid expanded spatial groups.");
             return;
         }
 
-        Vector2 centerOfSpatitalGroup = GetPatitionCenterDynamic(randomSpatitalGroup, spatitalGroupWidth, spatitalGroupHeight, 25);
+        Vector2 centerOfSpatialGroup = GetPatitionCenterDynamic(randomSpatialGroup, spatialGroupWidth, spatialGroupHeight, 25);
 
-        float sizeOfOneSpatitalGroup = spatitalGroupWidth / 5;
-        float valX = Random.Range(centerOfSpatitalGroup.x - sizeOfOneSpatitalGroup / 2,
-                                 centerOfSpatitalGroup.x + sizeOfOneSpatitalGroup / 2);
-        float valY = Random.Range(centerOfSpatitalGroup.y - sizeOfOneSpatitalGroup / 2,
-                                 centerOfSpatitalGroup.y + sizeOfOneSpatitalGroup / 2);
+        float sizeOfOneSpatialGroup = spatialGroupWidth / 5;
+        float valX = Random.Range(centerOfSpatialGroup.x - sizeOfOneSpatialGroup / 2,
+                                 centerOfSpatialGroup.x + sizeOfOneSpatialGroup / 2);
+        float valY = Random.Range(centerOfSpatialGroup.y - sizeOfOneSpatialGroup / 2,
+                                 centerOfSpatialGroup.y + sizeOfOneSpatialGroup / 2);
 
         GameObject enemyGO = Instantiate(_enemyPrefab, _enemyHolder);
 
@@ -300,10 +308,10 @@ public class GameController : MonoBehaviour
 
         Enemy enemyScript = enemyGO.GetComponent<Enemy>();
 
-        int spatialGroup = GetSpatitalGroup(enemyGO.transform.position.x, enemyGO.transform.position.y);
+        int spatialGroup = GetSpatialGroup(enemyGO.transform.position.x, enemyGO.transform.position.y);
         enemyScript.spatialGroup = spatialGroup;
 
-        AddToSpatitalGroup(spatialGroup, enemyScript);
+        AddToSpatialGroup(spatialGroup, enemyScript);
 
         enemyScript.BatchID = batchToAdd;
         enemyBatch[batchToAdd].Add(enemyScript);
@@ -311,12 +319,12 @@ public class GameController : MonoBehaviour
 
     }
 
-    public int GetSpatitalGroup(float xPos, float yPos)
+    public int GetSpatialGroup(float xPos, float yPos)
     {
-        return GetSpatitalGroupDynamic(xPos, yPos, spatitalGroupWidth, spatitalGroupHeight, numberOfPartitions);
+        return GetSpatialGroupDynamic(xPos, yPos, spatialGroupWidth, spatialGroupHeight, numberOfPartitions);
     }
 
-    public int GetSpatitalGroupStatic(float xPos, float yPos)
+    public int GetSpatialGroupStatic(float xPos, float yPos)
     {
         float adjustedX = xPos + Half_Width_Static;
         float adjustedY = yPos + Half_Height_Static;
@@ -328,7 +336,7 @@ public class GameController : MonoBehaviour
 
     }
 
-    public int GetSpatitalGroupDynamic(float xPos, float yPos, float mapWidth, float mapHeight, int totalPartitions)
+    public int GetSpatialGroupDynamic(float xPos, float yPos, float mapWidth, float mapHeight, int totalPartitions)
     {
         //calculate number of cells
         int cellsPerRow = (int)Mathf.Sqrt(totalPartitions);
@@ -364,7 +372,7 @@ public class GameController : MonoBehaviour
                    3 4 5
                    6 7 8 
                    partition = 7 rowIndex = 7/3 = 2 colIndex = 7%3 = 2 with 1 
-        because the spatital is square
+        because the spatial is square
         */
 
         float centerX = (colIndex + 0.5f) * cellWidth - (mapWidth / 2);
@@ -373,15 +381,15 @@ public class GameController : MonoBehaviour
         return new Vector2(centerX, centerY);
     }
 
-    public void AddToSpatitalGroup(int spatialGroupId, Enemy enemy)
+    public void AddToSpatialGroup(int spatialGroupId, Enemy enemy)
     {
-        enemySpatitalGroups[spatialGroupId].Add(enemy);
+        enemySpatialGroups[spatialGroupId].Add(enemy);
         Debug.Log($"[Spatial] Added enemy to group {spatialGroupId}");
     }
 
-    public void RemoveFromSpatitalGroup(int spatialGroupId, Enemy enemy)
+    public void RemoveFromSpatialGroup(int spatialGroupId, Enemy enemy)
     {
-        enemySpatitalGroups[spatialGroupId].Remove(enemy);
+        enemySpatialGroups[spatialGroupId].Remove(enemy);
         Debug.Log($"[Spatial] Removed enemy from group {spatialGroupId}");
     }
 
