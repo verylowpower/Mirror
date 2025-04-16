@@ -7,7 +7,7 @@ public class Bullet : MonoBehaviour
 {
     public bool spinBullet;
     int spatialGroup = 0;
-
+    
     Vector2 movementDirection = Vector2.zero;
     Vector2 MovementDirection
     {

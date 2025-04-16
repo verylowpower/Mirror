@@ -78,22 +78,7 @@ public class _Character_Move : MonoBehaviour
 
     public void FixedUpdate()
     {
-        Vector2 newPositon = _rb.position + moveInput * _speed * Time.fixedDeltaTime;
-
-        _rb.MovePosition(newPositon);
-
-        Debug.Log("Get camera: " + _Camera);
-        Vector3 mousePosition = _Camera.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.z = 0f; // Đảm bảo không thay đổi trục Z
-
-        // Tính toán góc quay từ nhân vật đến chuột
-        Vector2 direction = (mousePosition - transform.position).normalized;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-        // Gán góc quay cho nhân vật
-        _rb.rotation = angle;
-
-
+        CameraRotate();
         spatialGroup = GameController.instance.GetSpatialGroup(transform.position.x, transform.position.y);
         CheckNearestEnemyDirection();
 
@@ -103,6 +88,24 @@ public class _Character_Move : MonoBehaviour
             CheckCollisionWithEnemy();
             takeDmgEveryXFrame = 0;
         }
+    }
+    
+    void CameraRotate()
+    {
+        Vector2 newPositon = _rb.position + moveInput * _speed * Time.fixedDeltaTime;
+
+        _rb.MovePosition(newPositon);
+
+        //Debug.Log("Get camera: " + _Camera);
+        Vector3 mousePosition = _Camera.ScreenToWorldPoint(Input.mousePosition);
+        mousePosition.z = 0f; // Đảm bảo không thay đổi trục Z
+
+        // Tính toán góc quay từ nhân vật đến chuột
+        Vector2 direction = (mousePosition - transform.position).normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        // Gán góc quay cho nhân vật
+        _rb.rotation = angle;
     }
 
     void CheckCollisionWithEnemy()

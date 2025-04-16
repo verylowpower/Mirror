@@ -385,6 +385,37 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.99453944, y: 0.03138414}
   m_EdgeRadius: 0
+--- !u!1 &589655743
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 589655744}
+  m_Layer: 0
+  m_Name: Exp Holder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &589655744
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 589655743}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.183719, y: -2.0459151, z: -0.31176853}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1004505619
 GameObject:
   m_ObjectHideFlags: 0
@@ -575,6 +606,8 @@ MonoBehaviour:
   _spawnTimeCD: 3
   _enemyCount: 0
   _maxCount: 10000
+  experiencePoint: {fileID: 0}
+  experiencePointHolder: {fileID: 0}
 --- !u!4 &1069716622
 Transform:
   m_ObjectHideFlags: 0
@@ -808,7 +841,7 @@ Rigidbody2D:
   m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 1
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &1511386262
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1132,3 +1165,4 @@ SceneRoots:
   - {fileID: 1511386264}
   - {fileID: 1620215859}
   - {fileID: 2954585291578021697}
+  - {fileID: 589655744}
