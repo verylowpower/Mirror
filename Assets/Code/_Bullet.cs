@@ -9,13 +9,13 @@ public class Bullet : MonoBehaviour
     int spatialGroup = 0;
 
     Vector2 movementDirection = Vector2.zero;
-    Vector2 MovementDirection
+    public Vector2 MovementDirection
     {
         get { return movementDirection; }
         set { movementDirection = value; }
     }
 
-    [SerializeField] public float bulletDmg;
+    [SerializeField] public int bulletDmg;
     [SerializeField] public float bulletSpeed;
     [SerializeField] public float bulletHitBoxRadius;
 
@@ -41,15 +41,24 @@ public class Bullet : MonoBehaviour
     {
         //get spatial group
         spatialGroup = GameController.instance.GetSpatialGroupStatic(transform.position.x, transform.position.y);
+        if (GameController.instance.bulletSpatialGroups.ContainsKey(spatialGroup))
+        {
+            GameController.instance.bulletSpatialGroups[spatialGroup].Add(this);
+        }
+        else
+        {
+            Debug.LogWarning($"[Bullet] Spawned with invalid spatial group: {spatialGroup}, pos: {transform.position}");
+        }
+
         OnBulletSpawn?.Invoke();
     }
 
     void FixedUpdate()
     {
-        RunBulletLogic();
+        RunLogic();
     }
 
-    void RunBulletLogic()
+    void RunLogic()
     {
         transform.position += EnemyHelper.V2toV3(movementDirection) * Time.deltaTime * bulletSpeed;
         // caculate the angle to shoot bullet
@@ -62,11 +71,26 @@ public class Bullet : MonoBehaviour
         int newSpatialGroup = GameController.instance.GetSpatialGroupStatic(transform.position.x, transform.position.y);
         if (newSpatialGroup != spatialGroup)
         {
-            GameController.instance.bulletSpatialGroups[spatialGroup].Remove(this); //remove from old spatial group
+            // Safely remove from the old group
+            if (GameController.instance.bulletSpatialGroups.ContainsKey(spatialGroup))
+            {
+                GameController.instance.bulletSpatialGroups[spatialGroup].Remove(this);
+            }
+
             spatialGroup = newSpatialGroup;
-            GameController.instance.bulletSpatialGroups[spatialGroup].Add(this); //add new to spatial group
-            surroundingSpatialGroup = EnemyHelper.GetExpandedSpatialGroups(spatialGroup, movementDirection);
+
+            // Safely add to the new group
+            if (GameController.instance.bulletSpatialGroups.ContainsKey(spatialGroup))
+            {
+                GameController.instance.bulletSpatialGroups[spatialGroup].Add(this);
+                surroundingSpatialGroup = EnemyHelper.GetExpandedSpatialGroups(spatialGroup, movementDirection);
+            }
+            else
+            {
+                Debug.LogWarning($"[Bullet] Invalid spatial group: {spatialGroup} at position {transform.position}");
+            }
         }
+
         CheckCollisionWithEnemy();
     }
 
@@ -91,9 +115,8 @@ public class Bullet : MonoBehaviour
             if (distance < bulletHitBoxRadius)
             {
                 OnContactEnemy?.Invoke(transform);
-                //enemy.ChangeHealth(-bulletDmg)
+                enemy.ChangeHealth(-bulletDmg);
                 DestroyBullet();
-
                 break;
             }
         }
@@ -104,9 +127,9 @@ public class Bullet : MonoBehaviour
         if
         (
         transform.position.x < GameController.instance.MapHeightMin ||
-        transform.position.x < GameController.instance.MapHeightMax ||
+        transform.position.x > GameController.instance.MapHeightMax ||
         transform.position.y < GameController.instance.MapHeightMin ||
-        transform.position.y < GameController.instance.MapHeightMax ||
+        transform.position.y > GameController.instance.MapHeightMax ||
         Vector2.Distance(transform.position, GameController.instance.character.position) > 20f
         )
         {
@@ -127,4 +150,5 @@ public class Bullet : MonoBehaviour
         Destroy(gameObject);
         isDestroy = true;
     }
+
 }

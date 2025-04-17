@@ -50,6 +50,7 @@ public class GameController : MonoBehaviour
 
     //for enemy
     [HideInInspector] public Dictionary<int, HashSet<Enemy>> enemySpatialGroups = new Dictionary<int, HashSet<Enemy>>();
+    //for bullet
     [HideInInspector] public Dictionary<int, HashSet<Bullet>> bulletSpatialGroups = new Dictionary<int, HashSet<Bullet>>();
 
     //exp 
@@ -198,18 +199,22 @@ public class GameController : MonoBehaviour
 
         }
 
-        int initEnemySpawn = demo ? 10 : 1000;
-        _maxCount = demo ? 100 : 10000;
+        int initEnemySpawn = demo ? 5 : 20;
+        _maxCount = demo ? 100 : 1000;
+        _enemyCount = demo ? 5 : 20;
         for (int i = 0; i < initEnemySpawn; i++)
         {
+
             SpawnEnemy();
-            //_enemyCount++;
+
         }
 
         mapWidthMin = -spatialGroupWidth / 2;
         mapWidthMax = spatialGroupWidth / 2;
         mapHeightMin = -spatialGroupHeight / 2;
         mapHeightMax = spatialGroupHeight / 2;
+
+
     }
 
 
@@ -256,14 +261,15 @@ public class GameController : MonoBehaviour
 
     void SpawnEnemies()
     {
+        int initEnemySpawn = demo ? 5 : 20;
         _spawnTime += Time.deltaTime;
 
         if (_spawnTime > _spawnTimeCD && _enemyHolder.childCount < _maxCount)
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < initEnemySpawn; i++)
             {
                 SpawnEnemy();
-
+                _enemyCount++;
             }
             _spawnTime = 0;
         }
@@ -397,8 +403,38 @@ public class GameController : MonoBehaviour
     {
         GameObject expGO = Instantiate(experiencePoint, position, Quaternion.identity);
         expGO.transform.parent = experiencePointHolder;
-
     }
+
+
+
+
+    // void OnDrawGizmos()
+    // {
+    //     Gizmos.color = Color.cyan;
+
+    //     int cellPerRow = (int)Mathf.Sqrt(numberOfPartitions);
+    //     int cellPerCol = cellPerRow;
+
+    //     float cellWidth = spatialGroupWidth / (float)cellPerCol;
+    //     float cellHeight = spatialGroupHeight / (float)cellPerRow;
+
+    //     float halfMapWidth = spatialGroupWidth / 2f;
+    //     float halfMapHeight = spatialGroupHeight / 2f;
+
+    //     for (int row = 0; row < cellPerRow; row++)
+    //     {
+    //         for (int col = 0; col < cellPerCol; col++)
+    //         {
+    //             float centerX = (col + 0.5f) * cellWidth - halfMapWidth;
+    //             float centerY = (row + 0.5f) * cellHeight - halfMapHeight;
+
+    //             Vector3 center = new Vector3(centerX, centerY, 0);
+    //             Vector3 size = new Vector3(cellWidth, cellHeight, 0);
+
+    //             Gizmos.DrawWireCube(center, size);
+    //         }
+    //     }
+    // }
 
 
     // public void DropExp()

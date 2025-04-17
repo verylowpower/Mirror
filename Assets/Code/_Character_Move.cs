@@ -3,15 +3,22 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class _Character_Move : MonoBehaviour
+public class Character_Move : MonoBehaviour
 {
     public bool shootRandom = false;
     Camera _Camera;
+    Shoot shoot;
 
     [Header("Stat")]
     [SerializeField] private float _speed = 3.0f;
     public int _health;
     public int _maxHealth;
+
+    [Header("Experience")]
+    long exp = 0;
+    long expFromLastLevel = 0;
+    long expToNextLevel = 0;
+    int Level = 0;
 
     [Header("Spatial Group")]
     int spatialGroup = -1;
@@ -24,14 +31,17 @@ public class _Character_Move : MonoBehaviour
 
     //check nearest enemy for gun
     Vector2 nearestEnemy = Vector2.zero;
+
+    public static Character_Move instance;
+
     public Vector2 NearestEnemy
     {
         get { return nearestEnemy; }
         set { nearestEnemy = value; }
     }
 
-    bool noEnemyNearby = false;
-    bool foundTarget = false;
+    public bool noEnemyNearby = false;
+    public bool foundTarget = false;
     public bool NoEnemyNearby
     {
         get { return noEnemyNearby; }
@@ -54,7 +64,7 @@ public class _Character_Move : MonoBehaviour
     public void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
-
+        instance = this;
         inputActions = new PlayerInputAct();
         inputActions.PlayerControl.Move.performed += OnMove;
         inputActions.PlayerControl.Move.canceled += OnMove;
@@ -151,6 +161,7 @@ public class _Character_Move : MonoBehaviour
                     minDistance = distance;
                     closestPosition = enemy.transform.position;
                     foundTarget = true;
+                    //shoot.FixedUpdate();
                 }
             }
             if (!foundTarget)
@@ -164,23 +175,31 @@ public class _Character_Move : MonoBehaviour
         }
     }
 
-    public void ModifyExp()
+    public void ModifyExp(int amount)
     {
-        
+        exp += amount;
+        //EXP bar UI
+        if (exp >= expToNextLevel) LevelUp();
     }
 
     public void LevelUp()
     {
-
+        expFromLastLevel = expToNextLevel;
+        expToNextLevel = EnemyHelper.GetExpRequired(Level) - expToNextLevel;
+        Level++;
+        //EXP bar UI
     }
 
-    public void ModifyHealth()
+    public void ModifyHealth(int amount)
     {
-
+        _health += amount;
+        //UI for health bar
+        if (_health <= 0) KillPlayer();
     }
 
     public void KillPlayer()
     {
-
+        Destroy(gameObject);
     }
+
 }

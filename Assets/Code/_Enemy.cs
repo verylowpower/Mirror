@@ -56,8 +56,8 @@ public class Enemy : MonoBehaviour
         int newSpatialGroup = GameController.instance.GetSpatialGroup(transform.position.x, transform.position.y); // GET spatial group
         if (newSpatialGroup != spatialGroup)
         {
-            //GameController.instance.enemySpatialGroups[spatialGroup].Remove(this); // REMOVE from old spatial group
-            GameController.instance.RemoveFromSpatialGroup(spatialGroup, this);
+            GameController.instance.enemySpatialGroups[spatialGroup].Remove(this); // REMOVE from old spatial group
+            //GameController.instance.RemoveFromSpatialGroup(spatialGroup, this);
 
             spatialGroup = newSpatialGroup; // UPDATE current spatial group
             GameController.instance.enemySpatialGroups[spatialGroup].Add(this); // ADD to new spatial group
@@ -107,8 +107,8 @@ public class Enemy : MonoBehaviour
     public void KillEnemy()
     {
         GameController.instance.UpdateEnemyOnUnitDeath("enemy", batchId);
-        //GameController.instance.enemySpatialGroups[spatialGroup].Remove(this);
-        GameController.instance.RemoveFromSpatialGroup(spatialGroup, this);
+        GameController.instance.enemySpatialGroups[spatialGroup].Remove(this);
+        //GameController.instance.RemoveFromSpatialGroup(spatialGroup, this);
 
         //drop exp
         // if(Random.Range(1,50)<25)
@@ -119,5 +119,5 @@ public class Enemy : MonoBehaviour
         Destroy(gameObject);
     }
 
-
+    
 }
