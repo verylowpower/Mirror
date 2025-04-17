@@ -385,7 +385,11 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.99453944, y: 0.03138414}
   m_EdgeRadius: 0
+<<<<<<< HEAD
 --- !u!1 &597245568
+=======
+--- !u!1 &589655743
+>>>>>>> 697dcbfc752751b15bff40a3e9b90bc91e36fa1f
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -393,20 +397,31 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
   - component: {fileID: 597245569}
   m_Layer: 0
   m_Name: Fire Point
+=======
+  - component: {fileID: 589655744}
+  m_Layer: 0
+  m_Name: Exp Holder
+>>>>>>> 697dcbfc752751b15bff40a3e9b90bc91e36fa1f
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
 --- !u!4 &597245569
+=======
+--- !u!4 &589655744
+>>>>>>> 697dcbfc752751b15bff40a3e9b90bc91e36fa1f
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
   m_GameObject: {fileID: 597245568}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
@@ -415,6 +430,16 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1511386264}
+=======
+  m_GameObject: {fileID: 589655743}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.183719, y: -2.0459151, z: -0.31176853}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+>>>>>>> 697dcbfc752751b15bff40a3e9b90bc91e36fa1f
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1004505619
 GameObject:
@@ -1128,4 +1153,9 @@ SceneRoots:
   - {fileID: 1069716622}
   - {fileID: 1511386264}
   - {fileID: 1620215859}
+<<<<<<< HEAD
   - {fileID: 1069319382}
+=======
+  - {fileID: 2954585291578021697}
+  - {fileID: 589655744}
+>>>>>>> 697dcbfc752751b15bff40a3e9b90bc91e36fa1f
