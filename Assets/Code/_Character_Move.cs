@@ -99,7 +99,7 @@ public class Character_Move : MonoBehaviour
             takeDmgEveryXFrame = 0;
         }
     }
-    
+
     void CameraRotate()
     {
         Vector2 newPositon = _rb.position + moveInput * _speed * Time.fixedDeltaTime;
@@ -146,9 +146,10 @@ public class Character_Move : MonoBehaviour
         spatialGroupToSearch = EnemyHelper.GetExpandedSpatialGroupsV2(spatialGroup, 6);
         //get all enemy 
         List<Enemy> nearbyEnemy = EnemyHelper.GetAllEnemySpatialGroups(spatialGroupToSearch);
-
+        Debug.Log("Enemy nearby: " + nearbyEnemy.Count);
         if (nearbyEnemy.Count == 0)
         {
+
             noEnemyNearby = true;
         }
         else

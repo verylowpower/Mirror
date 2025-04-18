@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Shoot : MonoBehaviour
@@ -7,7 +8,7 @@ public class Shoot : MonoBehaviour
     [SerializeField] Transform firePoint;
     [SerializeField] float fireRate = 0.2f;
 
-    float nextFireTime = 0f;
+    [SerializeField] float nextFireTime = 0f;
     Bullet bullet;
 
     public void FixedUpdate()
@@ -20,6 +21,9 @@ public class Shoot : MonoBehaviour
 
             PiuPiu(directionToEnemy);
             nextFireTime = Time.time + fireRate;
+        }else
+        {
+            //
         }
     }
 

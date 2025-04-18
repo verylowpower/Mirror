@@ -45,7 +45,7 @@ public class EnemyHelper : MonoBehaviour
             numberOfPartitions = GameController.instance.NumberOfPartitions;
         if (numberOfPartitions <= 0)
         {
-            Debug.LogError($"[EnemyHelper] Invalid numberOfPartitions: {numberOfPartitions}. Cannot proceed.");
+            // Debug.LogError($"[EnemyHelper] Invalid numberOfPartitions: {numberOfPartitions}. Cannot proceed.");
             return expandedSpatialGroups;
         }
         int sqrtOfPartitions = (int)Mathf.Sqrt(numberOfPartitions); // calculate grid size of map
@@ -112,11 +112,14 @@ public class EnemyHelper : MonoBehaviour
 
         foreach (int spatialGroup in spatialGroups)
         {
-            enemies.AddRange(GameController.instance.enemySpatialGroups[spatialGroup]);
+            if (GameController.instance.enemySpatialGroups.TryGetValue(spatialGroup, out var groupEnemies))
+            {
+                enemies.AddRange(groupEnemies);
+            }
+
         }
         return enemies;
     }
-
     public static Vector3 V2toV3(Vector2 v)
     {
         return new Vector3(v.x, v.y, 0);

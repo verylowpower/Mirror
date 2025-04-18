@@ -123,11 +123,11 @@ public class GameController : MonoBehaviour
             batchQueue.Remove(batchScore);
             batchScore.UpdateScore(-1);
             batchQueue.Add(batchScore);
-            Debug.Log($"[Batch] Decreased score of batch {batchId} to {batchScore.Score}");
+           // Debug.Log($"[Batch] Decreased score of batch {batchId} to {batchScore.Score}");
         }
         else
         {
-            Debug.LogError("[Batch] ERROR: Missing batch ID in score map during enemy death.");
+            //Debug.LogError("[Batch] ERROR: Missing batch ID in score map during enemy death.");
         }
     }
 
@@ -146,19 +146,19 @@ public class GameController : MonoBehaviour
 
         if (leastLoadBatch == null)
         {
-            Debug.LogError("[Batch] ERROR: leastLoadBatch is null.");
+            //Debug.LogError("[Batch] ERROR: leastLoadBatch is null.");
             return 0;
         }
         batchQueue.Remove(leastLoadBatch); //remove old batch
         leastLoadBatch.UpdateScore(1); //add 
         batchQueue.Add(leastLoadBatch); //update
-        Debug.Log($"[Batch] Chose batch {leastLoadBatch.BatchId} with updated score {leastLoadBatch.Score}");
+       // Debug.Log($"[Batch] Chose batch {leastLoadBatch.BatchId} with updated score {leastLoadBatch.Score}");
         return leastLoadBatch.BatchId;
     }
 
     void IntitalizeBatches()
     {
-        Debug.Log("[Init] Initializing enemy batches...");
+        //Debug.Log("[Init] Initializing enemy batches...");
 
         for (int i = 0; i < 50; i++)
         {
@@ -167,7 +167,7 @@ public class GameController : MonoBehaviour
             enemyBatch.Add(i, new List<Enemy>()); //create enemy list of each batch
             batchScoreMap_Enemy.Add(i, batchScore); //update score for each batch
             batchQueue_Enemy.Add(batchScore);//add batch have least score to leastLoadBatch for spawn enemy
-            Debug.Log($"[Init] Created batch {i}");
+            //Debug.Log($"[Init] Created batch {i}");
         }
     }
 
@@ -247,13 +247,13 @@ public class GameController : MonoBehaviour
 
     private void RunBatchLogic(int batchId)
     {
-        Debug.Log($"[Batch] Running logic for batch {batchId}");
+        //Debug.Log($"[Batch] Running logic for batch {batchId}");
 
         if (!enemyBatch.ContainsKey(batchId)) return;
 
         foreach (Enemy enemy in enemyBatch[batchId])
         {
-            Debug.Log($"[Enemy] Running logic for enemy in batch {batchId}");
+            //Debug.Log($"[Enemy] Running logic for enemy in batch {batchId}");
             if (enemy) enemy.RunLogic();
         }
     }
@@ -282,11 +282,11 @@ public class GameController : MonoBehaviour
 
         if (batchToAdd == -1 || !enemyBatch.ContainsKey(batchToAdd))
         {
-            Debug.LogError("[Spawn] ERROR: Invalid batch ID received.");
+            //Debug.LogError("[Spawn] ERROR: Invalid batch ID received.");
             return;
         }
 
-        int charQuadrant = GetSpatialGroupDynamic(character.position.x, character.position.y, spatialGroupHeight, spatialGroupWidth, 25);
+        int charQuadrant = GetSpatialGroupDynamic(character.position.x, character.position.y, spatialGroupHeight, spatialGroupWidth, numberOfPartitions);
 
         List<int> expandedSpatialGroup = EnemyHelper.GetExpandedSpatialGroups(charQuadrant, 25);
 
@@ -295,11 +295,11 @@ public class GameController : MonoBehaviour
         int randomSpatialGroup = expandedSpatialGroup[Random.Range(0, expandedSpatialGroup.Count)];
         if (expandedSpatialGroup.Count == 0)
         {
-            Debug.LogWarning("[Spawn] WARNING: No valid expanded spatial groups.");
+            //Debug.LogWarning("[Spawn] WARNING: No valid expanded spatial groups.");
             return;
         }
 
-        Vector2 centerOfSpatialGroup = GetPatitionCenterDynamic(randomSpatialGroup, spatialGroupWidth, spatialGroupHeight, 25);
+        Vector2 centerOfSpatialGroup = GetPatitionCenterDynamic(randomSpatialGroup, spatialGroupWidth, spatialGroupHeight, numberOfPartitions);
 
         float sizeOfOneSpatialGroup = spatialGroupWidth / 5;
         float valX = Random.Range(centerOfSpatialGroup.x - sizeOfOneSpatialGroup / 2,
@@ -321,7 +321,7 @@ public class GameController : MonoBehaviour
 
         enemyScript.BatchID = batchToAdd;
         enemyBatch[batchToAdd].Add(enemyScript);
-        Debug.Log($"[Spawn] Spawned enemy in batch {batchToAdd} at group {spatialGroup} ({valX:F2}, {valY:F2})");
+       // Debug.Log($"[Spawn] Spawned enemy in batch {batchToAdd} at group {spatialGroup} ({valX:F2}, {valY:F2})");
 
     }
 
@@ -390,13 +390,13 @@ public class GameController : MonoBehaviour
     public void AddToSpatialGroup(int spatialGroupId, Enemy enemy)
     {
         enemySpatialGroups[spatialGroupId].Add(enemy);
-        Debug.Log($"[Spatial] Added enemy to group {spatialGroupId}");
+       // Debug.Log($"[Spatial] Added enemy to group {spatialGroupId}");
     }
 
     public void RemoveFromSpatialGroup(int spatialGroupId, Enemy enemy)
     {
         enemySpatialGroups[spatialGroupId].Remove(enemy);
-        Debug.Log($"[Spatial] Removed enemy from group {spatialGroupId}");
+       // Debug.Log($"[Spatial] Removed enemy from group {spatialGroupId}");
     }
 
     public void DropExpPoint(Vector3 position, int amount)

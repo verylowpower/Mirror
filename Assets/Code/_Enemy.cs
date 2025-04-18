@@ -23,8 +23,8 @@ public class Enemy : MonoBehaviour
 
     public int spatialGroup = 0;
 
-    int health = 10;
-    int damage = 5;
+    [SerializeField] int health = 10;
+    [SerializeField] int damage = 5;
     public int Damage
     {
         get { return damage; }
@@ -119,5 +119,5 @@ public class Enemy : MonoBehaviour
         Destroy(gameObject);
     }
 
-    
+
 }
