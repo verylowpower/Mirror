@@ -123,7 +123,7 @@ public class GameController : MonoBehaviour
             batchQueue.Remove(batchScore);
             batchScore.UpdateScore(-1);
             batchQueue.Add(batchScore);
-           // Debug.Log($"[Batch] Decreased score of batch {batchId} to {batchScore.Score}");
+            // Debug.Log($"[Batch] Decreased score of batch {batchId} to {batchScore.Score}");
         }
         else
         {
@@ -152,7 +152,7 @@ public class GameController : MonoBehaviour
         batchQueue.Remove(leastLoadBatch); //remove old batch
         leastLoadBatch.UpdateScore(1); //add 
         batchQueue.Add(leastLoadBatch); //update
-       // Debug.Log($"[Batch] Chose batch {leastLoadBatch.BatchId} with updated score {leastLoadBatch.Score}");
+                                        // Debug.Log($"[Batch] Chose batch {leastLoadBatch.BatchId} with updated score {leastLoadBatch.Score}");
         return leastLoadBatch.BatchId;
     }
 
@@ -321,7 +321,7 @@ public class GameController : MonoBehaviour
 
         enemyScript.BatchID = batchToAdd;
         enemyBatch[batchToAdd].Add(enemyScript);
-       // Debug.Log($"[Spawn] Spawned enemy in batch {batchToAdd} at group {spatialGroup} ({valX:F2}, {valY:F2})");
+        // Debug.Log($"[Spawn] Spawned enemy in batch {batchToAdd} at group {spatialGroup} ({valX:F2}, {valY:F2})");
 
     }
 
@@ -390,13 +390,13 @@ public class GameController : MonoBehaviour
     public void AddToSpatialGroup(int spatialGroupId, Enemy enemy)
     {
         enemySpatialGroups[spatialGroupId].Add(enemy);
-       // Debug.Log($"[Spatial] Added enemy to group {spatialGroupId}");
+        // Debug.Log($"[Spatial] Added enemy to group {spatialGroupId}");
     }
 
     public void RemoveFromSpatialGroup(int spatialGroupId, Enemy enemy)
     {
         enemySpatialGroups[spatialGroupId].Remove(enemy);
-       // Debug.Log($"[Spatial] Removed enemy from group {spatialGroupId}");
+        // Debug.Log($"[Spatial] Removed enemy from group {spatialGroupId}");
     }
 
     public void DropExpPoint(Vector3 position, int amount)

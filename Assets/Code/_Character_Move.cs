@@ -7,7 +7,9 @@ public class Character_Move : MonoBehaviour
 {
     public bool shootRandom = false;
     Camera _Camera;
-    Shoot shoot;
+    //Shoot shoot;
+
+
 
     [Header("Stat")]
     [SerializeField] private float _speed = 3.0f;
@@ -28,6 +30,14 @@ public class Character_Move : MonoBehaviour
     [SerializeField] int takeDmgEveryXFrame = 0;
     [SerializeField] int takeDmgEveryXFrameCD = 10;
     [SerializeField] float hitBoxRadius = 0.1f;
+
+    [Header("Shoot")]
+    [SerializeField] public GameObject bulletPF;
+    [SerializeField] public GameObject bulletHolder;
+    [SerializeField] public Transform firePoint;
+    [SerializeField] public float fireRate = 0.2f;
+
+    [SerializeField] public float nextFireTime = 0f;
 
     //check nearest enemy for gun
     Vector2 nearestEnemy = Vector2.zero;
@@ -91,6 +101,14 @@ public class Character_Move : MonoBehaviour
         CameraRotate();
         spatialGroup = GameController.instance.GetSpatialGroup(transform.position.x, transform.position.y);
         CheckNearestEnemyDirection();
+        if (!noEnemyNearby && Time.time >= nextFireTime)
+        {
+            Vector2 directionToEnemy = nearestEnemy - (Vector2)firePoint.position;
+            directionToEnemy.Normalize();
+
+            ShootBullet(directionToEnemy);
+            nextFireTime = Time.time + fireRate;
+        }
 
         takeDmgEveryXFrame++;
         if (takeDmgEveryXFrame > takeDmgEveryXFrameCD)
@@ -141,6 +159,7 @@ public class Character_Move : MonoBehaviour
     {
         float minDistance = 100f;
         Vector2 closestPosition = Vector2.zero;
+        bool foundTarget = false;
 
         List<int> spatialGroupToSearch = new List<int>() { spatialGroup };
         spatialGroupToSearch = EnemyHelper.GetExpandedSpatialGroupsV2(spatialGroup, 6);
@@ -205,5 +224,32 @@ public class Character_Move : MonoBehaviour
     {
         Destroy(gameObject);
     }
+
+    void ShootBullet(Vector2 direction)
+    {
+        GameObject bulletGO = Instantiate(bulletPF, firePoint.position, Quaternion.identity, bulletHolder.transform);
+        Bullet bullet = bulletGO.GetComponent<Bullet>();
+        bullet.MovementDirection = direction;
+
+        int group = GameController.instance.GetSpatialGroupStatic(bullet.transform.position.x, bullet.transform.position.y);
+        if (!GameController.instance.bulletSpatialGroups.ContainsKey(group))
+        {
+            GameController.instance.bulletSpatialGroups.Add(group, new HashSet<Bullet>()); // Initialize with HashSet
+        }
+        GameController.instance.bulletSpatialGroups[group].Add(bullet); // Add to HashSet
+    }
+
+
+    // void OnDrawGizmosSelected()
+    // {
+    //     Gizmos.color = Color.red;
+
+    //     // Draw detection radius
+    //     Gizmos.DrawWireSphere(transform.position, hitBoxRadius);
+
+    //     // Optional: label the spatial group radius search
+    //     Gizmos.color = Color.yellow;
+    //     Gizmos.DrawWireSphere(transform.position, 6f); // this matches the radius you used in `GetExpandedSpatialGroupsV2`
+    // }
 
 }

@@ -115,7 +115,7 @@ public class Bullet : MonoBehaviour
             if (distance < bulletHitBoxRadius)
             {
                 OnContactEnemy?.Invoke(transform);
-                enemy.ChangeHealth(-bulletDmg);
+                enemy.ChangeHealth(bulletDmg);
                 DestroyBullet();
                 break;
             }

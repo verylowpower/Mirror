@@ -261,6 +261,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb04a95e88e142d479813b955ca8456c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 60
-  smoothTime: 0.7
+  movementSpeed: 50000
+  smoothTime: 0
   spatialGroup: 0
+  spriteRender: {fileID: 7473473553290258956}
+  flashColor: {r: 1, g: 1, b: 1, a: 1}
+  health: 5
+  damage: 5

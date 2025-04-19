@@ -22,7 +22,9 @@ public class Enemy : MonoBehaviour
     Vector3 targetDirection;
 
     public int spatialGroup = 0;
-
+    [SerializeField] private SpriteRenderer spriteRender;
+    [SerializeField] private Color flashColor = Color.white;
+    private Color originColor;
     [SerializeField] int health = 10;
     [SerializeField] int damage = 5;
     public int Damage
@@ -31,10 +33,14 @@ public class Enemy : MonoBehaviour
         set { damage = value; }
     }
 
-    void Update()
+    void Start()
     {
-        //RunLogic();
+        if (spriteRender != null)
+        {
+            originColor = spriteRender.material.color;
+        }
     }
+
 
     public void RunLogic()
     {
@@ -49,8 +55,10 @@ public class Enemy : MonoBehaviour
         // targetDirection = transform.position + currentMovementDirection;
         // transform.position = Vector3.Lerp(transform.position, transform.position + currentMovementDirection, Time.deltaTime * movementSpeed);
 
-        Vector3 currentMovementDirection = GameController.instance.character.position;
-        transform.position = Vector3.MoveTowards(transform.position, currentMovementDirection, movementSpeed * smoothTime * Time.deltaTime);
+        Vector3 targetPosition = GameController.instance.character.position;
+        currentMovementDirection = (targetPosition - transform.position).normalized;
+
+        transform.position = Vector3.SmoothDamp(transform.position, transform.position + currentMovementDirection, ref velocity, smoothTime);
 
         PushEnemyNearby();
         int newSpatialGroup = GameController.instance.GetSpatialGroup(transform.position.x, transform.position.y); // GET spatial group
@@ -79,7 +87,7 @@ public class Enemy : MonoBehaviour
             {
                 Vector3 direction = transform.position - enemy.transform.position;
                 direction.Normalize();
-                enemy.transform.position -= 5 * movementSpeed * Time.deltaTime * direction;
+                enemy.transform.position -= 1.5f * movementSpeed * Time.deltaTime * direction;
             }
 
         }
@@ -97,7 +105,17 @@ public class Enemy : MonoBehaviour
 
     public void ChangeHealth(int amount)
     {
-        health += amount;
+        //int maxHealth = health;
+        health -= amount;
+        //int currentHealth = health;
+        Debug.Log("dmg taken" + amount);
+        if (amount < 0)
+        {
+            if (spriteRender != null)
+            {
+                StartCoroutine(FlashWhenHit(spriteRender, originColor, flashColor, 0.1f));
+            }
+        }
         if (health <= 0)
         {
             KillEnemy();
@@ -118,6 +136,17 @@ public class Enemy : MonoBehaviour
 
         Destroy(gameObject);
     }
+
+
+    IEnumerator FlashWhenHit(SpriteRenderer renderer, Color originColor, Color flashColor, float flashTime)
+    {
+        renderer.material.color = flashColor;
+
+        yield return new WaitForSeconds(flashTime);
+
+        renderer.material.color = originColor;
+    }
+
 
 
 }
