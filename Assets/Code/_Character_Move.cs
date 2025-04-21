@@ -36,10 +36,12 @@ public class Character_Move : MonoBehaviour
     [SerializeField] public GameObject bulletHolder;
     [SerializeField] public Transform firePoint;
     [SerializeField] public float fireRate = 0.2f;
-
     [SerializeField] public float nextFireTime = 0f;
 
+    [Header("Detect Enemy")]
     //check nearest enemy for gun
+    [SerializeField] private float enemyDetectRadius = 1f;
+    [SerializeField] private float maxClosestDistance;
     Vector2 nearestEnemy = Vector2.zero;
 
     public static Character_Move instance;
@@ -157,45 +159,74 @@ public class Character_Move : MonoBehaviour
 
     void CheckNearestEnemyDirection()
     {
-        float minDistance = 100f;
+
         Vector2 closestPosition = Vector2.zero;
+        maxClosestDistance = 10f;
         bool foundTarget = false;
 
         List<int> spatialGroupToSearch = new List<int>() { spatialGroup };
-        spatialGroupToSearch = EnemyHelper.GetExpandedSpatialGroupsV2(spatialGroup, 6);
+        spatialGroupToSearch = EnemyHelper.GetExpandedSpatialGroupsV2(spatialGroup, Mathf.CeilToInt(enemyDetectRadius));
         //get all enemy 
         List<Enemy> nearbyEnemy = EnemyHelper.GetAllEnemySpatialGroups(spatialGroupToSearch);
         Debug.Log("Enemy nearby: " + nearbyEnemy.Count);
         if (nearbyEnemy.Count == 0)
         {
-
             noEnemyNearby = true;
+            return;
+        }
+        foreach (Enemy enemy in nearbyEnemy)
+        {
+            if (enemy == null) continue;
+            float distance = Vector2.Distance(transform.position, enemy.transform.position);
+            if (distance < maxClosestDistance)
+            {
+                maxClosestDistance = distance;
+                closestPosition = enemy.transform.position;
+                foundTarget = true;
+            }
+            // if (enemy == null) continue;
+            // float distance = Vector2.Distance(transform.position, enemy.transform.position);
+            // if (distance < enemyDetectRadius)
+            // {
+            //     //maxClosestDistance = distance;
+            //     closestPosition = enemy.transform.position;
+            //     foundTarget = true;
+            // }
+        }
+        if (foundTarget)
+        {
+            noEnemyNearby = false;
+            nearestEnemy = closestPosition;
         }
         else
         {
             noEnemyNearby = false;
-
-            foreach (Enemy enemy in nearbyEnemy)
-            {
-                if (enemy == null) continue;
-                float distance = Vector2.Distance(transform.position, enemy.transform.position);
-                if (distance < minDistance)
-                {
-                    minDistance = distance;
-                    closestPosition = enemy.transform.position;
-                    foundTarget = true;
-                    //shoot.FixedUpdate();
-                }
-            }
-            if (!foundTarget)
-            {
-                noEnemyNearby = true;
-            }
-            else
-            {
-                nearestEnemy = closestPosition;
-            }
         }
+
+        // else
+        // {
+        //     noEnemyNearby = false;
+
+        //     foreach (Enemy enemy in nearbyEnemy)
+        //     {
+        //         if (enemy == null) continue;
+        //         float distance = Vector2.Distance(transform.position, enemy.transform.position);
+        //         // if (distance < minDistance)
+        //         // {
+        //         //     minDistance = distance;
+        //         //     closestPosition = enemy.transform.position;
+        //         //     foundTarget = true;
+        //         // }
+        //     }
+        //     if (!foundTarget)
+        //     {
+        //         noEnemyNearby = true;
+        //     }
+        //     else
+        //     {
+        //         nearestEnemy = closestPosition;
+        //     }
+        // }
     }
 
     public void ModifyExp(int amount)
@@ -240,16 +271,16 @@ public class Character_Move : MonoBehaviour
     }
 
 
-    // void OnDrawGizmosSelected()
-    // {
-    //     Gizmos.color = Color.red;
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
 
-    //     // Draw detection radius
-    //     Gizmos.DrawWireSphere(transform.position, hitBoxRadius);
+        Gizmos.DrawWireSphere(transform.position, enemyDetectRadius);
 
-    //     // Optional: label the spatial group radius search
-    //     Gizmos.color = Color.yellow;
-    //     Gizmos.DrawWireSphere(transform.position, 6f); // this matches the radius you used in `GetExpandedSpatialGroupsV2`
-    // }
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, maxClosestDistance);
+    }
 
 }
+
+

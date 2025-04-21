@@ -37,7 +37,7 @@ public class Enemy : MonoBehaviour
     {
         if (spriteRender != null)
         {
-            originColor = spriteRender.material.color;
+            originColor = spriteRender.color;
         }
     }
 
@@ -107,14 +107,15 @@ public class Enemy : MonoBehaviour
     {
         //int maxHealth = health;
         health -= amount;
-        //int currentHealth = health;
-        Debug.Log("dmg taken" + amount);
-        if (amount < 0)
+        //Debug.Log("dmg taken" + amount);
+
+        if (amount > 0 && spriteRender != null)
         {
             if (spriteRender != null)
             {
                 StartCoroutine(FlashWhenHit(spriteRender, originColor, flashColor, 0.1f));
             }
+            //maxHealth = health;
         }
         if (health <= 0)
         {
@@ -140,11 +141,9 @@ public class Enemy : MonoBehaviour
 
     IEnumerator FlashWhenHit(SpriteRenderer renderer, Color originColor, Color flashColor, float flashTime)
     {
-        renderer.material.color = flashColor;
-
+        renderer.color = flashColor;
         yield return new WaitForSeconds(flashTime);
-
-        renderer.material.color = originColor;
+        renderer.color = originColor;
     }
 
 

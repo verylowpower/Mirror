@@ -7,7 +7,7 @@ public class Bullet : MonoBehaviour
 {
     public bool spinBullet;
     int spatialGroup = 0;
-    
+
     Vector2 movementDirection = Vector2.zero;
     public Vector2 MovementDirection
     {
@@ -35,7 +35,7 @@ public class Bullet : MonoBehaviour
     //on contact with enemy
     public delegate void BulletContactAction(Transform parrentBullet);
     public event BulletContactAction OnContactEnemy;
-
+    Enemy enemy;
     bool isDestroy = false;
     void Start()
     {
@@ -91,7 +91,8 @@ public class Bullet : MonoBehaviour
             }
         }
 
-        CheckCollisionWithEnemy();
+        //CheckCollisionWithEnemy();
+
     }
 
     public void OnceASecondLogic()
@@ -104,23 +105,45 @@ public class Bullet : MonoBehaviour
         OnBulletTravel?.Invoke(transform);
     }
 
-    void CheckCollisionWithEnemy()
-    {
-        List<Enemy> surroundingEnemies = EnemyHelper.GetAllEnemySpatialGroups(surroundingSpatialGroup);
+    // void CheckCollisionWithEnemy()
+    // {
+    //     List<Enemy> surroundingEnemies = EnemyHelper.GetAllEnemySpatialGroups(surroundingSpatialGroup);
+    //     float closestDistance = float.MaxValue;
+    //     Enemy closestEnemy = null;
 
-        foreach (Enemy enemy in surroundingEnemies)
+    //     foreach (Enemy enemy in surroundingEnemies)
+    //     {
+    //         if (enemy == null) continue;
+    //         float distance = Vector2.Distance(transform.position, enemy.transform.position);
+    //         if (distance < bulletHitBoxRadius && distance < closestDistance)
+    //         {
+    //             closestDistance = distance;
+    //             closestEnemy = enemy;
+    //         }
+    //     }
+    //     if (closestEnemy != null)
+    //     {
+    //         OnContactEnemy?.Invoke(transform);
+    //         closestEnemy.ChangeHealth(bulletDmg);
+    //         DestroyBullet();
+    //     }
+    // }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("enemy")) // đảm bảo enemy có tag là "enemy"
         {
-            if (enemy == null) continue;
-            float distance = Vector2.Distance(transform.position, enemy.transform.position);
-            if (distance < bulletHitBoxRadius)
+            Enemy enemy = collision.GetComponent<Enemy>();
+            if (enemy != null)
             {
                 OnContactEnemy?.Invoke(transform);
                 enemy.ChangeHealth(bulletDmg);
-                DestroyBullet();
-                break;
+                DestroyBullet(); // Gây sát thương và huỷ đạn
             }
         }
     }
+
+
 
     void DestroyIfOutOfBound()
     {
@@ -149,6 +172,13 @@ public class Bullet : MonoBehaviour
         GameController.instance.bulletSpatialGroups[spatialGroup].Remove(this);
         Destroy(gameObject);
         isDestroy = true;
+    }
+
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, bulletHitBoxRadius);
     }
 
 }
