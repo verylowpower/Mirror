@@ -80,6 +80,7 @@ public class Character_Move : MonoBehaviour
         inputActions = new PlayerInputAct();
         inputActions.PlayerControl.Move.performed += OnMove;
         inputActions.PlayerControl.Move.canceled += OnMove;
+        _Camera = Camera.main;
     }
 
     private void OnEnable()
@@ -118,25 +119,24 @@ public class Character_Move : MonoBehaviour
             CheckCollisionWithEnemy();
             takeDmgEveryXFrame = 0;
         }
+        _rb.MovePosition(_rb.position + moveInput * _speed * Time.fixedDeltaTime);
     }
 
     void CameraRotate()
     {
-        Vector2 newPositon = _rb.position + moveInput * _speed * Time.fixedDeltaTime;
+        Vector3 mouseScreenPos = Input.mousePosition;
+        mouseScreenPos.z = 12f; // Đẩy chuột ra mặt phẳng Z = 0
 
-        _rb.MovePosition(newPositon);
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
 
-        //Debug.Log("Get camera: " + _Camera);
-        Vector3 mousePosition = _Camera.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.z = 0f; // Đảm bảo không thay đổi trục Z
-
-        // Tính toán góc quay từ nhân vật đến chuột
-        Vector2 direction = (mousePosition - transform.position).normalized;
+        Vector2 direction = mouseWorldPos - transform.position;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-        // Gán góc quay cho nhân vật
-        _rb.rotation = angle;
+        transform.rotation = Quaternion.Euler(0, 0, angle); // hoặc angle tùy sprite
+        //Debug.Log("Angle: " + angle);
     }
+
+
 
     void CheckCollisionWithEnemy()
     {
@@ -159,7 +159,6 @@ public class Character_Move : MonoBehaviour
 
     void CheckNearestEnemyDirection()
     {
-
         Vector2 closestPosition = Vector2.zero;
         maxClosestDistance = 10f;
         bool foundTarget = false;
@@ -169,11 +168,14 @@ public class Character_Move : MonoBehaviour
         //get all enemy 
         List<Enemy> nearbyEnemy = EnemyHelper.GetAllEnemySpatialGroups(spatialGroupToSearch);
         Debug.Log("Enemy nearby: " + nearbyEnemy.Count);
+
         if (nearbyEnemy.Count == 0)
         {
             noEnemyNearby = true;
             return;
         }
+
+
         foreach (Enemy enemy in nearbyEnemy)
         {
             if (enemy == null) continue;
@@ -184,49 +186,12 @@ public class Character_Move : MonoBehaviour
                 closestPosition = enemy.transform.position;
                 foundTarget = true;
             }
-            // if (enemy == null) continue;
-            // float distance = Vector2.Distance(transform.position, enemy.transform.position);
-            // if (distance < enemyDetectRadius)
-            // {
-            //     //maxClosestDistance = distance;
-            //     closestPosition = enemy.transform.position;
-            //     foundTarget = true;
-            // }
         }
+
+        noEnemyNearby = !foundTarget;
         if (foundTarget)
-        {
-            noEnemyNearby = false;
             nearestEnemy = closestPosition;
-        }
-        else
-        {
-            noEnemyNearby = false;
-        }
 
-        // else
-        // {
-        //     noEnemyNearby = false;
-
-        //     foreach (Enemy enemy in nearbyEnemy)
-        //     {
-        //         if (enemy == null) continue;
-        //         float distance = Vector2.Distance(transform.position, enemy.transform.position);
-        //         // if (distance < minDistance)
-        //         // {
-        //         //     minDistance = distance;
-        //         //     closestPosition = enemy.transform.position;
-        //         //     foundTarget = true;
-        //         // }
-        //     }
-        //     if (!foundTarget)
-        //     {
-        //         noEnemyNearby = true;
-        //     }
-        //     else
-        //     {
-        //         nearestEnemy = closestPosition;
-        //     }
-        // }
     }
 
     public void ModifyExp(int amount)

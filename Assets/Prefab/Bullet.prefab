@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3493068328679929458}
   - component: {fileID: 3932687994049855134}
   - component: {fileID: -4331231901270160980}
-  - component: {fileID: -1435020663784561323}
+  - component: {fileID: 4102539509127908528}
   m_Layer: 0
   m_Name: Bullet
   m_TagString: Untagged
@@ -28,8 +28,8 @@ Transform:
   m_GameObject: {fileID: 4946990297529389802}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.26, y: -0.19, z: 0}
-  m_LocalScale: {x: 0.46, y: 0.46, z: 0.46}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.230368, y: 0.919264, z: 0.46}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -78,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
+  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.16509432, g: 0.5204115, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -104,10 +104,10 @@ MonoBehaviour:
   spinBullet: 0
   bulletDmg: 10
   bulletSpeed: 12
-  bulletHitBoxRadius: 1.33
+  bulletHitBoxRadius: 1.79
   modelTransfrom: {fileID: 3493068328679929458}
---- !u!58 &-1435020663784561323
-CircleCollider2D:
+--- !u!61 &4102539509127908528
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -140,5 +140,15 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0.21133333}
-  m_Radius: 0.5
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
