@@ -239,7 +239,6 @@ public class Character_Move : MonoBehaviour
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-
         Gizmos.DrawWireSphere(transform.position, enemyDetectRadius);
 
         Gizmos.color = Color.green;
