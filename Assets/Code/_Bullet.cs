@@ -133,8 +133,7 @@ public class Bullet : MonoBehaviour
     {
         if (collision.CompareTag("enemy")) // đảm bảo enemy có tag là "enemy"
         {
-            Enemy enemy = collision.GetComponent<Enemy>();
-            if (enemy != null)
+            if (collision.TryGetComponent<Enemy>(out var enemy))
             {
                 OnContactEnemy?.Invoke(transform);
                 enemy.ChangeHealth(bulletDmg);
@@ -142,6 +141,19 @@ public class Bullet : MonoBehaviour
             }
         }
     }
+
+    // void OnCollisonEnter2D(Collider2D collision)
+    // {
+    //     if (collision.CompareTag("enemy")) // đảm bảo enemy có tag là "enemy"
+    //     {
+    //         if (collision.TryGetComponent<Enemy>(out var enemy))
+    //         {
+    //             OnContactEnemy?.Invoke(transform);
+    //             enemy.ChangeHealth(bulletDmg);
+    //             DestroyBullet(); // Gây sát thương và huỷ đạn
+    //         }
+    //     }
+    // }
 
 
 

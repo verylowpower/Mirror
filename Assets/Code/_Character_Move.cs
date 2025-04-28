@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 public class Character_Move : MonoBehaviour
 {
-    public bool shootRandom = false;
+    //public bool shootRandom = false;
     Camera _Camera;
     //Shoot shoot;
 
@@ -14,7 +14,7 @@ public class Character_Move : MonoBehaviour
     [Header("Stat")]
     [SerializeField] private float _speed = 3.0f;
     public int _health;
-    public int _maxHealth;
+    //public int _maxHealth;
 
     [Header("Experience")]
     long exp = 0;
@@ -29,7 +29,7 @@ public class Character_Move : MonoBehaviour
     [Header("Take DMG")] //take from every enemy
     [SerializeField] int takeDmgEveryXFrame = 0;
     [SerializeField] int takeDmgEveryXFrameCD = 10;
-    [SerializeField] float hitBoxRadius = 0.1f;
+    [SerializeField] float hurtBoxRadius = 0.1f;
 
     [Header("Shoot")]
     [SerializeField] public GameObject bulletPF;
@@ -66,10 +66,20 @@ public class Character_Move : MonoBehaviour
     private Vector2 moveInput;
 
 
+    [SerializeField] private SpriteRenderer spriteRender;
+    [SerializeField] private Color flashColor = Color.white;
+    [SerializeField] private float flashTime = 0f;
+    private Color originColor;
+
+
     void Start()
     {
         spatialGroup = GameController.instance.GetSpatialGroup(transform.position.x, transform.position.y);
         _Camera = Camera.main;
+        if (spriteRender != null)
+        {
+            originColor = spriteRender.color;
+        }
         //LevelUp();
     }
 
@@ -148,10 +158,11 @@ public class Character_Move : MonoBehaviour
             if (enemy == null) continue;
 
             float distance = Vector2.Distance(transform.position, enemy.transform.position);
-            if (distance < hitBoxRadius)
+            if (distance < hurtBoxRadius && spriteRender != null)
             {
-                //ModifyHealth(enemy.Dmg);
-
+                ModifyHealth(enemy.Damage);
+                PlayerFlash();
+                PushPlayer();
                 break;
             }
         }
@@ -167,14 +178,13 @@ public class Character_Move : MonoBehaviour
         spatialGroupToSearch = EnemyHelper.GetExpandedSpatialGroupsV2(spatialGroup, Mathf.CeilToInt(enemyDetectRadius));
         //get all enemy 
         List<Enemy> nearbyEnemy = EnemyHelper.GetAllEnemySpatialGroups(spatialGroupToSearch);
-        Debug.Log("Enemy nearby: " + nearbyEnemy.Count);
+        //Debug.Log("Enemy nearby: " + nearbyEnemy.Count);
 
         if (nearbyEnemy.Count == 0)
         {
             noEnemyNearby = true;
             return;
         }
-
 
         foreach (Enemy enemy in nearbyEnemy)
         {
@@ -211,7 +221,9 @@ public class Character_Move : MonoBehaviour
 
     public void ModifyHealth(int amount)
     {
-        _health += amount;
+        _health -= amount;
+
+        //Debug.Log("Player get dmg: " + amount);
         //UI for health bar
         if (_health <= 0) KillPlayer();
     }
@@ -219,6 +231,40 @@ public class Character_Move : MonoBehaviour
     public void KillPlayer()
     {
         Destroy(gameObject);
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+    }
+
+    public void PushPlayer()
+    {
+        List<int> spatialGroupToSearch = EnemyHelper.GetExpandedSpatialGroupsV2(spatialGroup, Mathf.CeilToInt(enemyDetectRadius));
+        List<Enemy> nearbyEnemy = EnemyHelper.GetAllEnemySpatialGroups(spatialGroupToSearch);
+
+
+        foreach (Enemy enemy in nearbyEnemy)
+        {
+            if (enemy == null) continue;
+            //if (enemy == this) continue;
+
+
+            // float distance = Mathf.Abs(transform.position.x - enemy.transform.position.x) +
+            // Mathf.Abs(transform.position.y - _rb.transform.position.y);
+            float distance = Vector2.Distance(transform.position, enemy.transform.position);
+            if (distance <= hurtBoxRadius)
+            {
+                Vector3 direction = transform.position - enemy.transform.position;
+                direction.Normalize();
+                _rb.transform.position += 10f * _speed * Time.deltaTime * direction;
+                Debug.Log("PUSH");
+            }
+        }
+
+    }
+
+    void PlayerFlash()
+    {
+        StartCoroutine(Enemy.instance.FlashWhenHit(spriteRender, originColor, flashColor, flashTime));
     }
 
     void ShootBullet(Vector2 direction)
@@ -243,6 +289,9 @@ public class Character_Move : MonoBehaviour
 
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, maxClosestDistance);
+
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, hurtBoxRadius);
     }
 
 }

@@ -1747,8 +1747,8 @@ MonoBehaviour:
   character: {fileID: 1511386264}
   _enemyPrefab: {fileID: 2322608764563794003, guid: 2db7ff8a18655634eaffa3230844b9d1, type: 3}
   _enemyHolder: {fileID: 1620215859}
-  _spawnTime: 5
-  _spawnTimeCD: 10
+  _spawnTime: 2
+  _spawnTimeCD: 4
   _enemyCount: 0
   _maxCount: 10000
   experiencePoint: {fileID: 0}
@@ -2329,22 +2329,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5574518b37ba8054596df1ecbc3350eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shootRandom: 0
   _speed: 6
-  _health: 0
-  _maxHealth: 0
+  _health: 20
   takeDmgEveryXFrame: 0
   takeDmgEveryXFrameCD: 10
-  hitBoxRadius: 0.1
+  hurtBoxRadius: 2.57
   bulletPF: {fileID: 4946990297529389802, guid: ba076c2efad94914984cc92b0c760a68, type: 3}
   bulletHolder: {fileID: 589655743}
   firePoint: {fileID: 1643397287}
   fireRate: 0.5
   nextFireTime: 0.5
   enemyDetectRadius: 40
-  maxClosestDistance: 20
+  maxClosestDistance: 26.3
   noEnemyNearby: 0
   foundTarget: 0
+  spriteRender: {fileID: 1511386263}
+  flashColor: {r: 1, g: 0, b: 0, a: 1}
+  flashTime: 0.3
 --- !u!1001 &1522911808
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2696,6 +2697,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _camera: {fileID: 1699843089}
   _target: {fileID: 1511386259}
+  zPosition: 15
 --- !u!114 &1699843087
 MonoBehaviour:
   m_ObjectHideFlags: 0

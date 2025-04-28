@@ -13,7 +13,7 @@ public class Enemy : MonoBehaviour
         get { return batchId; }
         set { batchId = value; }
     }
-
+    public static Enemy instance;
     [SerializeField] float movementSpeed = 7f;
     [SerializeField] float smoothTime = 0.2f;
     //private BehaviorGraph behaviorGraph;
@@ -34,7 +34,8 @@ public class Enemy : MonoBehaviour
     }
 
     void Start()
-    {
+    {   
+        instance = this;
         if (spriteRender != null)
         {
             originColor = spriteRender.color;
@@ -139,7 +140,7 @@ public class Enemy : MonoBehaviour
     }
 
 
-    IEnumerator FlashWhenHit(SpriteRenderer renderer, Color originColor, Color flashColor, float flashTime)
+    public IEnumerator FlashWhenHit(SpriteRenderer renderer, Color originColor, Color flashColor, float flashTime)
     {
         renderer.color = flashColor;
         yield return new WaitForSeconds(flashTime);
