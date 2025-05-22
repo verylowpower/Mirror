@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class Character_Move : MonoBehaviour
 {
@@ -14,6 +15,8 @@ public class Character_Move : MonoBehaviour
     [Header("Stat")]
     [SerializeField] private float _speed = 3.0f;
     public int _health;
+    public int _curHealth;
+    [SerializeField] Slider healthBar;
     //public int _maxHealth;
 
     [Header("Experience")]
@@ -76,6 +79,8 @@ public class Character_Move : MonoBehaviour
     {
         spatialGroup = GameController.instance.GetSpatialGroup(transform.position.x, transform.position.y);
         _Camera = Camera.main;
+        _curHealth = _health;
+        UpdateGUI(_curHealth, _health);
         if (spriteRender != null)
         {
             originColor = spriteRender.color;
@@ -148,7 +153,7 @@ public class Character_Move : MonoBehaviour
 
 
 
-    void CheckCollisionWithEnemy()
+    public void CheckCollisionWithEnemy()
     {
         List<int> surroundingSpatialGroup = EnemyHelper.GetExpandedSpatialGroups(spatialGroup);
         List<Enemy> surroudingEnemy = EnemyHelper.GetAllEnemySpatialGroups(surroundingSpatialGroup);
@@ -162,7 +167,7 @@ public class Character_Move : MonoBehaviour
             {
                 ModifyHealth(enemy.Damage);
                 PlayerFlash();
-                PushPlayer();
+                //PushPlayer();
                 break;
             }
         }
@@ -221,11 +226,21 @@ public class Character_Move : MonoBehaviour
 
     public void ModifyHealth(int amount)
     {
-        _health -= amount;
+        _curHealth -= amount;
+        //_curHealth = Mathf.Clamp(_curHealth, 0, _health);
+
 
         //Debug.Log("Player get dmg: " + amount);
-        //UI for health bar
-        if (_health <= 0) KillPlayer();
+        UpdateGUI(_curHealth, _health);
+        if (_curHealth <= 0) KillPlayer();
+    }
+
+    void UpdateGUI(float curValue, float maxValue)
+    {
+        if (healthBar != null)
+        {
+            healthBar.value = curValue / maxValue;
+        }
     }
 
     public void KillPlayer()
@@ -236,31 +251,31 @@ public class Character_Move : MonoBehaviour
 #endif
     }
 
-    public void PushPlayer()
-    {
-        List<int> spatialGroupToSearch = EnemyHelper.GetExpandedSpatialGroupsV2(spatialGroup, Mathf.CeilToInt(enemyDetectRadius));
-        List<Enemy> nearbyEnemy = EnemyHelper.GetAllEnemySpatialGroups(spatialGroupToSearch);
+    // public void PushPlayer()
+    // {
+    //     List<int> spatialGroupToSearch = EnemyHelper.GetExpandedSpatialGroupsV2(spatialGroup, Mathf.CeilToInt(enemyDetectRadius));
+    //     List<Enemy> nearbyEnemy = EnemyHelper.GetAllEnemySpatialGroups(spatialGroupToSearch);
 
 
-        foreach (Enemy enemy in nearbyEnemy)
-        {
-            if (enemy == null) continue;
-            //if (enemy == this) continue;
+    //     foreach (Enemy enemy in nearbyEnemy)
+    //     {
+    //         if (enemy == null) continue;
+    //         //if (enemy == this) continue;
 
 
-            // float distance = Mathf.Abs(transform.position.x - enemy.transform.position.x) +
-            // Mathf.Abs(transform.position.y - _rb.transform.position.y);
-            float distance = Vector2.Distance(transform.position, enemy.transform.position);
-            if (distance <= hurtBoxRadius)
-            {
-                Vector3 direction = transform.position - enemy.transform.position;
-                direction.Normalize();
-                _rb.transform.position += 10f * _speed * Time.deltaTime * direction;
-                Debug.Log("PUSH");
-            }
-        }
+    //         // float distance = Mathf.Abs(transform.position.x - enemy.transform.position.x) +
+    //         // Mathf.Abs(transform.position.y - _rb.transform.position.y);
+    //         float distance = Vector2.Distance(transform.position, enemy.transform.position);
+    //         if (distance <= hurtBoxRadius)
+    //         {
+    //             Vector3 direction = transform.position - enemy.transform.position;
+    //             direction.Normalize();
+    //             _rb.transform.position += 10f * _speed * Time.deltaTime * direction;
+    //             Debug.Log("PUSH");
+    //         }
+    //     }
 
-    }
+    // }
 
     void PlayerFlash()
     {
