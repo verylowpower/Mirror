@@ -16,6 +16,8 @@ public class Enemy : MonoBehaviour
     public static Enemy instance;
     [SerializeField] float movementSpeed = 7f;
     [SerializeField] float smoothTime = 0.2f;
+    public Rigidbody2D rb;
+
     //private BehaviorGraph behaviorGraph;
     Vector3 currentMovementDirection = Vector3.zero;
     Vector3 velocity = Vector3.zero;
@@ -34,12 +36,19 @@ public class Enemy : MonoBehaviour
     }
 
     void Start()
-    {   
+    {
         instance = this;
+        rb = GetComponent<Rigidbody2D>();
         if (spriteRender != null)
         {
             originColor = spriteRender.color;
         }
+
+    }
+
+    void FixedUpdate()
+    {
+        RunLogic();
     }
 
 
@@ -56,10 +65,16 @@ public class Enemy : MonoBehaviour
         // targetDirection = transform.position + currentMovementDirection;
         // transform.position = Vector3.Lerp(transform.position, transform.position + currentMovementDirection, Time.deltaTime * movementSpeed);
 
+        // Vector3 targetPosition = GameController.instance.character.position;
+        // currentMovementDirection = (targetPosition - transform.position).normalized;
+
+        // transform.position = Vector3.SmoothDamp(transform.position, transform.position + currentMovementDirection, ref velocity, smoothTime);
+
         Vector3 targetPosition = GameController.instance.character.position;
         currentMovementDirection = (targetPosition - transform.position).normalized;
 
-        transform.position = Vector3.SmoothDamp(transform.position, transform.position + currentMovementDirection, ref velocity, smoothTime);
+        Vector2 newPosition = rb.position + (Vector2)currentMovementDirection * movementSpeed * Time.fixedDeltaTime;
+        rb.MovePosition(newPosition);
 
         PushEnemyNearby();
         int newSpatialGroup = GameController.instance.GetSpatialGroup(transform.position.x, transform.position.y); // GET spatial group
