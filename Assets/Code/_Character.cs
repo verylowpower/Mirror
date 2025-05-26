@@ -3,8 +3,10 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using System.Collections;
 
-public class Character_Move : MonoBehaviour
+
+public class Character : MonoBehaviour
 {
     //public bool shootRandom = false;
     Camera _Camera;
@@ -16,14 +18,21 @@ public class Character_Move : MonoBehaviour
     [SerializeField] private float _speed = 3.0f;
     public int _health;
     public int _curHealth;
+    public float collectRadious;
+
+    [Header("GUI")]
     [SerializeField] Slider healthBar;
+    [SerializeField] Slider expBar;
     //public int _maxHealth;
 
     [Header("Experience")]
-    long exp = 0;
+    public long exp = 0;
     long expFromLastLevel = 0;
-    long expToNextLevel = 0;
-    int Level = 0;
+    public long expToNextLevel;
+    public int Level = 0;
+
+    public delegate void LevelChanged();
+    public event LevelChanged OnLevelChanged;
 
     [Header("Spatial Group")]
     int spatialGroup = -1;
@@ -31,7 +40,7 @@ public class Character_Move : MonoBehaviour
 
     [Header("Take DMG")] //take from every enemy
     [SerializeField] int takeDmgEveryXFrame = 0;
-    [SerializeField] int takeDmgEveryXFrameCD = 10;
+    [SerializeField] int takeDmgEveryXFrameCD = 1;
     [SerializeField] float hurtBoxRadius = 0.1f;
 
     [Header("Shoot")]
@@ -47,7 +56,7 @@ public class Character_Move : MonoBehaviour
     [SerializeField] private float maxClosestDistance;
     Vector2 nearestEnemy = Vector2.zero;
 
-    public static Character_Move instance;
+    public static Character instance;
 
     public Vector2 NearestEnemy
     {
@@ -80,7 +89,8 @@ public class Character_Move : MonoBehaviour
         spatialGroup = GameController.instance.GetSpatialGroup(transform.position.x, transform.position.y);
         _Camera = Camera.main;
         _curHealth = _health;
-        UpdateGUI(_curHealth, _health);
+        UpdateGUIforHealthBar(_curHealth, _health);
+        expToNextLevel = Helper.GetExpRequired(Level);
         if (spriteRender != null)
         {
             originColor = spriteRender.color;
@@ -155,8 +165,8 @@ public class Character_Move : MonoBehaviour
 
     public void CheckCollisionWithEnemy()
     {
-        List<int> surroundingSpatialGroup = EnemyHelper.GetExpandedSpatialGroups(spatialGroup);
-        List<Enemy> surroudingEnemy = EnemyHelper.GetAllEnemySpatialGroups(surroundingSpatialGroup);
+        List<int> surroundingSpatialGroup = Helper.GetExpandedSpatialGroups(spatialGroup);
+        List<Enemy> surroudingEnemy = Helper.GetAllEnemySpatialGroups(surroundingSpatialGroup);
 
         foreach (Enemy enemy in surroudingEnemy)
         {
@@ -180,9 +190,9 @@ public class Character_Move : MonoBehaviour
         bool foundTarget = false;
 
         List<int> spatialGroupToSearch = new List<int>() { spatialGroup };
-        spatialGroupToSearch = EnemyHelper.GetExpandedSpatialGroupsV2(spatialGroup, Mathf.CeilToInt(enemyDetectRadius));
+        spatialGroupToSearch = Helper.GetExpandedSpatialGroupsV2(spatialGroup, Mathf.CeilToInt(enemyDetectRadius));
         //get all enemy 
-        List<Enemy> nearbyEnemy = EnemyHelper.GetAllEnemySpatialGroups(spatialGroupToSearch);
+        List<Enemy> nearbyEnemy = Helper.GetAllEnemySpatialGroups(spatialGroupToSearch);
         //Debug.Log("Enemy nearby: " + nearbyEnemy.Count);
 
         if (nearbyEnemy.Count == 0)
@@ -212,34 +222,48 @@ public class Character_Move : MonoBehaviour
     public void ModifyExp(int amount)
     {
         exp += amount;
-        //EXP bar UI
-        if (exp >= expToNextLevel) LevelUp();
+
+        Debug.Log($"Gained {amount} EXP. Total EXP: {exp}");
+        UpdateGUIforExpBar(exp, expToNextLevel);
+        // Nếu đủ exp thì lên cấp
+        if (exp >= expToNextLevel)
+        {
+            LevelUp();
+            OnLevelChanged?.Invoke();
+        }
     }
 
     public void LevelUp()
     {
-        expFromLastLevel = expToNextLevel;
-        expToNextLevel = EnemyHelper.GetExpRequired(Level) - expToNextLevel;
         Level++;
+        expFromLastLevel = expToNextLevel;
+        expToNextLevel = Helper.GetExpRequired(Level);
+
+        Debug.Log($"Level Up! New Level: {Level}");
         //EXP bar UI
     }
 
     public void ModifyHealth(int amount)
     {
-        _curHealth -= amount;
-        //_curHealth = Mathf.Clamp(_curHealth, 0, _health);
-
-
+        _curHealth = Mathf.Clamp(_curHealth - amount, 0, _health);
         //Debug.Log("Player get dmg: " + amount);
-        UpdateGUI(_curHealth, _health);
+        UpdateGUIforHealthBar(_curHealth, _health);
         if (_curHealth <= 0) KillPlayer();
     }
 
-    void UpdateGUI(float curValue, float maxValue)
+    void UpdateGUIforHealthBar(float curValue, float maxValue)
     {
         if (healthBar != null)
         {
             healthBar.value = curValue / maxValue;
+        }
+    }
+
+    void UpdateGUIforExpBar(float curValue, float maxValue)
+    {
+        if (expBar != null)
+        {
+            expBar.value = curValue / maxValue;
         }
     }
 
@@ -251,35 +275,16 @@ public class Character_Move : MonoBehaviour
 #endif
     }
 
-    // public void PushPlayer()
-    // {
-    //     List<int> spatialGroupToSearch = EnemyHelper.GetExpandedSpatialGroupsV2(spatialGroup, Mathf.CeilToInt(enemyDetectRadius));
-    //     List<Enemy> nearbyEnemy = EnemyHelper.GetAllEnemySpatialGroups(spatialGroupToSearch);
-
-
-    //     foreach (Enemy enemy in nearbyEnemy)
-    //     {
-    //         if (enemy == null) continue;
-    //         //if (enemy == this) continue;
-
-
-    //         // float distance = Mathf.Abs(transform.position.x - enemy.transform.position.x) +
-    //         // Mathf.Abs(transform.position.y - _rb.transform.position.y);
-    //         float distance = Vector2.Distance(transform.position, enemy.transform.position);
-    //         if (distance <= hurtBoxRadius)
-    //         {
-    //             Vector3 direction = transform.position - enemy.transform.position;
-    //             direction.Normalize();
-    //             _rb.transform.position += 10f * _speed * Time.deltaTime * direction;
-    //             Debug.Log("PUSH");
-    //         }
-    //     }
-
-    // }
+    IEnumerator FlashWhenHit(SpriteRenderer renderer, Color original, Color flash, float duration)
+    {
+        renderer.color = flash;
+        yield return new WaitForSeconds(duration);
+        renderer.color = original;
+    }
 
     void PlayerFlash()
     {
-        StartCoroutine(Enemy.instance.FlashWhenHit(spriteRender, originColor, flashColor, flashTime));
+        StartCoroutine(FlashWhenHit(spriteRender, originColor, flashColor, flashTime));
     }
 
     void ShootBullet(Vector2 direction)
@@ -296,7 +301,6 @@ public class Character_Move : MonoBehaviour
         GameController.instance.bulletSpatialGroups[group].Add(bullet); // Add to HashSet
     }
 
-
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
@@ -307,6 +311,9 @@ public class Character_Move : MonoBehaviour
 
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, hurtBoxRadius);
+
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireSphere(transform.position, collectRadious);
     }
 
 }

@@ -455,7 +455,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Level: 0'
+  m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1751,8 +1751,8 @@ MonoBehaviour:
   _spawnTimeCD: 2
   _enemyCount: 0
   _maxCount: 10000
-  experiencePoint: {fileID: 0}
-  experiencePointHolder: {fileID: 0}
+  experiencePoint: {fileID: 5916476040344603345, guid: 7f5c186261f1fe647844bb7a1e0baddb, type: 3}
+  experiencePointHolder: {fileID: 1525062284}
 --- !u!4 &1069716622
 Transform:
   m_ObjectHideFlags: 0
@@ -2166,6 +2166,7 @@ GameObject:
   - component: {fileID: 1511386261}
   - component: {fileID: 1511386260}
   - component: {fileID: 1511386265}
+  - component: {fileID: 1511386266}
   m_Layer: 7
   m_Name: Char
   m_TagString: player
@@ -2332,7 +2333,12 @@ MonoBehaviour:
   _speed: 6
   _health: 20
   _curHealth: 0
+  collectRadious: 5.6
   healthBar: {fileID: 1868683684041217527}
+  expBar: {fileID: 2146985339}
+  exp: 0
+  expToNextLevel: 0
+  Level: 0
   takeDmgEveryXFrame: 0
   takeDmgEveryXFrameCD: 10
   hurtBoxRadius: 2.57
@@ -2348,6 +2354,19 @@ MonoBehaviour:
   spriteRender: {fileID: 1511386263}
   flashColor: {r: 1, g: 0, b: 0, a: 1}
   flashTime: 0.3
+--- !u!114 &1511386266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1511386259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb32dfd7ab9f2e347932b64d5de4c111, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  levelText: {fileID: 358233398}
 --- !u!1001 &1522911808
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2498,6 +2517,37 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 5297335506031860609, guid: 626272634cf925f4a8ba464caf6fe672, type: 3}
   m_PrefabInstance: {fileID: 1522911808}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1525062283
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1525062284}
+  m_Layer: 0
+  m_Name: ExpHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1525062284
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1525062283}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.56785566, y: 2.7547174, z: -2.000262}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1587845816
 GameObject:
   m_ObjectHideFlags: 0
@@ -3075,6 +3125,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1969819839}
   m_CullTransparentMesh: 1
+--- !u!114 &2146985339 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4979825692149759815, guid: 626272634cf925f4a8ba464caf6fe672, type: 3}
+  m_PrefabInstance: {fileID: 1522911808}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &1868683684041217526 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5297335506031860609, guid: 626272634cf925f4a8ba464caf6fe672, type: 3}
@@ -3365,5 +3426,6 @@ SceneRoots:
   - {fileID: 1069716622}
   - {fileID: 1620215859}
   - {fileID: 589655744}
+  - {fileID: 1525062284}
   - {fileID: 1400561263}
   - {fileID: 302352398}
