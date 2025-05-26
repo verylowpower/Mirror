@@ -264,6 +264,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementSpeed: 2
   smoothTime: 0
+  enemyExp: 2
+  expPrefab: {fileID: 5916476040344603345, guid: 7f5c186261f1fe647844bb7a1e0baddb, type: 3}
   rb: {fileID: 4978881550584770520}
   spatialGroup: 0
   spriteRender: {fileID: 7473473553290258956}

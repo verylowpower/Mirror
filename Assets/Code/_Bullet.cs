@@ -60,7 +60,7 @@ public class Bullet : MonoBehaviour
 
     void RunLogic()
     {
-        transform.position += EnemyHelper.V2toV3(movementDirection) * Time.deltaTime * bulletSpeed;
+        transform.position += Helper.V2toV3(movementDirection) * Time.deltaTime * bulletSpeed;
         // caculate the angle to shoot bullet
         float angle = Mathf.Atan2(movementDirection.y, movementDirection.x) * Mathf.Rad2Deg - 90f;
         //set rotation to transfrom
@@ -83,7 +83,7 @@ public class Bullet : MonoBehaviour
             if (GameController.instance.bulletSpatialGroups.ContainsKey(spatialGroup))
             {
                 GameController.instance.bulletSpatialGroups[spatialGroup].Add(this);
-                surroundingSpatialGroup = EnemyHelper.GetExpandedSpatialGroups(spatialGroup, movementDirection);
+                surroundingSpatialGroup = Helper.GetExpandedSpatialGroups(spatialGroup, movementDirection);
             }
             else
             {

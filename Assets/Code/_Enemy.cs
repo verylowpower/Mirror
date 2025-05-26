@@ -16,6 +16,8 @@ public class Enemy : MonoBehaviour
     public static Enemy instance;
     [SerializeField] float movementSpeed = 7f;
     [SerializeField] float smoothTime = 0.2f;
+    //[SerializeField] int enemyExp;
+    //[SerializeField] private GameObject expPrefab;
     public Rigidbody2D rb;
 
     //private BehaviorGraph behaviorGraph;
@@ -143,14 +145,16 @@ public class Enemy : MonoBehaviour
     {
         GameController.instance.UpdateEnemyOnUnitDeath("enemy", batchId);
         GameController.instance.enemySpatialGroups[spatialGroup].Remove(this);
-        //GameController.instance.RemoveFromSpatialGroup(spatialGroup, this);
+        GameController.instance.RemoveFromSpatialGroup(spatialGroup, this);
 
         //drop exp
-        // if(Random.Range(1,50)<25)
-        // {
-        //     GameController.instance.Drop
-        // }
+        if (Random.Range(0f, 1f) < 0.5f)
+        {
+            Debug.Log("EXP DROP WHEN KILL WORKING");
+            GameController.instance.DropExpPoint(transform.position, 1);
 
+            //Instantiate(expPrefab, transform.position, Quaternion.identity);
+        }
         Destroy(gameObject);
     }
 
