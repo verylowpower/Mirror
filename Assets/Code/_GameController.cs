@@ -300,16 +300,33 @@ public class GameController : MonoBehaviour
         }
 
         Vector2 centerOfSpatialGroup = GetPatitionCenterDynamic(randomSpatialGroup, spatialGroupWidth, spatialGroupHeight, numberOfPartitions);
-
         float sizeOfOneSpatialGroup = spatialGroupWidth / 5;
-        float valX = Random.Range(centerOfSpatialGroup.x - sizeOfOneSpatialGroup / 2,
-                                 centerOfSpatialGroup.x + sizeOfOneSpatialGroup / 2);
-        float valY = Random.Range(centerOfSpatialGroup.y - sizeOfOneSpatialGroup / 2,
-                                 centerOfSpatialGroup.y + sizeOfOneSpatialGroup / 2);
+        Vector3 spawnPos;
+
+        int maxTry = 20; // số lần thử vị trí spawn không nằm trong camera
+        int tryCount = 0;
+
+        do
+        {
+            float valX = Random.Range(centerOfSpatialGroup.x - sizeOfOneSpatialGroup / 2,
+                                     centerOfSpatialGroup.x + sizeOfOneSpatialGroup / 2);
+            float valY = Random.Range(centerOfSpatialGroup.y - sizeOfOneSpatialGroup / 2,
+                                     centerOfSpatialGroup.y + sizeOfOneSpatialGroup / 2);
+
+            spawnPos = new Vector3(valX, valY, 0);
+            tryCount++;
+        }
+        while (CheckInsideCamera(spawnPos) && tryCount < maxTry);
+
+        if (tryCount >= maxTry && CheckInsideCamera(spawnPos))
+        {
+            // Không tìm được vị trí spawn ngoài camera, có thể bỏ qua spawn lần này hoặc spawn ở vị trí an toàn mặc định
+            return;
+        }
 
         GameObject enemyGO = Instantiate(_enemyPrefab, _enemyHolder);
 
-        enemyGO.transform.position = new Vector3(valX, valY, 0);
+        enemyGO.transform.position = spawnPos;
         enemyGO.transform.parent = _enemyHolder;
 
         Enemy enemyScript = enemyGO.GetComponent<Enemy>();
@@ -399,6 +416,12 @@ public class GameController : MonoBehaviour
         // Debug.Log($"[Spatial] Removed enemy from group {spatialGroupId}");
     }
 
+    private bool CheckInsideCamera(Vector2 positon) //check camera area
+    {
+        Vector3 viewportPos = Camera.main.WorldToViewportPoint(positon);
+        return viewportPos.x > 0 && viewportPos.x < 1 && viewportPos.y > 0 && viewportPos.y < 1;
+    }
+
     public void DropExpPoint(Vector3 position, int amount)
     {
         Debug.Log("EXP DROP IN GAME CONTROLLER WORKING TOO");
@@ -477,9 +500,5 @@ public class GameController : MonoBehaviour
     //     return spawnPos;
     // }
 
-    // private bool CheckInsideCamera(Vector2 positon) //check camera area
-    // {
-    //     Vector3 viewportPos = Camera.main.WorldToViewportPoint(positon);
-    //     return viewportPos.x > 0 && viewportPos.x < 1 && viewportPos.y > 0 && viewportPos.y < 1;
-    // }
+
 }

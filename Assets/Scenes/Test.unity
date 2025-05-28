@@ -2339,9 +2339,10 @@ MonoBehaviour:
   exp: 0
   expToNextLevel: 0
   Level: 0
-  takeDmgEveryXFrame: 0
-  takeDmgEveryXFrameCD: 10
   hurtBoxRadius: 2.57
+  iFrame: 1
+  iFrameCD: 0
+  isIFrame: 0
   bulletPF: {fileID: 4946990297529389802, guid: ba076c2efad94914984cc92b0c760a68, type: 3}
   bulletHolder: {fileID: 589655743}
   firePoint: {fileID: 1643397287}

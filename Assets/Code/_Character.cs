@@ -12,8 +12,6 @@ public class Character : MonoBehaviour
     Camera _Camera;
     //Shoot shoot;
 
-
-
     [Header("Stat")]
     [SerializeField] private float _speed = 3.0f;
     public int _health;
@@ -39,9 +37,13 @@ public class Character : MonoBehaviour
     public int SpatialGroup { get { return spatialGroup; } }
 
     [Header("Take DMG")] //take from every enemy
-    [SerializeField] int takeDmgEveryXFrame = 0;
-    [SerializeField] int takeDmgEveryXFrameCD = 1;
+    // [SerializeField] int takeDmgEveryXFrame = 0;
+    // [SerializeField] int takeDmgEveryXFrameCD = 1;
     [SerializeField] float hurtBoxRadius = 0.1f;
+    [SerializeField] float iFrame;
+    [SerializeField] float iFrameCD;
+    public bool isIFrame;
+
 
     [Header("Shoot")]
     [SerializeField] public GameObject bulletPF;
@@ -138,12 +140,23 @@ public class Character : MonoBehaviour
             nextFireTime = Time.time + fireRate;
         }
 
-        takeDmgEveryXFrame++;
-        if (takeDmgEveryXFrame > takeDmgEveryXFrameCD)
+        if (isIFrame == true)
+        {
+            iFrameCD -= Time.deltaTime;
+            if (iFrameCD <= 0)
+                isIFrame = false;
+        }
+        else
         {
             CheckCollisionWithEnemy();
-            takeDmgEveryXFrame = 0;
         }
+
+        // takeDmgEveryXFrame++;
+        // if (takeDmgEveryXFrame > takeDmgEveryXFrameCD)
+        // {
+        //     CheckCollisionWithEnemy();
+        //     takeDmgEveryXFrame = 0;
+        // }
         _rb.MovePosition(_rb.position + moveInput * _speed * Time.fixedDeltaTime);
     }
 
@@ -176,7 +189,7 @@ public class Character : MonoBehaviour
             if (distance < hurtBoxRadius && spriteRender != null)
             {
                 ModifyHealth(enemy.Damage);
-                PlayerFlash();
+
                 //PushPlayer();
                 break;
             }
@@ -245,10 +258,18 @@ public class Character : MonoBehaviour
 
     public void ModifyHealth(int amount)
     {
+        if (isIFrame) return;
+
+
         _curHealth = Mathf.Clamp(_curHealth - amount, 0, _health);
         //Debug.Log("Player get dmg: " + amount);
         UpdateGUIforHealthBar(_curHealth, _health);
         if (_curHealth <= 0) KillPlayer();
+
+        isIFrame = true;
+        iFrameCD = iFrame;
+
+        PlayerFlash();
     }
 
     void UpdateGUIforHealthBar(float curValue, float maxValue)
