@@ -37,13 +37,12 @@ public class Character : MonoBehaviour
     public int SpatialGroup { get { return spatialGroup; } }
 
     [Header("Take DMG")] //take from every enemy
-    // [SerializeField] int takeDmgEveryXFrame = 0;
-    // [SerializeField] int takeDmgEveryXFrameCD = 1;
+    [SerializeField] int takeDmgEveryXFrame = 0;
+    [SerializeField] int takeDmgEveryXFrameCD = 1;
     [SerializeField] float hurtBoxRadius = 0.1f;
     [SerializeField] float iFrame;
     [SerializeField] float iFrameCD;
     public bool isIFrame;
-
 
     [Header("Shoot")]
     [SerializeField] public GameObject bulletPF;
@@ -54,10 +53,12 @@ public class Character : MonoBehaviour
 
     [Header("Detect Enemy")]
     //check nearest enemy for gun
+    float enemySearchTimer = 0f;
+    float searchInterval = 0.2f;
+
     [SerializeField] private float enemyDetectRadius = 1f;
     [SerializeField] private float maxClosestDistance;
     Vector2 nearestEnemy = Vector2.zero;
-
     public static Character instance;
 
     public Vector2 NearestEnemy
@@ -79,6 +80,8 @@ public class Character : MonoBehaviour
     private Rigidbody2D _rb;
     private Vector2 moveInput;
 
+    [Header("Point")]
+    //public int enemyKilled;
 
     [SerializeField] private SpriteRenderer spriteRender;
     [SerializeField] private Color flashColor = Color.white;
@@ -125,31 +128,56 @@ public class Character : MonoBehaviour
         moveInput = context.ReadValue<Vector2>();
     }
 
+    void Update()
+    {
+        CameraRotate();
+    }
+
 
     public void FixedUpdate()
     {
-        CameraRotate();
+
         spatialGroup = GameController.instance.GetSpatialGroup(transform.position.x, transform.position.y);
-        CheckNearestEnemyDirection();
-        if (!noEnemyNearby && Time.time >= nextFireTime)
+
+        enemySearchTimer += Time.fixedDeltaTime;
+        if (enemySearchTimer >= searchInterval)
+        {
+            CheckNearestEnemyDirection();
+            enemySearchTimer = 0f;
+        }
+
+        if (!noEnemyNearby && nearestEnemy != Vector2.zero && Time.time >= nextFireTime)
         {
             Vector2 directionToEnemy = nearestEnemy - (Vector2)firePoint.position;
-            directionToEnemy.Normalize();
-
-            ShootBullet(directionToEnemy);
-            nextFireTime = Time.time + fireRate;
+            if (directionToEnemy.sqrMagnitude > 0.001f)
+            {
+                directionToEnemy.Normalize();
+                ShootBullet(directionToEnemy);
+                nextFireTime = Time.time + fireRate;
+            }
         }
 
-        if (isIFrame == true)
+
+        if (!isIFrame)
         {
-            iFrameCD -= Time.deltaTime;
-            if (iFrameCD <= 0)
-                isIFrame = false;
+            takeDmgEveryXFrame++;
+            if (takeDmgEveryXFrame > takeDmgEveryXFrameCD)
+            {
+                CheckCollisionWithEnemy();
+                takeDmgEveryXFrame = 0;
+            }
         }
-        else
-        {
-            CheckCollisionWithEnemy();
-        }
+
+        // if (isIFrame == true)
+        // {
+        //     iFrameCD -= Time.deltaTime;
+        //     if (iFrameCD <= 0)
+        //         isIFrame = false;
+        // }
+        // else
+        // {
+        //     CheckCollisionWithEnemy();
+        // }
 
         // takeDmgEveryXFrame++;
         // if (takeDmgEveryXFrame > takeDmgEveryXFrameCD)

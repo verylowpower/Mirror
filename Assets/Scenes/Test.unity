@@ -1724,6 +1724,7 @@ GameObject:
   - component: {fileID: 1069716622}
   - component: {fileID: 1069716621}
   - component: {fileID: 1069716623}
+  - component: {fileID: 1069716624}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -1749,8 +1750,14 @@ MonoBehaviour:
   _enemyHolder: {fileID: 1620215859}
   _spawnTime: 1
   _spawnTimeCD: 2
+  maxCountDemo: 300
+  maxCountInGame: 10000
+  numEnemySpawnDemo: 50
+  numEnemySpawnInGame: 10
   _enemyCount: 0
   _maxCount: 10000
+  inGameTime: 0
+  enemyKilled: 0
   experiencePoint: {fileID: 5916476040344603345, guid: 7f5c186261f1fe647844bb7a1e0baddb, type: 3}
   experiencePointHolder: {fileID: 1525062284}
 --- !u!4 &1069716622
@@ -1814,6 +1821,21 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4.178746, y: 3.2879767}
   m_EdgeRadius: 0
+--- !u!114 &1069716624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1069716620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb32dfd7ab9f2e347932b64d5de4c111, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  levelText: {fileID: 358233398}
+  timeText: {fileID: 777158374}
+  pointText: {fileID: 507746006}
 --- !u!1001 &1189952675
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2166,7 +2188,6 @@ GameObject:
   - component: {fileID: 1511386261}
   - component: {fileID: 1511386260}
   - component: {fileID: 1511386265}
-  - component: {fileID: 1511386266}
   m_Layer: 7
   m_Name: Char
   m_TagString: player
@@ -2339,7 +2360,9 @@ MonoBehaviour:
   exp: 0
   expToNextLevel: 0
   Level: 0
-  hurtBoxRadius: 2.57
+  takeDmgEveryXFrame: 0
+  takeDmgEveryXFrameCD: 1
+  hurtBoxRadius: 1
   iFrame: 1
   iFrameCD: 0
   isIFrame: 0
@@ -2355,19 +2378,6 @@ MonoBehaviour:
   spriteRender: {fileID: 1511386263}
   flashColor: {r: 1, g: 0, b: 0, a: 1}
   flashTime: 0.3
---- !u!114 &1511386266
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1511386259}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb32dfd7ab9f2e347932b64d5de4c111, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  levelText: {fileID: 358233398}
 --- !u!1001 &1522911808
 PrefabInstance:
   m_ObjectHideFlags: 0
