@@ -15,7 +15,7 @@ public class Enemy : MonoBehaviour
     }
     public static Enemy instance;
     [SerializeField] float movementSpeed = 7f;
-    [SerializeField] float smoothTime = 0.2f;
+    //[SerializeField] float smoothTime = 0.2f;
     //[SerializeField] int enemyExp;
     //[SerializeField] private GameObject expPrefab;
     public Rigidbody2D rb;
@@ -24,6 +24,8 @@ public class Enemy : MonoBehaviour
     Vector3 currentMovementDirection = Vector3.zero;
     Vector3 velocity = Vector3.zero;
     Vector3 targetDirection;
+
+
 
     public int spatialGroup = 0;
     [SerializeField] private SpriteRenderer spriteRender;
@@ -50,45 +52,33 @@ public class Enemy : MonoBehaviour
 
     void FixedUpdate()
     {
-        RunLogic();
+        RunLightLogic();
     }
 
-
-    public void RunLogic()
+    public void RunHeavyLogic()
     {
-        // currentMovementDirection = GameController.instance.character.position - transform.position;
-        // currentMovementDirection.Normalize();
-
-        // transform.position += currentMovementDirection * Time.deltaTime * movementSpeed;
-
-        // currentMovementDirection = GameController.instance.character.position - transform.position;
-        // currentMovementDirection.Normalize();
-
-        // targetDirection = transform.position + currentMovementDirection;
-        // transform.position = Vector3.Lerp(transform.position, transform.position + currentMovementDirection, Time.deltaTime * movementSpeed);
-
-        // Vector3 targetPosition = GameController.instance.character.position;
-        // currentMovementDirection = (targetPosition - transform.position).normalized;
-
-        // transform.position = Vector3.SmoothDamp(transform.position, transform.position + currentMovementDirection, ref velocity, smoothTime);
-
         Vector3 targetPosition = GameController.instance.character.position;
-        currentMovementDirection = (targetPosition - transform.position).normalized;
+        targetDirection = (targetPosition - transform.position).normalized;
+    }
 
-        Vector2 newPosition = rb.position + (Vector2)currentMovementDirection * movementSpeed * Time.fixedDeltaTime;
+    public void RunLightLogic()
+    {
+        if (rb == null) return;
+
+        Vector2 newPosition = rb.position + (Vector2)targetDirection * movementSpeed * Time.fixedDeltaTime;
         rb.MovePosition(newPosition);
 
         PushEnemyNearby();
-        int newSpatialGroup = GameController.instance.GetSpatialGroup(transform.position.x, transform.position.y); // GET spatial group
+
+        int newSpatialGroup = GameController.instance.GetSpatialGroup(transform.position.x, transform.position.y);
         if (newSpatialGroup != spatialGroup)
         {
-            GameController.instance.enemySpatialGroups[spatialGroup].Remove(this); // REMOVE from old spatial group
-            //GameController.instance.RemoveFromSpatialGroup(spatialGroup, this);
-
-            spatialGroup = newSpatialGroup; // UPDATE current spatial group
-            GameController.instance.enemySpatialGroups[spatialGroup].Add(this); // ADD to new spatial group
+            GameController.instance.enemySpatialGroups[spatialGroup].Remove(this);
+            spatialGroup = newSpatialGroup;
+            GameController.instance.enemySpatialGroups[spatialGroup].Add(this);
         }
     }
+
 
     private void PushEnemyNearby()
     {
@@ -105,7 +95,7 @@ public class Enemy : MonoBehaviour
             {
                 Vector3 direction = transform.position - enemy.transform.position;
                 direction.Normalize();
-                enemy.transform.position -= 1.5f * movementSpeed * Time.deltaTime * direction;
+                enemy.transform.position -= 2f * movementSpeed * Time.deltaTime * direction;
             }
 
         }
@@ -143,6 +133,7 @@ public class Enemy : MonoBehaviour
 
     public void KillEnemy()
     {
+
         GameController.instance.UpdateEnemyOnUnitDeath("enemy", batchId);
         GameController.instance.enemySpatialGroups[spatialGroup].Remove(this);
         GameController.instance.RemoveFromSpatialGroup(spatialGroup, this);

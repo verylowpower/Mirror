@@ -6,26 +6,45 @@ using UnityEngine.Rendering;
 
 public class GameController : MonoBehaviour
 {
-    public bool demo;
+
 
     //[SerializeField] private BoxCollider2D colliderArea;
 
     //player
+    [Header("For Player")]
+    public bool demo;
     public static GameController instance;
     public Transform character;
     CharacterController charScript;
     public CharacterController CharScript { get { return charScript; } }
 
+    [Header("For enemy")]
     //enemy
     public GameObject _enemyPrefab;
     public Transform _enemyHolder;
     public float _spawnTime = 0f;
     //public float _minSpawnTime = 1f;
     public float _spawnTimeCD = 3f;
+
+    public int maxCountDemo;
+    public int maxCountInGame;
+
+
+    public int numEnemySpawnDemo;
+    public int numEnemySpawnInGame;
+
     //public int _spawnCount = 0;
     public int _enemyCount = 0;
     public int _maxCount = 10000;
 
+    [Header("Game controller")]
+    public float inGameTime = 0f;
+    public delegate void TimeInGame();
+    public event TimeInGame TimeChange;
+
+    public int enemyKilled;
+    public delegate void EnemyDied();
+    public event EnemyDied KilledEnemy;
     //enemy logic
     Dictionary<int, List<Enemy>> enemyBatch = new(); //store enemy list for handle
     float runLogicTimer = 0f;
@@ -70,6 +89,9 @@ public class GameController : MonoBehaviour
         handle enemy in batch
         find batch to spawn enemy
     */
+
+
+
     public class BatchScore : System.IComparable<BatchScore>
     {
         public int BatchId { get; }
@@ -111,6 +133,8 @@ public class GameController : MonoBehaviour
     {
         if (option == "enemy")
         {
+            enemyKilled++;
+            KilledEnemy?.Invoke();
             UpdateEnemyOnDeathRaw(batchQueue_Enemy, batchScoreMap_Enemy, batchId);
         }
     }
@@ -199,9 +223,9 @@ public class GameController : MonoBehaviour
 
         }
 
-        int initEnemySpawn = demo ? 5 : 20;
-        _maxCount = demo ? 100 : 1000;
-        _enemyCount = demo ? 5 : 20;
+        int initEnemySpawn = demo ? numEnemySpawnDemo : numEnemySpawnInGame;
+        _maxCount = demo ? maxCountDemo : maxCountInGame;
+        _enemyCount = demo ? numEnemySpawnDemo : numEnemySpawnInGame;
         for (int i = 0; i < initEnemySpawn; i++)
         {
 
@@ -221,7 +245,7 @@ public class GameController : MonoBehaviour
     void FixedUpdate()
     {
         if (instance.character == null) return;
-
+        GameTime();
         runLogicTimer += Time.deltaTime;
 
         if (runLogicTimer > runLogicTimerCD)
@@ -234,7 +258,6 @@ public class GameController : MonoBehaviour
         SpawnEnemies();
         int batchId = (int)(runLogicTimer * 50) % 50; // <-- giới hạn trong 0–49
         RunBatchLogic(batchId);
-
     }
 
     void RunOnceASecondLogicForAllBullet()
@@ -254,14 +277,14 @@ public class GameController : MonoBehaviour
         foreach (Enemy enemy in enemyBatch[batchId])
         {
             //Debug.Log($"[Enemy] Running logic for enemy in batch {batchId}");
-            if (enemy) enemy.RunLogic();
+            if (enemy) enemy.RunHeavyLogic();
         }
     }
 
 
     void SpawnEnemies()
     {
-        int initEnemySpawn = demo ? 5 : 20;
+        int initEnemySpawn = demo ? numEnemySpawnDemo : numEnemySpawnInGame;
         _spawnTime += Time.deltaTime;
 
         if (_spawnTime > _spawnTimeCD && _enemyHolder.childCount < _maxCount)
@@ -292,25 +315,44 @@ public class GameController : MonoBehaviour
 
         expandedSpatialGroup.Remove(charQuadrant);
 
-        int randomSpatialGroup = expandedSpatialGroup[Random.Range(0, expandedSpatialGroup.Count)];
         if (expandedSpatialGroup.Count == 0)
         {
             //Debug.LogWarning("[Spawn] WARNING: No valid expanded spatial groups.");
             return;
         }
 
-        Vector2 centerOfSpatialGroup = GetPatitionCenterDynamic(randomSpatialGroup, spatialGroupWidth, spatialGroupHeight, numberOfPartitions);
+        int randomSpatialGroup = expandedSpatialGroup[Random.Range(0, expandedSpatialGroup.Count)];
 
+        Vector2 centerOfSpatialGroup = GetPatitionCenterDynamic(randomSpatialGroup, spatialGroupWidth, spatialGroupHeight, numberOfPartitions);
         float sizeOfOneSpatialGroup = spatialGroupWidth / 5;
-        float valX = Random.Range(centerOfSpatialGroup.x - sizeOfOneSpatialGroup / 2,
-                                 centerOfSpatialGroup.x + sizeOfOneSpatialGroup / 2);
-        float valY = Random.Range(centerOfSpatialGroup.y - sizeOfOneSpatialGroup / 2,
-                                 centerOfSpatialGroup.y + sizeOfOneSpatialGroup / 2);
+
+        Vector3 spawnPos;
+
+        int maxTry = 20; // số lần thử vị trí spawn không nằm trong camera
+        int tryCount = 0;
+
+        do
+        {
+            float valX = Random.Range(centerOfSpatialGroup.x - sizeOfOneSpatialGroup / 2,
+                                     centerOfSpatialGroup.x + sizeOfOneSpatialGroup / 2);
+            float valY = Random.Range(centerOfSpatialGroup.y - sizeOfOneSpatialGroup / 2,
+                                     centerOfSpatialGroup.y + sizeOfOneSpatialGroup / 2);
+
+            spawnPos = new Vector3(valX, valY, 0);
+            tryCount++;
+        }
+        while (CheckInsideCamera(spawnPos) && tryCount < maxTry);
+
+        if (tryCount >= maxTry && CheckInsideCamera(spawnPos))
+        {
+            // Không tìm được vị trí spawn ngoài camera, có thể bỏ qua spawn lần này hoặc spawn ở vị trí an toàn mặc định
+            return;
+        }
 
         GameObject enemyGO = Instantiate(_enemyPrefab, _enemyHolder);
 
-        enemyGO.transform.position = new Vector3(valX, valY, 0);
-        enemyGO.transform.parent = _enemyHolder;
+        enemyGO.transform.position = spawnPos;
+        //enemyGO.transform.parent = _enemyHolder;
 
         Enemy enemyScript = enemyGO.GetComponent<Enemy>();
 
@@ -399,6 +441,18 @@ public class GameController : MonoBehaviour
         // Debug.Log($"[Spatial] Removed enemy from group {spatialGroupId}");
     }
 
+    private bool CheckInsideCamera(Vector2 positon) //check camera area
+    {
+        Vector3 viewportPos = Camera.main.WorldToViewportPoint(positon);
+        return viewportPos.x > 0 && viewportPos.x < 1 && viewportPos.y > 0 && viewportPos.y < 1;
+    }
+
+    public void GameTime()
+    {
+        inGameTime = Time.time;
+        TimeChange?.Invoke();
+    }
+
     public void DropExpPoint(Vector3 position, int amount)
     {
         Debug.Log("EXP DROP IN GAME CONTROLLER WORKING TOO");
@@ -477,9 +531,5 @@ public class GameController : MonoBehaviour
     //     return spawnPos;
     // }
 
-    // private bool CheckInsideCamera(Vector2 positon) //check camera area
-    // {
-    //     Vector3 viewportPos = Camera.main.WorldToViewportPoint(positon);
-    //     return viewportPos.x > 0 && viewportPos.x < 1 && viewportPos.y > 0 && viewportPos.y < 1;
-    // }
+
 }
