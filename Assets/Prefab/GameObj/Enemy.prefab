@@ -236,8 +236,8 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.0073279194, y: 0}
-  m_Radius: 0.68319815
+  m_Offset: {x: -0.0029161181, y: 0}
+  m_Radius: 0.80612504
 --- !u!114 &-5223753828125647118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -263,9 +263,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementSpeed: 2
-  smoothTime: 0
-  enemyExp: 2
-  expPrefab: {fileID: 5916476040344603345, guid: 7f5c186261f1fe647844bb7a1e0baddb, type: 3}
   rb: {fileID: 4978881550584770520}
   spatialGroup: 0
   spriteRender: {fileID: 7473473553290258956}
