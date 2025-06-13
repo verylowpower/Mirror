@@ -91,7 +91,7 @@ public class Enemy : MonoBehaviour
 
             float distance = Mathf.Abs(transform.position.x - enemy.transform.position.x) +
             Mathf.Abs(transform.position.y - enemy.transform.position.y);
-            if (distance < 0.2f)
+            if (distance < 2f)
             {
                 Vector3 direction = transform.position - enemy.transform.position;
                 direction.Normalize();

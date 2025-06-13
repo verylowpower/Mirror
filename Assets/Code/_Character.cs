@@ -37,8 +37,8 @@ public class Character : MonoBehaviour
     public int SpatialGroup { get { return spatialGroup; } }
 
     [Header("Take DMG")] //take from every enemy
-    [SerializeField] int takeDmgEveryXFrame = 0;
-    [SerializeField] int takeDmgEveryXFrameCD = 1;
+    // [SerializeField] int takeDmgEveryXFrame = 0;
+    // [SerializeField] int takeDmgEveryXFrameCD = 1;
     [SerializeField] float hurtBoxRadius = 0.1f;
     [SerializeField] float iFrame;
     [SerializeField] float iFrameCD;
@@ -83,7 +83,7 @@ public class Character : MonoBehaviour
     [Header("Point")]
     //public int enemyKilled;
 
-    [SerializeField] private SpriteRenderer spriteRender;
+    [SerializeField] public SpriteRenderer spriteRender;
     [SerializeField] private Color flashColor = Color.white;
     [SerializeField] private float flashTime = 0f;
     private Color originColor;
@@ -96,6 +96,7 @@ public class Character : MonoBehaviour
         _curHealth = _health;
         UpdateGUIforHealthBar(_curHealth, _health);
         expToNextLevel = Helper.GetExpRequired(Level);
+        Debug.Log("Sprite is:" + spriteRender);
         if (spriteRender != null)
         {
             originColor = spriteRender.color;
@@ -130,7 +131,7 @@ public class Character : MonoBehaviour
 
     void Update()
     {
-        CameraRotate();
+        //CameraRotate();
     }
 
 
@@ -158,24 +159,26 @@ public class Character : MonoBehaviour
         }
 
 
-        if (!isIFrame)
-        {
-            takeDmgEveryXFrame++;
-            if (takeDmgEveryXFrame > takeDmgEveryXFrameCD)
-            {
-                CheckCollisionWithEnemy();
-                takeDmgEveryXFrame = 0;
-            }
-        }
-
+        // if (!isIFrame)
+        // {
+        //     takeDmgEveryXFrame++;
+        //     if (takeDmgEveryXFrame > takeDmgEveryXFrameCD)
+        //     {
+        //         CheckCollisionWithEnemy();
+        //         takeDmgEveryXFrame = 0;
+        //     }
+        // }
+        //Debug.Log("Fixed update is working");
+        CheckCollisionWithEnemy();
         // if (isIFrame == true)
         // {
+        //     Debug.Log("iframe working correctly");
         //     iFrameCD -= Time.deltaTime;
         //     if (iFrameCD <= 0)
         //         isIFrame = false;
         // }
         // else
-        // {
+        // {   
         //     CheckCollisionWithEnemy();
         // }
 
@@ -185,37 +188,42 @@ public class Character : MonoBehaviour
         //     CheckCollisionWithEnemy();
         //     takeDmgEveryXFrame = 0;
         // }
-        _rb.MovePosition(_rb.position + moveInput * _speed * Time.fixedDeltaTime);
+        // _rb.MovePosition(_rb.position + moveInput * _speed * Time.fixedDeltaTime);
+        _rb.linearVelocity = moveInput * _speed;
+
     }
 
-    void CameraRotate()
-    {
-        Vector3 mouseScreenPos = Input.mousePosition;
-        mouseScreenPos.z = 12f; // Đẩy chuột ra mặt phẳng Z = 0
+    // void CameraRotate()
+    // {
+    //     Vector3 mouseScreenPos = Input.mousePosition;
+    //     mouseScreenPos.z = 12f; // Đẩy chuột ra mặt phẳng Z = 0
 
-        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+    //     Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
 
-        Vector2 direction = mouseWorldPos - transform.position;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+    //     Vector2 direction = mouseWorldPos - transform.position;
+    //     float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-        transform.rotation = Quaternion.Euler(0, 0, angle); // hoặc angle tùy sprite
-        //Debug.Log("Angle: " + angle);
-    }
+    //     transform.rotation = Quaternion.Euler(0, 0, angle); // hoặc angle tùy sprite
+    //     //Debug.Log("Angle: " + angle);
+    // }
 
 
 
     public void CheckCollisionWithEnemy()
     {
+        //Debug.Log("Calling CheckCollisionWithEnemy"); 
         List<int> surroundingSpatialGroup = Helper.GetExpandedSpatialGroups(spatialGroup);
         List<Enemy> surroudingEnemy = Helper.GetAllEnemySpatialGroups(surroundingSpatialGroup);
 
         foreach (Enemy enemy in surroudingEnemy)
         {
+            //Debug.Log("is checking surrouding enemy");
             if (enemy == null) continue;
-
             float distance = Vector2.Distance(transform.position, enemy.transform.position);
-            if (distance < hurtBoxRadius && spriteRender != null)
+            //Debug.Log("enemy distance: " + distance);
+            if (distance <= hurtBoxRadius && spriteRender != null)
             {
+                Debug.Log("Enemy in hurtBox");
                 ModifyHealth(enemy.Damage);
 
                 //PushPlayer();
@@ -286,11 +294,9 @@ public class Character : MonoBehaviour
 
     public void ModifyHealth(int amount)
     {
-        if (isIFrame) return;
-
-
+        //if (isIFrame) return;
         _curHealth = Mathf.Clamp(_curHealth - amount, 0, _health);
-        //Debug.Log("Player get dmg: " + amount);
+        Debug.Log("Player get dmg: " + amount);
         UpdateGUIforHealthBar(_curHealth, _health);
         if (_curHealth <= 0) KillPlayer();
 
@@ -319,9 +325,9 @@ public class Character : MonoBehaviour
     public void KillPlayer()
     {
         Destroy(gameObject);
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#endif
+        // #if UNITY_EDITOR
+        //         UnityEditor.EditorApplication.isPlaying = false;
+        // #endif
     }
 
     IEnumerator FlashWhenHit(SpriteRenderer renderer, Color original, Color flash, float duration)

@@ -1,13 +1,11 @@
+using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil.Cil;
-using UnityEngine;
 using UnityEngine.Rendering;
 
 public class GameController : MonoBehaviour
 {
-
-
     //[SerializeField] private BoxCollider2D colliderArea;
 
     //player
@@ -247,7 +245,7 @@ public class GameController : MonoBehaviour
         if (instance.character == null) return;
         GameTime();
         runLogicTimer += Time.deltaTime;
-
+        SpawnEnemies();
         if (runLogicTimer > runLogicTimerCD)
         {
             RunOnceASecondLogicForAllBullet();
@@ -255,7 +253,6 @@ public class GameController : MonoBehaviour
             return;
         }
 
-        SpawnEnemies();
         int batchId = (int)(runLogicTimer * 50) % 50; // <-- giới hạn trong 0–49
         RunBatchLogic(batchId);
     }
