@@ -13,10 +13,14 @@ public class Character : MonoBehaviour
     //Shoot shoot;
 
     [Header("Stat")]
-    [SerializeField] private float _speed = 3.0f;
+    public float _baseSpeed = 3.0f;
+    public float _speedMultiplier = 1f;
+    public float Speed => _baseSpeed * _speedMultiplier;
     public int _health;
     public int _curHealth;
-    public float collectRadious;
+    public float baseCollectRadious;
+    public float collectRadiousMultiplier = 1f;
+    public float CollectRadious => baseCollectRadious * collectRadiousMultiplier;
 
     [Header("GUI")]
     [SerializeField] Slider healthBar;
@@ -27,7 +31,9 @@ public class Character : MonoBehaviour
     public long exp = 0;
     long expFromLastLevel = 0;
     public long expToNextLevel;
-    public int Level = 0;
+    public int Level = 1;
+    public bool buffUIActive = false;
+
 
     public delegate void LevelChanged();
     public event LevelChanged OnLevelChanged;
@@ -50,6 +56,15 @@ public class Character : MonoBehaviour
     [SerializeField] public Transform firePoint;
     [SerializeField] public float fireRate = 0.2f;
     [SerializeField] public float nextFireTime = 0f;
+    public float baseBulletSpeed = 12f;       // default
+    public float bulletSpeedMultiplier = 1f;  // modified by buffs
+    public float CurrentBulletSpeed => baseBulletSpeed * bulletSpeedMultiplier;
+
+    public float baseBulletDmg = 5f;
+    public float bulletDmgMultiplier = 1f;  // modified by buffs
+    public float CurrentBulletDmg => baseBulletDmg * bulletDmgMultiplier;
+
+
 
     [Header("Detect Enemy")]
     //check nearest enemy for gun
@@ -96,7 +111,7 @@ public class Character : MonoBehaviour
         _curHealth = _health;
         UpdateGUIforHealthBar(_curHealth, _health);
         expToNextLevel = Helper.GetExpRequired(Level);
-        Debug.Log("Sprite is:" + spriteRender);
+        //Debug.Log("Sprite is:" + spriteRender);
         if (spriteRender != null)
         {
             originColor = spriteRender.color;
@@ -169,18 +184,18 @@ public class Character : MonoBehaviour
         //     }
         // }
         //Debug.Log("Fixed update is working");
-        CheckCollisionWithEnemy();
-        // if (isIFrame == true)
-        // {
-        //     Debug.Log("iframe working correctly");
-        //     iFrameCD -= Time.deltaTime;
-        //     if (iFrameCD <= 0)
-        //         isIFrame = false;
-        // }
-        // else
-        // {   
-        //     CheckCollisionWithEnemy();
-        // }
+        //CheckCollisionWithEnemy();
+        if (isIFrame == true)
+        {
+            //Debug.Log("iframe working correctly");
+            iFrameCD -= Time.deltaTime;
+            if (iFrameCD <= 0)
+                isIFrame = false;
+        }
+        else
+        {
+            CheckCollisionWithEnemy();
+        }
 
         // takeDmgEveryXFrame++;
         // if (takeDmgEveryXFrame > takeDmgEveryXFrameCD)
@@ -189,7 +204,7 @@ public class Character : MonoBehaviour
         //     takeDmgEveryXFrame = 0;
         // }
         // _rb.MovePosition(_rb.position + moveInput * _speed * Time.fixedDeltaTime);
-        _rb.linearVelocity = moveInput * _speed;
+        _rb.linearVelocity = moveInput * Speed;
 
     }
 
@@ -223,7 +238,7 @@ public class Character : MonoBehaviour
             //Debug.Log("enemy distance: " + distance);
             if (distance <= hurtBoxRadius && spriteRender != null)
             {
-                Debug.Log("Enemy in hurtBox");
+                //Debug.Log("Enemy in hurtBox");
                 ModifyHealth(enemy.Damage);
 
                 //PushPlayer();
@@ -272,12 +287,13 @@ public class Character : MonoBehaviour
     {
         exp += amount;
 
-        Debug.Log($"Gained {amount} EXP. Total EXP: {exp}");
+        //Debug.Log($"Gained {amount} EXP. Total EXP: {exp}");
         UpdateGUIforExpBar(exp, expToNextLevel);
         // Nếu đủ exp thì lên cấp
         if (exp >= expToNextLevel)
         {
             LevelUp();
+
             OnLevelChanged?.Invoke();
         }
     }
@@ -285,18 +301,26 @@ public class Character : MonoBehaviour
     public void LevelUp()
     {
         Level++;
+
+
         expFromLastLevel = expToNextLevel;
         expToNextLevel = Helper.GetExpRequired(Level);
-
-        Debug.Log($"Level Up! New Level: {Level}");
-        //EXP bar UI
+        OnLevelChanged?.Invoke();
+        // Debug.Log($"Level Up! New Level: {Level}");
+        if (!buffUIActive)
+        {
+            RandomSystem.instance.RandomBuff();
+            buffUIActive = true;
+        }
+        Debug.Log("Health is: " + _health);
+        Debug.Log("Bullet Speed is: " + CurrentBulletSpeed);
     }
 
     public void ModifyHealth(int amount)
     {
         //if (isIFrame) return;
         _curHealth = Mathf.Clamp(_curHealth - amount, 0, _health);
-        Debug.Log("Player get dmg: " + amount);
+        //Debug.Log("Player get dmg: " + amount);
         UpdateGUIforHealthBar(_curHealth, _health);
         if (_curHealth <= 0) KillPlayer();
 
@@ -325,9 +349,9 @@ public class Character : MonoBehaviour
     public void KillPlayer()
     {
         Destroy(gameObject);
-        // #if UNITY_EDITOR
-        //         UnityEditor.EditorApplication.isPlaying = false;
-        // #endif
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
     }
 
     IEnumerator FlashWhenHit(SpriteRenderer renderer, Color original, Color flash, float duration)
@@ -347,6 +371,12 @@ public class Character : MonoBehaviour
         GameObject bulletGO = Instantiate(bulletPF, firePoint.position, Quaternion.identity, bulletHolder.transform);
         Bullet bullet = bulletGO.GetComponent<Bullet>();
         bullet.MovementDirection = direction;
+
+        bullet.bulletSpeed = CurrentBulletSpeed;
+        bullet.bulletDmg = CurrentBulletDmg;
+
+        Debug.Log("Current bullet speed: " + CurrentBulletSpeed);
+        Debug.Log("Current bullet dmg: " + CurrentBulletDmg);
 
         int group = GameController.instance.GetSpatialGroupStatic(bullet.transform.position.x, bullet.transform.position.y);
         if (!GameController.instance.bulletSpatialGroups.ContainsKey(group))
@@ -368,7 +398,7 @@ public class Character : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, hurtBoxRadius);
 
         Gizmos.color = Color.magenta;
-        Gizmos.DrawWireSphere(transform.position, collectRadious);
+        Gizmos.DrawWireSphere(transform.position, CollectRadious);
     }
 
 }

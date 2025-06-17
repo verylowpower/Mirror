@@ -452,7 +452,7 @@ public class GameController : MonoBehaviour
 
     public void DropExpPoint(Vector3 position, int amount)
     {
-        Debug.Log("EXP DROP IN GAME CONTROLLER WORKING TOO");
+        //Debug.Log("EXP DROP IN GAME CONTROLLER WORKING TOO");
         GameObject expGO = Instantiate(experiencePoint, position, Quaternion.identity);
         expGO.transform.parent = experiencePointHolder;
     }

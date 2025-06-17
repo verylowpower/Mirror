@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 
-public class GUI_Controller : MonoBehaviour
+public class GUIController : MonoBehaviour
 {
     public TextMeshProUGUI levelText;
     public TextMeshProUGUI timeText;
@@ -20,16 +20,8 @@ public class GUI_Controller : MonoBehaviour
     private void UpdateLevelText()
     {
         levelText.text = "Level: " + Character.instance.Level.ToString();
-        Debug.Log("UPDATE LEVEL TEXT");
+        //Debug.Log("UPDATE LEVEL TEXT");
     }
-
-    // void OnDestroy()
-    // {
-    //     Character.instance.OnLevelChanged -= UpdateLevelText;
-    //     GameController.instance.TimeChange -= UpdateGameTime;
-    //     GameController.instance.KilledEnemy -= UpdatePointText;
-    // }
-
 
     private void UpdateGameTime()
     {
@@ -37,7 +29,7 @@ public class GUI_Controller : MonoBehaviour
         int minutes = Mathf.FloorToInt(time / 60f);
         int seconds = Mathf.FloorToInt(time % 60f);
         timeText.text = $"{minutes:00}:{seconds:00}";
-        Debug.Log("UPDATE TIME TEXT");
+        //Debug.Log("UPDATE TIME TEXT");
     }
 
     private void UpdatePointText()

@@ -31,7 +31,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private SpriteRenderer spriteRender;
     [SerializeField] private Color flashColor = Color.white;
     private Color originColor;
-    [SerializeField] int health = 10;
+    [SerializeField] float health = 10;
     [SerializeField] int damage = 5;
     public int Damage
     {
@@ -111,7 +111,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public void ChangeHealth(int amount)
+    public void ChangeHealth(float amount)
     {
         //int maxHealth = health;
         health -= amount;
@@ -139,13 +139,13 @@ public class Enemy : MonoBehaviour
         GameController.instance.RemoveFromSpatialGroup(spatialGroup, this);
 
         //drop exp
-        if (Random.Range(0f, 1f) < 0.5f)
-        {
-            Debug.Log("EXP DROP WHEN KILL WORKING");
-            GameController.instance.DropExpPoint(transform.position, 1);
+        // if (Random.Range(0f, 1f) < 0.5f)
+        // {
+        //Debug.Log("EXP DROP WHEN KILL WORKING");
+        GameController.instance.DropExpPoint(transform.position, 1);
 
-            //Instantiate(expPrefab, transform.position, Quaternion.identity);
-        }
+        //Instantiate(expPrefab, transform.position, Quaternion.identity);
+        // }
         Destroy(gameObject);
     }
 

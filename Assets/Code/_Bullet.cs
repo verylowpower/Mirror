@@ -7,7 +7,7 @@ public class Bullet : MonoBehaviour
 {
     public bool spinBullet;
     int spatialGroup = 0;
-
+    public static Bullet instance;
     Vector2 movementDirection = Vector2.zero;
     public Vector2 MovementDirection
     {
@@ -15,7 +15,7 @@ public class Bullet : MonoBehaviour
         set { movementDirection = value; }
     }
 
-    [SerializeField] public int bulletDmg;
+    [SerializeField] public float bulletDmg;
     [SerializeField] public float bulletSpeed;
     [SerializeField] public float bulletHitBoxRadius;
 
@@ -37,6 +37,11 @@ public class Bullet : MonoBehaviour
     public event BulletContactAction OnContactEnemy;
     Enemy enemy;
     bool isDestroy = false;
+    void Awake()
+    {
+        instance = this;
+    }
+
     void Start()
     {
         //get spatial group
