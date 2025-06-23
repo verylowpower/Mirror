@@ -73,6 +73,7 @@ public class GameController : MonoBehaviour
     //exp 
     public GameObject experiencePoint;
     public Transform experiencePointHolder;
+    public float bulletMaxDistance;
 
     //get spatial group static 
     int Cell_Per_Row_Static;

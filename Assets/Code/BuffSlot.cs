@@ -33,6 +33,6 @@ public class BuffSlot : MonoBehaviour
     {
         //Debug.Log("Selected: " + buffID);
         onClick?.Invoke(buffID);
-        Time.timeScale = 1;
+       
     }
 }

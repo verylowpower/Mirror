@@ -8,11 +8,6 @@ public class RandomSystem : MonoBehaviour
     public static RandomSystem instance;
     public Buff_GUI buff_UI;
 
-    void Start()
-    {
-
-    }
-
     void Awake()
     {
         instance = this;
@@ -20,47 +15,70 @@ public class RandomSystem : MonoBehaviour
 
     public void RandomBuff()
     {
-        List<string> buffIDs = new(BuffLibrary.AllBuffs.Keys);
-        List<string> selected = new();
+        Time.timeScale = 0;
+        // Lọc các buff đủ điều kiện
+        List<string> availableBuffIDs = new();
 
-        if (buffIDs.Count > 0)
+        foreach (var kvp in BuffLibrary.AllBuffs)
         {
-            for (int i = 0; i < 3 && buffIDs.Count > 0; i++)
+            string buffID = kvp.Key;
+            Buff buff = kvp.Value;
+
+            // Nếu buff chưa được nhận
+            if (!Character.instance.unlockedBuffs.Contains(buffID))
             {
-                int index = UnityEngine.Random.Range(0, buffIDs.Count);
-                string randomID = buffIDs[index];
-                buffIDs.RemoveAt(index);
-                selected.Add(randomID);
+                // Và không yêu cầu hoặc yêu cầu đã được mở khóa
+                if (string.IsNullOrEmpty(buff.RequirementBuffID) ||
+                    Character.instance.unlockedBuffs.Contains(buff.RequirementBuffID))
+                {
+                    availableBuffIDs.Add(buffID);
+                }
             }
-            // Pass callback for selection
-            buff_UI.ShowBuffs(selected.ToArray(), selectedBuffID =>
-            {
-                OnBuffSelected(selectedBuffID, selected);
-            });
-            Time.timeScale = 0;
         }
+
+        // Nếu không còn buff hợp lệ → không hiện
+        if (availableBuffIDs.Count == 0)
+        {
+            Debug.Log("No valid buffs available.");
+            Character.instance.buffUIActive = false;
+            return;
+        }
+
+        // Random 3 buff từ danh sách đã lọc
+        List<string> selected = new();
+        for (int i = 0; i < 3 && availableBuffIDs.Count > 0; i++)
+        {
+            int index = UnityEngine.Random.Range(0, availableBuffIDs.Count);
+            string randomID = availableBuffIDs[index];
+            availableBuffIDs.RemoveAt(index);
+            selected.Add(randomID);
+
+        }
+
+        // Hiển thị UI chọn buff
+        buff_UI.ShowBuffs(selected.ToArray(), selectedBuffID =>
+        {
+            OnBuffSelected(selectedBuffID);
+        });
     }
 
-    private void OnBuffSelected(string selectedBuffID, List<string> selectedOption)
-    {
-        //Debug.Log("Selected Buff: " + selectedBuff);
 
+    private void OnBuffSelected(string selectedBuffID)
+    {
         if (BuffLibrary.AllBuffs.TryGetValue(selectedBuffID, out Buff buff))
         {
+            // Áp dụng hiệu ứng buff
             buff.ApplyEffect?.Invoke();
-            Debug.Log($"Apply buff: {buff.Name}");
+
+            // Đánh dấu là đã nhận
+            Character.instance.unlockedBuffs.Add(selectedBuffID);
+
+            Debug.Log($"Buff selected and applied: {selectedBuffID}");
         }
 
-        foreach (string id in selectedOption)
-        {
-            BuffLibrary.AllBuffs.Remove(selectedBuffID);
-
-            Debug.Log("Remove: " + selectedBuffID);
-        }
-
-        buff_UI.HideAll(); // Hide the buff UI
-        Character.instance.buffUIActive = false; // Allow future buffs
+        buff_UI.HideAll();
+        Character.instance.buffUIActive = false;
+        Time.timeScale = 1;
     }
-
 
 }

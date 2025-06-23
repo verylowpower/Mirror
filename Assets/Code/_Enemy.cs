@@ -30,9 +30,11 @@ public class Enemy : MonoBehaviour
     public int spatialGroup = 0;
     [SerializeField] private SpriteRenderer spriteRender;
     [SerializeField] private Color flashColor = Color.white;
+    [SerializeField] private Color slowColor = Color.blue;
     private Color originColor;
     [SerializeField] float health = 10;
     [SerializeField] int damage = 5;
+    private bool isSlowed = false;
     public int Damage
     {
         get { return damage; }
@@ -149,6 +151,41 @@ public class Enemy : MonoBehaviour
         Destroy(gameObject);
     }
 
+    public void ApplyBurn(float dmgPerSec, float duration)
+    {
+        StartCoroutine(DmgOverTime(dmgPerSec, duration));
+    }
+
+    public void ApplySlow(float slowDownNumber, float duration)
+    {
+        StartCoroutine(SlowSpeed(slowDownNumber, duration));
+    }
+
+    private IEnumerator DmgOverTime(float dmgPerSec, float duration)
+    {
+        float interval = 1f;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            ChangeHealth(dmgPerSec);
+            yield return new WaitForSeconds(interval);
+            elapsed += interval;
+        }
+    }
+
+    private IEnumerator SlowSpeed(float slowDownNumber, float duration)
+    {
+        if (isSlowed) yield break;
+
+        isSlowed = true;
+        movementSpeed -= slowDownNumber;
+        StartCoroutine(FlashWhenHit(spriteRender, originColor, slowColor, duration));
+        yield return new WaitForSeconds(duration);
+        movementSpeed += slowDownNumber;
+        isSlowed = false;
+    }
+
 
     public IEnumerator FlashWhenHit(SpriteRenderer renderer, Color originColor, Color flashColor, float flashTime)
     {
@@ -156,7 +193,6 @@ public class Enemy : MonoBehaviour
         yield return new WaitForSeconds(flashTime);
         renderer.color = originColor;
     }
-
 
 
 }

@@ -236,8 +236,8 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.013160082, y: 0}
-  m_Radius: 0.8880763
+  m_Offset: {x: 0.0022058636, y: 0}
+  m_Radius: 0.8931983
 --- !u!114 &-5223753828125647118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -267,6 +267,7 @@ MonoBehaviour:
   spatialGroup: 0
   spriteRender: {fileID: 7473473553290258956}
   flashColor: {r: 1, g: 1, b: 1, a: 1}
+  slowColor: {r: 0.60275006, g: 0.60275006, b: 0.990566, a: 1}
   health: 20
   damage: 1
 --- !u!61 &6853659762500492370
