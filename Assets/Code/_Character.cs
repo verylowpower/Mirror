@@ -9,14 +9,20 @@ using System.Collections;
 public class Character : MonoBehaviour
 {
     //public bool shootRandom = false;
+    public static Character instance;
     Camera _Camera;
     //Shoot shoot;
+    //    public float bulletDistance = GameController.instance.bulletMaxDistance;
 
     [Header("Stat")]
-    [SerializeField] private float _speed = 3.0f;
+    public float _baseSpeed = 3.0f;
+    public float _speedMultiplier = 1f;
+    public float Speed => _baseSpeed * _speedMultiplier;
     public int _health;
     public int _curHealth;
-    public float collectRadious;
+    public float baseCollectRadious;
+    public float collectRadiousMultiplier = 1f;
+    public float CollectRadious => baseCollectRadious * collectRadiousMultiplier;
 
     [Header("GUI")]
     [SerializeField] Slider healthBar;
@@ -27,7 +33,9 @@ public class Character : MonoBehaviour
     public long exp = 0;
     long expFromLastLevel = 0;
     public long expToNextLevel;
-    public int Level = 0;
+    public int Level = 1;
+    public bool buffUIActive = false;
+
 
     public delegate void LevelChanged();
     public event LevelChanged OnLevelChanged;
@@ -45,11 +53,41 @@ public class Character : MonoBehaviour
     public bool isIFrame;
 
     [Header("Shoot")]
-    [SerializeField] public GameObject bulletPF;
-    [SerializeField] public GameObject bulletHolder;
-    [SerializeField] public Transform firePoint;
-    [SerializeField] public float fireRate = 0.2f;
-    [SerializeField] public float nextFireTime = 0f;
+
+    public GameObject bulletHolder;
+    public Transform firePoint;
+    public float fireRate = 0.2f;
+    public float nextFireTime = 0f;
+    public float baseBulletSpeed = 12f;       // default
+    public float bulletSpeedMultiplier = 1f;  // modified by buffs
+    public float CurrentBulletSpeed => baseBulletSpeed * bulletSpeedMultiplier;
+
+    public float baseBulletDmg = 5f;
+    public float bulletDmgMultiplier = 1f;  // modified by buffs
+    public float CurrentBulletDmg => baseBulletDmg * bulletDmgMultiplier;
+
+    [Header("Bullet Buff")]
+    public int bulletPerShoot = 1;
+    public int bulletPerShootSpread = 1;
+    public float multiShootDelayTime = 0.1f;
+    public float spreadAngle = 15f;
+
+    public bool isFireBulletOn = false;
+    public float burnDmg;
+    public float burnTime;
+
+    [Header("Ice Spell")]
+    public bool isIceSpellOn = false;
+    public float iceSlowNumber;
+    public float iceSlowTime;
+
+    [Header("Auto shoot")]
+    public bool isAutoShootOn = false;
+    public float autoShootInterval;
+    public float autoShootTime;
+    public string autoBulletType;
+
+
 
     [Header("Detect Enemy")]
     //check nearest enemy for gun
@@ -59,7 +97,7 @@ public class Character : MonoBehaviour
     [SerializeField] private float enemyDetectRadius = 1f;
     [SerializeField] private float maxClosestDistance;
     Vector2 nearestEnemy = Vector2.zero;
-    public static Character instance;
+
 
     public Vector2 NearestEnemy
     {
@@ -79,11 +117,12 @@ public class Character : MonoBehaviour
     private PlayerInputAct inputActions;
     private Rigidbody2D _rb;
     private Vector2 moveInput;
+    public HashSet<string> unlockedBuffs = new();
 
     [Header("Point")]
     //public int enemyKilled;
 
-    [SerializeField] public SpriteRenderer spriteRender;
+    public SpriteRenderer spriteRender;
     [SerializeField] private Color flashColor = Color.white;
     [SerializeField] private float flashTime = 0f;
     private Color originColor;
@@ -96,7 +135,7 @@ public class Character : MonoBehaviour
         _curHealth = _health;
         UpdateGUIforHealthBar(_curHealth, _health);
         expToNextLevel = Helper.GetExpRequired(Level);
-        Debug.Log("Sprite is:" + spriteRender);
+        //Debug.Log("Sprite is:" + spriteRender);
         if (spriteRender != null)
         {
             originColor = spriteRender.color;
@@ -158,29 +197,40 @@ public class Character : MonoBehaviour
             }
         }
 
+        if (isAutoShootOn)
+        {
+            autoShootTime += Time.fixedDeltaTime;
+            if (autoShootTime >= autoShootInterval)
+            {
+                autoShootTime = 0f;
 
-        // if (!isIFrame)
-        // {
-        //     takeDmgEveryXFrame++;
-        //     if (takeDmgEveryXFrame > takeDmgEveryXFrameCD)
-        //     {
-        //         CheckCollisionWithEnemy();
-        //         takeDmgEveryXFrame = 0;
-        //     }
-        // }
-        //Debug.Log("Fixed update is working");
-        CheckCollisionWithEnemy();
-        // if (isIFrame == true)
-        // {
-        //     Debug.Log("iframe working correctly");
-        //     iFrameCD -= Time.deltaTime;
-        //     if (iFrameCD <= 0)
-        //         isIFrame = false;
-        // }
-        // else
-        // {   
-        //     CheckCollisionWithEnemy();
-        // }
+                Vector2 shootDir;
+
+                if (!noEnemyNearby && nearestEnemy != Vector2.zero)
+                {
+                    shootDir = (nearestEnemy - (Vector2)firePoint.position).normalized;
+                }
+                else
+                {
+                    shootDir = Vector2.right; // hoặc Vector2.down, Vector2.up...
+                }
+
+                ShootAutoBullet(shootDir);
+            }
+        }
+
+
+        if (isIFrame == true)
+        {
+            //Debug.Log("iframe working correctly");
+            iFrameCD -= Time.deltaTime;
+            if (iFrameCD <= 0)
+                isIFrame = false;
+        }
+        else
+        {
+            CheckCollisionWithEnemy();
+        }
 
         // takeDmgEveryXFrame++;
         // if (takeDmgEveryXFrame > takeDmgEveryXFrameCD)
@@ -189,7 +239,7 @@ public class Character : MonoBehaviour
         //     takeDmgEveryXFrame = 0;
         // }
         // _rb.MovePosition(_rb.position + moveInput * _speed * Time.fixedDeltaTime);
-        _rb.linearVelocity = moveInput * _speed;
+        _rb.linearVelocity = moveInput * Speed;
 
     }
 
@@ -223,7 +273,7 @@ public class Character : MonoBehaviour
             //Debug.Log("enemy distance: " + distance);
             if (distance <= hurtBoxRadius && spriteRender != null)
             {
-                Debug.Log("Enemy in hurtBox");
+                //Debug.Log("Enemy in hurtBox");
                 ModifyHealth(enemy.Damage);
 
                 //PushPlayer();
@@ -272,31 +322,41 @@ public class Character : MonoBehaviour
     {
         exp += amount;
 
-        Debug.Log($"Gained {amount} EXP. Total EXP: {exp}");
-        UpdateGUIforExpBar(exp, expToNextLevel);
+        //Debug.Log($"Gained {amount} EXP. Total EXP: {exp}");
+
+        //Debug.Log("exp from last level" + expFromLastLevel);
         // Nếu đủ exp thì lên cấp
         if (exp >= expToNextLevel)
         {
             LevelUp();
+
             OnLevelChanged?.Invoke();
         }
+        UpdateGUIforExpBar(exp, expToNextLevel);
     }
 
     public void LevelUp()
     {
         Level++;
+
         expFromLastLevel = expToNextLevel;
         expToNextLevel = Helper.GetExpRequired(Level);
-
-        Debug.Log($"Level Up! New Level: {Level}");
-        //EXP bar UI
+        OnLevelChanged?.Invoke();
+        // Debug.Log($"Level Up! New Level: {Level}");
+        if (!buffUIActive)
+        {
+            RandomSystem.instance.RandomBuff();
+            buffUIActive = true;
+        }
+        Debug.Log("Health is: " + _health);
+        Debug.Log("Bullet Speed is: " + CurrentBulletSpeed);
     }
 
     public void ModifyHealth(int amount)
     {
         //if (isIFrame) return;
         _curHealth = Mathf.Clamp(_curHealth - amount, 0, _health);
-        Debug.Log("Player get dmg: " + amount);
+        //Debug.Log("Player get dmg: " + amount);
         UpdateGUIforHealthBar(_curHealth, _health);
         if (_curHealth <= 0) KillPlayer();
 
@@ -318,16 +378,23 @@ public class Character : MonoBehaviour
     {
         if (expBar != null)
         {
-            expBar.value = curValue / maxValue;
+            expBar.value = (curValue - expFromLastLevel) / (maxValue - expFromLastLevel);
+
         }
+    }
+
+    //store unlocked buff for UI (not done)
+    public static bool IsUnlocked(string buffID)
+    {
+        return instance.unlockedBuffs.Contains(buffID);
     }
 
     public void KillPlayer()
     {
         Destroy(gameObject);
-        // #if UNITY_EDITOR
-        //         UnityEditor.EditorApplication.isPlaying = false;
-        // #endif
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
     }
 
     IEnumerator FlashWhenHit(SpriteRenderer renderer, Color original, Color flash, float duration)
@@ -342,12 +409,137 @@ public class Character : MonoBehaviour
         StartCoroutine(FlashWhenHit(spriteRender, originColor, flashColor, flashTime));
     }
 
+    //shoot logic
     void ShootBullet(Vector2 direction)
     {
-        GameObject bulletGO = Instantiate(bulletPF, firePoint.position, Quaternion.identity, bulletHolder.transform);
+
+        StartCoroutine(ShootCombined(direction));
+    }
+
+    IEnumerator ShootCombined(Vector2 direction)
+    {
+        for (int seq = 0; seq < bulletPerShoot; seq++)
+        {
+            // Tính toán và bắn các viên xoè (spread)
+            int spreadCount = bulletPerShootSpread;
+            float totalSpreadAngle = spreadAngle;
+            float angleStep = (spreadCount > 1) ? totalSpreadAngle / (spreadCount - 1) : 0f;
+            float startAngle = -totalSpreadAngle / 2f;
+
+            for (int i = 0; i < spreadCount; i++)
+            {
+                float currentAngle = startAngle + i * angleStep;
+                Vector2 spreadDirection = Quaternion.Euler(0, 0, currentAngle) * direction;
+                ShootSingleBullet(spreadDirection.normalized);
+            }
+
+            if (seq < bulletPerShoot - 1)
+            {
+                yield return new WaitForSeconds(multiShootDelayTime);
+            }
+        }
+    }
+
+    void ShootSingleBullet(Vector2 direction)
+    {
+        if (isFireBulletOn)
+        {
+            ShootFireBullet(direction);
+        }
+        else
+        {
+            ShootNormalBullet(direction);
+        }
+    }
+
+    void ShootNormalBullet(Vector2 direction)
+    {
+
+        GameObject bulletGO = FactoryPattern.BulletFactory.CreateBullet
+        (
+        "normal",
+        firePoint.position,
+        Quaternion.identity,
+        bulletHolder.transform
+        );
+
+
         Bullet bullet = bulletGO.GetComponent<Bullet>();
+
         bullet.MovementDirection = direction;
 
+        bullet.bulletSpeed = CurrentBulletSpeed;
+        bullet.bulletDmg = CurrentBulletDmg;
+
+        // Debug.Log("Current bullet speed: " + CurrentBulletSpeed);
+        // Debug.Log("Current bullet dmg: " + CurrentBulletDmg);
+
+        RegisterBulletToSpatialGroup(bullet);
+    }
+
+    void ShootFireBullet(Vector2 direction)
+    {
+        GameObject bulletGO = FactoryPattern.BulletFactory.CreateBullet
+        (
+        "fire",
+        firePoint.position,
+        Quaternion.identity,
+        bulletHolder.transform
+        );
+
+        FireBullet fireBullet = bulletGO.GetComponent<FireBullet>();
+
+        fireBullet.MovementDirection = direction;
+
+        fireBullet.burnDmg = burnDmg;
+
+        fireBullet.burnTime = burnTime;
+
+        RegisterBulletToSpatialGroup(fireBullet);
+    }
+
+
+    void ShootAutoBullet(Vector2 direction)
+    {
+        switch (autoBulletType)
+        {
+            case "ice":
+                ShootIceSpell(direction);
+                break;
+            case "fire":
+                ShootFireBullet(direction);
+                break;
+            default:
+                ShootNormalBullet(direction);
+                break;
+        }
+    }
+
+
+    void ShootIceSpell(Vector2 direction)
+    {
+        GameObject bulletGO = FactoryPattern.BulletFactory.CreateBullet
+        (
+        "ice",
+        firePoint.position,
+        Quaternion.identity,
+        bulletHolder.transform
+        );
+
+        IceSpell iceSpell = bulletGO.GetComponent<IceSpell>();
+
+        iceSpell.MovementDirection = direction;
+
+        iceSpell.slowDownNumber = iceSlowNumber;
+
+        iceSpell.slowDuration = iceSlowTime;
+
+        RegisterBulletToSpatialGroup(iceSpell);
+    }
+
+
+    void RegisterBulletToSpatialGroup(Bullet bullet)
+    {
         int group = GameController.instance.GetSpatialGroupStatic(bullet.transform.position.x, bullet.transform.position.y);
         if (!GameController.instance.bulletSpatialGroups.ContainsKey(group))
         {
@@ -355,6 +547,8 @@ public class Character : MonoBehaviour
         }
         GameController.instance.bulletSpatialGroups[group].Add(bullet); // Add to HashSet
     }
+
+
 
     void OnDrawGizmosSelected()
     {
@@ -368,7 +562,21 @@ public class Character : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, hurtBoxRadius);
 
         Gizmos.color = Color.magenta;
-        Gizmos.DrawWireSphere(transform.position, collectRadious);
+        Gizmos.DrawWireSphere(transform.position, CollectRadious);
+
+        if (GameController.instance != null)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(transform.position, GameController.instance.bulletMaxDistance);
+        }
+        else
+        {
+            Debug.LogWarning("Don't found gamecontroller");
+        }
+        // Gizmos.color = Color.yellow;
+        // Gizmos.DrawWireSphere(transform.position, bulletDistance);
+
+
     }
 
 }

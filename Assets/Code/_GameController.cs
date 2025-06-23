@@ -73,6 +73,7 @@ public class GameController : MonoBehaviour
     //exp 
     public GameObject experiencePoint;
     public Transform experiencePointHolder;
+    public float bulletMaxDistance;
 
     //get spatial group static 
     int Cell_Per_Row_Static;
@@ -452,7 +453,7 @@ public class GameController : MonoBehaviour
 
     public void DropExpPoint(Vector3 position, int amount)
     {
-        Debug.Log("EXP DROP IN GAME CONTROLLER WORKING TOO");
+        //Debug.Log("EXP DROP IN GAME CONTROLLER WORKING TOO");
         GameObject expGO = Instantiate(experiencePoint, position, Quaternion.identity);
         expGO.transform.parent = experiencePointHolder;
     }

@@ -7,7 +7,7 @@ public class Bullet : MonoBehaviour
 {
     public bool spinBullet;
     int spatialGroup = 0;
-
+    public static Bullet instance;
     Vector2 movementDirection = Vector2.zero;
     public Vector2 MovementDirection
     {
@@ -15,11 +15,11 @@ public class Bullet : MonoBehaviour
         set { movementDirection = value; }
     }
 
-    [SerializeField] public int bulletDmg;
-    [SerializeField] public float bulletSpeed;
-    [SerializeField] public float bulletHitBoxRadius;
+    public float bulletDmg;
+    public float bulletSpeed;
+    public float bulletHitBoxRadius;
 
-    [SerializeField] public Transform modelTransfrom;
+    public Transform modelTransfrom;
 
     List<int> surroundingSpatialGroup = new();
 
@@ -37,6 +37,11 @@ public class Bullet : MonoBehaviour
     public event BulletContactAction OnContactEnemy;
     Enemy enemy;
     bool isDestroy = false;
+    void Awake()
+    {
+        instance = this;
+    }
+
     void Start()
     {
         //get spatial group
@@ -50,6 +55,14 @@ public class Bullet : MonoBehaviour
             Debug.LogWarning($"[Bullet] Spawned with invalid spatial group: {spatialGroup}, pos: {transform.position}");
         }
 
+        // Debug.Log($"[Bullet] Spawned at {transform.position}, SpatialGroup: {spatialGroup}");
+        // Debug.Log($"BulletMaxDistance: {GameController.instance.bulletMaxDistance}, Distance from player: {Vector2.Distance(transform.position, GameController.instance.character.position)}");
+        // if (modelTransfrom == null)
+        // {
+        //     Debug.LogWarning("Bullet modelTransform is NULL! Auto-assigning transform.");
+        //     modelTransfrom = transform;
+        // }
+
         OnBulletSpawn?.Invoke();
     }
 
@@ -62,16 +75,34 @@ public class Bullet : MonoBehaviour
     {
         transform.position += Helper.V2toV3(movementDirection) * Time.deltaTime * bulletSpeed;
         // caculate the angle to shoot bullet
-        float angle = Mathf.Atan2(movementDirection.y, movementDirection.x) * Mathf.Rad2Deg - 90f;
-        //set rotation to transfrom
-        if (!spinBullet) modelTransfrom.rotation = Quaternion.Euler(0, 0, angle);
-        else modelTransfrom.Rotate(0, 0, 10f);
+
+        if (!spinBullet && modelTransfrom != null)
+        {
+            float angle = Mathf.Atan2(movementDirection.y, movementDirection.x) * Mathf.Rad2Deg;
+            modelTransfrom.rotation = Quaternion.Euler(0, 0, angle);
+        }
+        else if (modelTransfrom != null)
+        {
+            modelTransfrom.Rotate(0, 0, 10f); // chỉ dùng khi muốn xoay liên tục như viên đạn lốc xoáy
+        }
+
+        if (modelTransfrom == transform)
+        {
+            Debug.LogWarning("modelTransfrom is root transform, consider using a child!");
+        }
 
         //update spatial group 
         int newSpatialGroup = GameController.instance.GetSpatialGroupStatic(transform.position.x, transform.position.y);
+
+        if (newSpatialGroup < 0)
+        {
+            Debug.LogWarning($"[Bullet] Invalid spatial group: {newSpatialGroup} at position {transform.position}");
+            DestroyBullet(); // hoặc xử lý hợp lý, tránh gây lỗi
+            return;
+        }
+
         if (newSpatialGroup != spatialGroup)
         {
-            // Safely remove from the old group
             if (GameController.instance.bulletSpatialGroups.ContainsKey(spatialGroup))
             {
                 GameController.instance.bulletSpatialGroups[spatialGroup].Remove(this);
@@ -79,16 +110,13 @@ public class Bullet : MonoBehaviour
 
             spatialGroup = newSpatialGroup;
 
-            // Safely add to the new group
-            if (GameController.instance.bulletSpatialGroups.ContainsKey(spatialGroup))
+            if (!GameController.instance.bulletSpatialGroups.ContainsKey(spatialGroup))
             {
-                GameController.instance.bulletSpatialGroups[spatialGroup].Add(this);
-                surroundingSpatialGroup = Helper.GetExpandedSpatialGroups(spatialGroup, movementDirection);
+                GameController.instance.bulletSpatialGroups[spatialGroup] = new HashSet<Bullet>();
             }
-            else
-            {
-                Debug.LogWarning($"[Bullet] Invalid spatial group: {spatialGroup} at position {transform.position}");
-            }
+
+            GameController.instance.bulletSpatialGroups[spatialGroup].Add(this);
+            surroundingSpatialGroup = Helper.GetExpandedSpatialGroups(spatialGroup, movementDirection);
         }
 
         //CheckCollisionWithEnemy();
@@ -129,7 +157,7 @@ public class Bullet : MonoBehaviour
     //     }
     // }
 
-    void OnTriggerEnter2D(Collider2D collision)
+    protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("enemy")) // đảm bảo enemy có tag là "enemy"
         {
@@ -159,27 +187,28 @@ public class Bullet : MonoBehaviour
 
     void DestroyIfOutOfBound()
     {
-        if
-        (
-        transform.position.x < GameController.instance.MapHeightMin ||
-        transform.position.x > GameController.instance.MapHeightMax ||
-        transform.position.y < GameController.instance.MapHeightMin ||
-        transform.position.y > GameController.instance.MapHeightMax ||
-        Vector2.Distance(transform.position, GameController.instance.character.position) > 20f
-        )
+        Vector2 pos = transform.position;
+        Vector2 playerPos = GameController.instance.character.position;
+
+        bool outOfMap =
+        pos.x < GameController.instance.MapWidthMin ||
+        pos.x > GameController.instance.MapWidthMax ||
+        pos.y < GameController.instance.MapHeightMin ||
+        pos.y > GameController.instance.MapHeightMax;
+        bool tooFarFromPlayer = Vector2.Distance(pos, playerPos) > GameController.instance.bulletMaxDistance;
+
+        if (outOfMap || tooFarFromPlayer)
         {
             DestroyBullet();
         }
     }
 
-    void DestroyBullet()
+    public void DestroyBullet()
     {
         if (isDestroy) return;
 
         //trigger when bullet destroy
         OnDestroy?.Invoke(transform);
-
-        //Weaponary. 
 
         GameController.instance.bulletSpatialGroups[spatialGroup].Remove(this);
         Destroy(gameObject);
