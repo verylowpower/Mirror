@@ -21,9 +21,9 @@ public class Experience : MonoBehaviour
 
         float distance = Vector2.Distance(transform.position, player.position);
 
-        if (distance < Character.instance.collectRadious)
+        if (distance < Character.instance.CollectRadious)
         {
-            Debug.Log("EXP SCRIPT WORKING FINE");
+            //Debug.Log("EXP SCRIPT WORKING FINE");
             transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed);
         }
     }
