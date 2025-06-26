@@ -138,5 +138,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   expAmount: 1
-  moveSpeed: 0.1
+  moveSpeed: 0.2
   player: {fileID: 0}

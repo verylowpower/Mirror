@@ -10,9 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1728628323106610898}
   - component: {fileID: 7473473553290258956}
-  - component: {fileID: 1275491552090265855}
-  - component: {fileID: 9105075700259850823}
-  - component: {fileID: 4211153218070639921}
   - component: {fileID: 4978881550584770520}
   - component: {fileID: 2044554667826913382}
   - component: {fileID: -5223753828125647118}
@@ -35,7 +32,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.73, y: 3.2, z: 0}
-  m_LocalScale: {x: 0.8031993, y: 0.8031993, z: 0.8031993}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -95,86 +92,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!195 &1275491552090265855
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2322608764563794003}
-  m_Enabled: 0
-  m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 30
-  m_Acceleration: 10
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 0
-  m_AutoRepath: 1
-  m_Height: 1
-  m_BaseOffset: 0.5
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
---- !u!114 &9105075700259850823
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2322608764563794003}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0038c16c34866b4f9e25c9c0dc0f7e6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Graph: {fileID: 4736556364564493531, guid: 3fc3c7301b7a77048be942ba83dfddd9, type: 2}
-  m_BlackboardVariableOverridesList:
-  - rid: 5676876879722709029
-  - rid: 3464908615813955719
-  - rid: 3464908691320078411
-  m_IsInitialised: 0
-  m_IsStarted: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: 3464908615813955719
-      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 9599394494474238469
-          m_Value1: 12316385437930698266
-        Name: Target
-        m_Value: {fileID: 0}
-    - rid: 3464908691320078411
-      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 10466135811474443426
-          m_Value1: 16308694207749334625
-        Name: enemySpeed
-        m_Value: 3
-    - rid: 5676876879722709029
-      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 1
-          m_Value1: 0
-        Name: Self
-        m_Value: {fileID: 2322608764563794003}
---- !u!114 &4211153218070639921
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2322608764563794003}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e39f6090724e4a4a8aadeb042afa2bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!50 &4978881550584770520
 Rigidbody2D:
   serializedVersion: 5
@@ -236,8 +153,8 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.0022058636, y: 0}
-  m_Radius: 0.8931983
+  m_Offset: {x: 0.0077287355, y: -0.006504158}
+  m_Radius: 0.7650821
 --- !u!114 &-5223753828125647118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -262,13 +179,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb04a95e88e142d479813b955ca8456c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 2
+  movementSpeed: 1
   rb: {fileID: 4978881550584770520}
   spatialGroup: 0
   spriteRender: {fileID: 7473473553290258956}
   flashColor: {r: 1, g: 1, b: 1, a: 1}
   slowColor: {r: 0.60275006, g: 0.60275006, b: 0.990566, a: 1}
-  health: 20
+  health: 30
   damage: 1
 --- !u!61 &6853659762500492370
 BoxCollider2D:
@@ -304,7 +221,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.013373375, y: 0}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -314,5 +231,5 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.2407222, y: 1.2674692}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
