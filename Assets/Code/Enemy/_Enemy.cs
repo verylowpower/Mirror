@@ -67,19 +67,28 @@ public class Enemy : MonoBehaviour
     {
         if (rb == null) return;
 
-        Vector2 newPosition = rb.position + (Vector2)targetDirection * movementSpeed * Time.fixedDeltaTime;
-        rb.MovePosition(newPosition);
-
-        PushEnemyNearby();
-
         int newSpatialGroup = GameController.instance.GetSpatialGroup(transform.position.x, transform.position.y);
         if (newSpatialGroup != spatialGroup)
         {
+            // Add trước khi remove
+            if (!GameController.instance.enemySpatialGroups.ContainsKey(newSpatialGroup))
+            {
+                GameController.instance.enemySpatialGroups[newSpatialGroup] = new();
+            }
+
+            GameController.instance.enemySpatialGroups[newSpatialGroup].Add(this);
             GameController.instance.enemySpatialGroups[spatialGroup].Remove(this);
+
+            Debug.Log($"Enemy {BatchID} moved to group {newSpatialGroup} at position {transform.position}");
+
             spatialGroup = newSpatialGroup;
-            GameController.instance.enemySpatialGroups[spatialGroup].Add(this);
         }
+
+        Vector2 newPosition = rb.position + (Vector2)targetDirection * movementSpeed * Time.fixedDeltaTime;
+        rb.MovePosition(newPosition);
+        PushEnemyNearby();
     }
+
 
 
     private void PushEnemyNearby()

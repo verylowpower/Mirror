@@ -233,7 +233,7 @@ public class GameController : MonoBehaviour
         mapHeightMin = -spatialGroupHeight / 2;
         mapHeightMax = spatialGroupHeight / 2;
 
-      
+
     }
 
     void FixedUpdate()

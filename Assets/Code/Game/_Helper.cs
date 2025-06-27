@@ -74,6 +74,41 @@ public class Helper : MonoBehaviour
         return expandedSpatialGroups;
     }
 
+    // public static List<int> GetExpandedSpatialGroups(int spatialGroup, int numberOfPartitions = -1)
+    // {
+    //     List<int> expandedSpatialGroups = new();
+
+    //     if (numberOfPartitions == -1)
+    //         numberOfPartitions = GameController.instance.NumberOfPartitions;
+
+    //     if (numberOfPartitions <= 0)
+    //         return expandedSpatialGroups;
+
+    //     int gridSize = (int)Mathf.Sqrt(numberOfPartitions); // ví dụ: 25 group => 5x5
+    //     int row = spatialGroup / gridSize;
+    //     int col = spatialGroup % gridSize;
+
+    //     // Lặp qua 3x3 khu vực quanh group hiện tại (kể cả chính nó)
+    //     for (int dy = -1; dy <= 1; dy++)
+    //     {
+    //         for (int dx = -1; dx <= 1; dx++)
+    //         {
+    //             int newRow = row + dy;
+    //             int newCol = col + dx;
+
+    //             // Nếu vẫn nằm trong bản đồ
+    //             if (newRow >= 0 && newRow < gridSize && newCol >= 0 && newCol < gridSize)
+    //             {
+    //                 int newGroup = newRow * gridSize + newCol;
+    //                 expandedSpatialGroups.Add(newGroup);
+    //             }
+    //         }
+    //     }
+
+    //     return expandedSpatialGroups;
+    // }
+
+
     //take spatial around enemy movement direction
     public static List<int> GetExpandedSpatialGroups(int spatialGroup, Vector2 direction)
     {
@@ -106,6 +141,36 @@ public class Helper : MonoBehaviour
 
         return expandedSpatialGroups;
     }
+
+    // public static List<int> GetExpandedSpatialGroups(int spatialGroup, Vector2 direction)
+    // {
+    //     List<int> expandedSpatialGroups = new List<int>() { spatialGroup };
+
+    //     int gridSize = Mathf.RoundToInt(Mathf.Sqrt(GameController.instance.NumberOfPartitions));
+
+    //     bool goingRight = direction.x > 0;
+    //     bool goingTop = direction.y > 0;
+
+    //     bool isLeft = spatialGroup % gridSize == 0;
+    //     bool isRight = spatialGroup % gridSize == gridSize - 1;
+    //     bool isTop = spatialGroup / gridSize == gridSize - 1;
+    //     bool isBottom = spatialGroup / gridSize == 0;
+
+    //     // Sides
+    //     if (!isTop && goingTop) expandedSpatialGroups.Add(spatialGroup + gridSize);
+    //     if (!isBottom && !goingTop) expandedSpatialGroups.Add(spatialGroup - gridSize);
+    //     if (!isLeft && !goingRight) expandedSpatialGroups.Add(spatialGroup - 1);
+    //     if (!isRight && goingRight) expandedSpatialGroups.Add(spatialGroup + 1);
+
+    //     // Diagonals
+    //     if (!isTop && !isRight && (goingTop || goingRight)) expandedSpatialGroups.Add(spatialGroup + gridSize + 1); // top right
+    //     if (!isTop && !isLeft && (goingTop || !goingRight)) expandedSpatialGroups.Add(spatialGroup + gridSize - 1); // top left
+    //     if (!isBottom && !isRight && (!goingTop || goingRight)) expandedSpatialGroups.Add(spatialGroup - gridSize + 1); // bottom right
+    //     if (!isBottom && !isLeft && (!goingTop || !goingRight)) expandedSpatialGroups.Add(spatialGroup - gridSize - 1); // bottom left
+
+    //     return expandedSpatialGroups;
+    // }
+
 
     public static List<Enemy> GetAllEnemySpatialGroups(List<int> spatialGroups)
     {
@@ -146,7 +211,7 @@ public class Helper : MonoBehaviour
             6870, 7550, 8290, 9100, 10000, 11000, 12400, 14000, 15800, 17800, // 31-40
             20000, 22500, 25300, 28500, 32000, 35700, 39600, 44000, 48600, 53500, // 41-50
         };
-        
+
         if (currentLevel < 0) return 0;
         if (currentLevel >= expChart.Count)
             return expChart.Last(); // hoặc throw error / scale tiếp

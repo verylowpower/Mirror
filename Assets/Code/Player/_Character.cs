@@ -51,8 +51,8 @@ public class Character : MonoBehaviour
     // [SerializeField] int takeDmgEveryXFrameCD = 1;
     [SerializeField] float hurtBoxRadius = 0.1f;
     [SerializeField] float iFrame;
-    [SerializeField] float iFrameCD;
-    public bool isIFrame;
+    [SerializeField] float iFrameCD = 0f;
+    public bool isIFrame = false;
     public bool isKilled = false;
 
     [Header("Shoot")]
@@ -217,6 +217,9 @@ public class Character : MonoBehaviour
         }
 
 
+
+        CheckCollisionWithEnemy();
+
         if (isIFrame)
         {
             iFrameCD -= Time.deltaTime;
@@ -225,10 +228,7 @@ public class Character : MonoBehaviour
                 isIFrame = false;
             }
         }
-        else
-        {
-            CheckCollisionWithEnemy();
-        }
+
 
         // CheckCollisionWithEnemy();
         // takeDmgEveryXFrame++;
@@ -260,10 +260,22 @@ public class Character : MonoBehaviour
 
     public void CheckCollisionWithEnemy()
     {
-        //Debug.Log("Calling CheckCollisionWithEnemy"); 
-        List<int> surroundingSpatialGroup = Helper.GetExpandedSpatialGroups(spatialGroup);
+        spatialGroup = GameController.instance.GetSpatialGroup(transform.position.x, transform.position.y);
+        //Debug.Log("Calling CheckCollisionWithEnemy");
+        List<int> surroundingSpatialGroup = Helper.GetExpandedSpatialGroupsV2(spatialGroup, 1);
         List<Enemy> surroudingEnemy = Helper.GetAllEnemySpatialGroups(surroundingSpatialGroup);
+
+        //Debug.Log("Total group nearby: " + surroundingSpatialGroup.Count);
+        //Debug.Log("ID group nearby: " + string.Join(", ", surroundingSpatialGroup));
         //Debug.Log("Total enemies nearby: " + surroudingEnemy.Count);
+
+        // foreach (var groupId in surroundingSpatialGroup)
+        // {
+        //     if (GameController.instance.enemySpatialGroups.ContainsKey(groupId))
+        //     {
+        //         Debug.Log($"Group {groupId} has {GameController.instance.enemySpatialGroups[groupId].Count} enemies");
+        //     }
+        // }
         foreach (Enemy enemy in surroudingEnemy)
         {
             if (enemy == null) continue;
@@ -271,13 +283,45 @@ public class Character : MonoBehaviour
             float distance = Vector2.Distance(transform.position, enemy.transform.position);
             if (distance < hurtBoxRadius)
             {
-                //Debug.Log("Hallo");
-                // Take damage
-                ModifyHealth(enemy.Damage);
+                //Debug.Log($"[ENTER HURTBOX] Enemy: {enemy.name} | BatchID: {enemy.BatchID} | Distance: {distance:F3} | Time: {Time.time:F2}");
+
+                if (!isIFrame)
+                {
+                   // Debug.Log($"[DEAL DAMAGE] Enemy: {enemy.name} | BatchID: {enemy.BatchID} | Time: {Time.time:F2}");
+                    ModifyHealth(enemy.Damage);
+                }
+                else
+                {
+                   // Debug.Log($"[SKIP DMG - IFRAME] Enemy: {enemy.name} | BatchID: {enemy.BatchID} | iFrameCD: {iFrameCD:F2}");
+                }
 
                 break;
             }
+
         }
+
+        // List<int> nearbyGroups = Helper.GetExpandedSpatialGroups(spatialGroup);
+        // List<Enemy> nearbyEnemies = Helper.GetAllEnemySpatialGroups(nearbyGroups);
+
+        // float sqrHurtBoxRadius = hurtBoxRadius * hurtBoxRadius;
+
+        // Vector2 playerPos = transform.position;
+
+        // foreach (Enemy enemy in nearbyEnemies)
+        // {
+        //     if (enemy == null) continue;
+
+        //     Vector2 enemyPos = enemy.transform.position;
+        //     float sqrDist = (enemyPos - playerPos).sqrMagnitude;
+
+        //     if (sqrDist <= sqrHurtBoxRadius)
+        //     {
+        //         Debug.Log("Is dealing Dmg" + enemy.BatchID);
+        //         ModifyHealth(enemy.Damage);
+        //         break;
+        //     }
+        // }
+
     }
 
     void CheckNearestEnemyDirection()
@@ -285,19 +329,16 @@ public class Character : MonoBehaviour
         Vector2 closestPosition = Vector2.zero;
         maxClosestDistance = 10f;
         bool foundTarget = false;
-
         List<int> spatialGroupToSearch = new List<int>() { spatialGroup };
         spatialGroupToSearch = Helper.GetExpandedSpatialGroupsV2(spatialGroup, Mathf.CeilToInt(enemyDetectRadius));
         //get all enemy 
         List<Enemy> nearbyEnemy = Helper.GetAllEnemySpatialGroups(spatialGroupToSearch);
         //Debug.Log("Enemy nearby: " + nearbyEnemy.Count);
-
         if (nearbyEnemy.Count == 0)
         {
             noEnemyNearby = true;
             return;
         }
-
         foreach (Enemy enemy in nearbyEnemy)
         {
             if (enemy == null) continue;
@@ -309,11 +350,9 @@ public class Character : MonoBehaviour
                 foundTarget = true;
             }
         }
-
         noEnemyNearby = !foundTarget;
         if (foundTarget)
             nearestEnemy = closestPosition;
-
     }
 
     public void ModifyExp(int amount)
@@ -563,14 +602,18 @@ public class Character : MonoBehaviour
         Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(transform.position, CollectRadious);
 
-        if (GameController.instance != null)
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(transform.position, GameController.instance.bulletMaxDistance);
-        }
+
+
+
+
+        //  if (GameController.instance != null)
+        // {
+        //     Gizmos.color = Color.yellow;
+        //     Gizmos.DrawWireSphere(transform.position, GameController.instance.bulletMaxDistance);
+        // }
         // else
         // {
-        //    // Debug.LogWarning("Don't found gamecontroller");
+        //      Debug.LogWarning("Don't found gamecontroller");
         // }
         // Gizmos.color = Color.yellow;
         // Gizmos.DrawWireSphere(transform.position, bulletDistance);
