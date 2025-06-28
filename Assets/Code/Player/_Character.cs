@@ -97,7 +97,7 @@ public class Character : MonoBehaviour
     float enemySearchTimer = 0f;
     float searchInterval = 0.2f;
 
-    [SerializeField] private float enemyDetectRadius = 1f;
+    [SerializeField] private float enemyDetectRadius = 20f;
     [SerializeField] private float maxClosestDistance;
     Vector2 nearestEnemy = Vector2.zero;
 
@@ -287,12 +287,12 @@ public class Character : MonoBehaviour
 
                 if (!isIFrame)
                 {
-                   // Debug.Log($"[DEAL DAMAGE] Enemy: {enemy.name} | BatchID: {enemy.BatchID} | Time: {Time.time:F2}");
+                    // Debug.Log($"[DEAL DAMAGE] Enemy: {enemy.name} | BatchID: {enemy.BatchID} | Time: {Time.time:F2}");
                     ModifyHealth(enemy.Damage);
                 }
                 else
                 {
-                   // Debug.Log($"[SKIP DMG - IFRAME] Enemy: {enemy.name} | BatchID: {enemy.BatchID} | iFrameCD: {iFrameCD:F2}");
+                    // Debug.Log($"[SKIP DMG - IFRAME] Enemy: {enemy.name} | BatchID: {enemy.BatchID} | iFrameCD: {iFrameCD:F2}");
                 }
 
                 break;
@@ -323,37 +323,60 @@ public class Character : MonoBehaviour
         // }
 
     }
-
     void CheckNearestEnemyDirection()
     {
+
+
         Vector2 closestPosition = Vector2.zero;
-        maxClosestDistance = 10f;
+        float closestDistance = maxClosestDistance;  // Dùng biến tạm, KHÔNG ghi đè maxClosestDistance toàn cục
+
         bool foundTarget = false;
-        List<int> spatialGroupToSearch = new List<int>() { spatialGroup };
-        spatialGroupToSearch = Helper.GetExpandedSpatialGroupsV2(spatialGroup, Mathf.CeilToInt(enemyDetectRadius));
-        //get all enemy 
+
+        // Lấy các spatial group mở rộng quanh player
+        List<int> spatialGroupToSearch = Helper.GetExpandedSpatialGroupsV2(spatialGroup, Mathf.CeilToInt(enemyDetectRadius));
+
+        // Debug số enemy trong từng group
+        foreach (var groupId in spatialGroupToSearch)
+        {
+            if (GameController.instance.enemySpatialGroups.ContainsKey(groupId))
+            {
+                Debug.Log($"[Group {groupId}] has {GameController.instance.enemySpatialGroups[groupId].Count} enemies");
+            }
+        }
+
+        // Lấy tất cả enemy trong các spatial group gần đó
         List<Enemy> nearbyEnemy = Helper.GetAllEnemySpatialGroups(spatialGroupToSearch);
-        //Debug.Log("Enemy nearby: " + nearbyEnemy.Count);
+        Debug.Log($"[Detect] Total enemies nearby: {nearbyEnemy.Count}");
+
         if (nearbyEnemy.Count == 0)
         {
             noEnemyNearby = true;
             return;
         }
+
         foreach (Enemy enemy in nearbyEnemy)
         {
-            if (enemy == null) continue;
+            if (enemy == null || !enemy.gameObject.activeInHierarchy) continue;
+
             float distance = Vector2.Distance(transform.position, enemy.transform.position);
-            if (distance < maxClosestDistance)
+            if (distance < closestDistance)
             {
-                maxClosestDistance = distance;
+                closestDistance = distance;
                 closestPosition = enemy.transform.position;
                 foundTarget = true;
+                Debug.DrawLine(firePoint.position, nearestEnemy, Color.yellow, 0.5f);
+                Debug.Log($"[Target Found] Enemy {enemy.BatchID} | Dist = {distance:F2}");
             }
         }
+
         noEnemyNearby = !foundTarget;
         if (foundTarget)
+        {
             nearestEnemy = closestPosition;
+            Debug.DrawLine(transform.position, closestPosition, Color.red, 0.5f); // Vẽ line debug
+        }
     }
+
 
     public void ModifyExp(int amount)
     {

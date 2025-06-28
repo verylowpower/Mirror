@@ -79,7 +79,7 @@ public class Enemy : MonoBehaviour
             GameController.instance.enemySpatialGroups[newSpatialGroup].Add(this);
             GameController.instance.enemySpatialGroups[spatialGroup].Remove(this);
 
-            Debug.Log($"Enemy {BatchID} moved to group {newSpatialGroup} at position {transform.position}");
+            //Debug.Log($"Enemy {BatchID} moved to group {newSpatialGroup} at position {transform.position}");
 
             spatialGroup = newSpatialGroup;
         }

@@ -7,34 +7,69 @@ using UnityEngine;
 //use to render spatial group
 public class Helper : MonoBehaviour
 {
-    public static List<int> GetExpandedSpatialGroupsV2(int spatialGroup, int radious = 1)
+    // public static List<int> GetExpandedSpatialGroupsV2(int spatialGroup, int radious = 1)
+    // {
+    //     List<int> expandedSpatialGroups = new(); //list to save parition
+    //     int widthRange = GameController.instance.SpatialGroupWidth;
+    //     int heightRange = GameController.instance.SpatialGroupHeight;
+    //     int numberOfPartition = GameController.instance.NumberOfPartitions;
+
+    //     //check each partition
+    //     for (int dx = -radious; dx <= radious; dx++)
+    //     {
+    //         for (int dy = -radious; dy <= radious; dy++)
+    //         {
+    //             int newGroup = spatialGroup + dx + dy * widthRange; //postion of new parition
+
+    //             //check if square inside map
+    //             bool isWithinWidth = newGroup % widthRange >= 0 && newGroup % widthRange < widthRange;
+    //             bool isWithinHeight = newGroup / heightRange >= 0 && newGroup / heightRange < heightRange;
+    //             bool isWithinBonds = isWithinHeight && isWithinWidth; //if width and height in map 
+
+    //             bool isWithinPartition = newGroup >= 0 && newGroup < numberOfPartition; //if partition !> map size
+
+    //             if (isWithinBonds && isWithinPartition)
+    //             {
+    //                 expandedSpatialGroups.Add(newGroup); //add to list
+    //             }
+    //         }
+    //     }
+    //     return expandedSpatialGroups.Distinct().ToList(); //remove duplicates
+    // }
+    public static List<int> GetExpandedSpatialGroupsV2(int spatialGroup, int radius = 1)
     {
-        List<int> expandedSpatialGroups = new(); //list to save parition
-        int widthRange = GameController.instance.SpatialGroupWidth;
-        int heightRange = GameController.instance.SpatialGroupHeight;
+        List<int> expandedSpatialGroups = new();
+
+        int width = GameController.instance.SpatialGroupWidth;
+        int height = GameController.instance.SpatialGroupHeight;
+        int cellPerRow = GameController.instance.Cell_Per_Row_Static;
+        int cellPerCol = GameController.instance.Cell_Per_Col_Static;
         int numberOfPartition = GameController.instance.NumberOfPartitions;
 
-        //check each partition
-        for (int dx = -radious; dx <= radious; dx++)
+        // Tính row và col hiện tại từ spatialGroup
+        int centerX = spatialGroup % cellPerRow;
+        int centerY = spatialGroup / cellPerRow;
+
+        for (int dx = -radius; dx <= radius; dx++)
         {
-            for (int dy = -radious; dy <= radious; dy++)
+            for (int dy = -radius; dy <= radius; dy++)
             {
-                int newGroup = spatialGroup + dx + dy * widthRange; //postion of new parition
+                int newX = centerX + dx;
+                int newY = centerY + dy;
 
-                //check if square inside map
-                bool isWithinWidth = newGroup % widthRange >= 0 && newGroup % widthRange < widthRange;
-                bool isWithinHeight = newGroup / heightRange >= 0 && newGroup / heightRange < heightRange;
-                bool isWithinBonds = isWithinHeight && isWithinWidth; //if width and height in map 
-
-                bool isWithinPartition = newGroup >= 0 && newGroup < numberOfPartition; //if partition !> map size
-
-                if (isWithinBonds && isWithinPartition)
+                // Kiểm tra trong giới hạn
+                if (newX >= 0 && newX < cellPerRow && newY >= 0 && newY < cellPerCol)
                 {
-                    expandedSpatialGroups.Add(newGroup); //add to list
+                    int newGroup = newY * cellPerRow + newX;
+                    if (newGroup >= 0 && newGroup < numberOfPartition)
+                    {
+                        expandedSpatialGroups.Add(newGroup);
+                    }
                 }
             }
         }
-        return expandedSpatialGroups.Distinct().ToList(); //remove duplicates
+
+        return expandedSpatialGroups;
     }
 
     public static List<int> GetExpandedSpatialGroups(int spatialGroup, int numberOfPartitions = -1)
