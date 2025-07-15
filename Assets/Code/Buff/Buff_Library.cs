@@ -128,19 +128,19 @@ public class BuffLibrary : MonoBehaviour
             Character.instance.burnTime += 3;
         }, "FB2");
 
-        //  Lightning Spell Buff 
-        AllBuffs["IS1"] = new Buff("IS1", "Ice Spell 1", "Using Ice Spell +1", dummyIcon, () =>
-        {
+        // //  Lightning Spell Buff 
+        // AllBuffs["LS1"] = new Buff("LS1", "Ice Spell 1", "Using Ice Spell +1", dummyIcon, () =>
+        // {
 
-        });
-        AllBuffs["IS2"] = new Buff("IS2", "Ice Spell 2", "Using Ice Spell +1", dummyIcon, () =>
-        {
+        // });
+        // AllBuffs["LS2"] = new Buff("LS2", "Ice Spell 2", "Using Ice Spell +1", dummyIcon, () =>
+        // {
 
-        }, "IS1");
-        AllBuffs["IS3"] = new Buff("IS3", "Ice Spell 3", "Using Ice Spell +1", dummyIcon, () =>
-        {
+        // }, "IS1");
+        // AllBuffs["LS3"] = new Buff("LS3", "Ice Spell 3", "Using Ice Spell +1", dummyIcon, () =>
+        // {
 
-        }, "IS2");
+        // }, "LS2");
 
         //  Ice Spell Buff 
         AllBuffs["IS1"] = new Buff("IS1", "Ice Spell 1", "Using Ice Spell +1", dummyIcon, () =>
@@ -161,33 +161,33 @@ public class BuffLibrary : MonoBehaviour
             Character.instance.iceSlowTime += 2f;
         }, "IS2");
 
-        //  Wind Spell Buff 
-        AllBuffs["WS1"] = new Buff("WS1", "Wind Spell 1", "Using Wind Spell +1", dummyIcon, () =>
-        {
+        // //  Wind Spell Buff 
+        // AllBuffs["WS1"] = new Buff("WS1", "Wind Spell 1", "Using Wind Spell +1", dummyIcon, () =>
+        // {
 
-        });
-        AllBuffs["WS2"] = new Buff("WS2", "Wind Spell 2", "Using Wind Spell +1", dummyIcon, () =>
-        {
+        // });
+        // AllBuffs["WS2"] = new Buff("WS2", "Wind Spell 2", "Using Wind Spell +1", dummyIcon, () =>
+        // {
 
-        }, "WS1");
-        AllBuffs["WS3"] = new Buff("WS3", "Wind Spell 3", "Using Wind Spell +1", dummyIcon, () =>
-        {
+        // }, "WS1");
+        // AllBuffs["WS3"] = new Buff("WS3", "Wind Spell 3", "Using Wind Spell +1", dummyIcon, () =>
+        // {
 
-        }, "WS2");
+        // }, "WS2");
 
-        //  Dark Spell Buff 
-        AllBuffs["DSR"] = new Buff("DS1", "Dark Spell 1", "Using Dark Spell +1", dummyIcon, () =>
-        {
+        // //  Dark Spell Buff 
+        // AllBuffs["DSR"] = new Buff("DS1", "Dark Spell 1", "Using Dark Spell +1", dummyIcon, () =>
+        // {
 
-        });
-        AllBuffs["DS2"] = new Buff("DS2", "Dark Spell 2", "Using Dark Spell +1", dummyIcon, () =>
-        {
+        // });
+        // AllBuffs["DS2"] = new Buff("DS2", "Dark Spell 2", "Using Dark Spell +1", dummyIcon, () =>
+        // {
 
-        }, "DS1");
-        AllBuffs["DS3"] = new Buff("DS3", "Dark Spell 3", "Using Dark Spell +1", dummyIcon, () =>
-        {
+        // }, "DS1");
+        // AllBuffs["DS3"] = new Buff("DS3", "Dark Spell 3", "Using Dark Spell +1", dummyIcon, () =>
+        // {
 
-        }, "DS2");
+        // }, "DS2");
 
     }
 

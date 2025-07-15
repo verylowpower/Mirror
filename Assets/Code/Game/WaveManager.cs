@@ -4,18 +4,23 @@ using TMPro;
 using UnityEngine;
 
 [System.Serializable]
+public class EnemySpawnInfo
+{
+    public GameObject prefab;
+    public int count;
+}
+
+[System.Serializable]
 public class WaveData
 {
-    public int enemyCount;
+    public List<EnemySpawnInfo> enemySpawnInfoList;
     public float spawnInterval = 0.5f;
-    public GameObject enemyPrefab;
 }
 
 public class WaveManager : MonoBehaviour
 {
     public static WaveManager instance;
-
-
+    
     [Header("Wave Settings")]
     public List<WaveData> waves;
     public Transform enemyHolder;
@@ -48,7 +53,13 @@ public class WaveManager : MonoBehaviour
 
             WaveData wave = waves[currentWaveIndex];
 
-            Debug.Log($"[Wave] Wave {currentWaveIndex + 1} starting with {wave.enemyCount} enemies.");
+            int totalEnemy = 0;
+            foreach (var info in wave.enemySpawnInfoList)
+            {
+                totalEnemy += info.count;
+            }
+
+            Debug.Log($"[Wave] Wave {currentWaveIndex + 1} starting with {totalEnemy} enemies.");
             StartCoroutine(SpawnEnemiesInWave(wave));
 
             yield return new WaitForSeconds(timeBetweenWaves);
@@ -57,19 +68,27 @@ public class WaveManager : MonoBehaviour
 
     IEnumerator SpawnEnemiesInWave(WaveData wave)
     {
-        for (int i = 0; i < wave.enemyCount; i++)
+        waveText.text = $"Wave {currentWaveIndex + 1}";
+
+        foreach (var info in wave.enemySpawnInfoList)
         {
-            waveText.text = $"Wave {currentWaveIndex + 1}";
-            SpawnEnemy(wave.enemyPrefab);
-            yield return new WaitForSeconds(wave.spawnInterval);
+            for (int i = 0; i < info.count; i++)
+            {
+                GameController.instance.SpawnEnemy(info.prefab);
+                yield return new WaitForSeconds(wave.spawnInterval);
+            }
         }
     }
 
-    void SpawnEnemy(GameObject enemyPrefab)
-    {
-        GameController.instance.SpawnEnemy(enemyPrefab);
+    // void SpawnEnemy(List<GameObject> enemyPrefabs)
+    // {
+    //     if (enemyPrefabs == null || enemyPrefabs.Count == 0) return;
 
-    }
+    //     int index = Random.Range(0, enemyPrefabs.Count);
+    //     GameObject prefab = enemyPrefabs[index];
+
+    //     GameController.instance.SpawnEnemy(prefab);
+    // }
 
     public void ResetWaves()
     {
@@ -83,6 +102,4 @@ public class WaveManager : MonoBehaviour
 
         StartCoroutine(WaveLoop());
     }
-
-
 }

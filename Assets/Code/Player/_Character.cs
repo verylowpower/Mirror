@@ -340,13 +340,13 @@ public class Character : MonoBehaviour
         {
             if (GameController.instance.enemySpatialGroups.ContainsKey(groupId))
             {
-                Debug.Log($"[Group {groupId}] has {GameController.instance.enemySpatialGroups[groupId].Count} enemies");
+                // Debug.Log($"[Group {groupId}] has {GameController.instance.enemySpatialGroups[groupId].Count} enemies");
             }
         }
 
         // Lấy tất cả enemy trong các spatial group gần đó
         List<Enemy> nearbyEnemy = Helper.GetAllEnemySpatialGroups(spatialGroupToSearch);
-        Debug.Log($"[Detect] Total enemies nearby: {nearbyEnemy.Count}");
+        // Debug.Log($"[Detect] Total enemies nearby: {nearbyEnemy.Count}");
 
         if (nearbyEnemy.Count == 0)
         {
@@ -365,7 +365,7 @@ public class Character : MonoBehaviour
                 closestPosition = enemy.transform.position;
                 foundTarget = true;
                 Debug.DrawLine(firePoint.position, nearestEnemy, Color.yellow, 0.5f);
-                Debug.Log($"[Target Found] Enemy {enemy.BatchID} | Dist = {distance:F2}");
+                // Debug.Log($"[Target Found] Enemy {enemy.BatchID} | Dist = {distance:F2}");
             }
         }
 

@@ -31,6 +31,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private SpriteRenderer spriteRender;
     [SerializeField] private Color flashColor = Color.white;
     [SerializeField] private Color slowColor = Color.blue;
+    [SerializeField] private int expDropAmount;
     private Color originColor;
     [SerializeField] float health = 10;
     [SerializeField] int damage = 5;
@@ -40,7 +41,11 @@ public class Enemy : MonoBehaviour
         get { return damage; }
         set { damage = value; }
     }
-
+    private FacePlayer facePlayer;
+    private void Awake()
+    {
+        facePlayer = GetComponent<FacePlayer>();
+    }
     void Start()
     {
         instance = this;
@@ -49,7 +54,6 @@ public class Enemy : MonoBehaviour
         {
             originColor = spriteRender.color;
         }
-
     }
 
     void FixedUpdate()
@@ -61,6 +65,8 @@ public class Enemy : MonoBehaviour
     {
         Vector3 targetPosition = GameController.instance.character.position;
         targetDirection = (targetPosition - transform.position).normalized;
+
+        facePlayer?.FaceTowardsPlayer();
     }
 
     public void RunLightLogic()
@@ -84,8 +90,10 @@ public class Enemy : MonoBehaviour
             spatialGroup = newSpatialGroup;
         }
 
+        // transform.LookAt((Vector2)targetDirection);
         Vector2 newPosition = rb.position + (Vector2)targetDirection * movementSpeed * Time.fixedDeltaTime;
         rb.MovePosition(newPosition);
+
         PushEnemyNearby();
     }
 
@@ -153,7 +161,7 @@ public class Enemy : MonoBehaviour
         // if (Random.Range(0f, 1f) < 0.5f)
         // {
         //Debug.Log("EXP DROP WHEN KILL WORKING");
-        GameController.instance.DropExpPoint(transform.position, 1);
+        GameController.instance.DropExpPoint(transform.position, expDropAmount);
 
         //Instantiate(expPrefab, transform.position, Quaternion.identity);
         // }

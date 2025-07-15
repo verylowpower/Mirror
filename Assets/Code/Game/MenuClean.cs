@@ -5,7 +5,6 @@ public class MenuSceneCleaner : MonoBehaviour
 {
     void Awake()
     {
-        // Nếu đã có 1 EventSystem rồi (ví dụ từ GameScene)
         if (EventSystem.current != null)
         {
             var allES = FindObjectsByType<EventSystem>(FindObjectsSortMode.None);
@@ -13,7 +12,7 @@ public class MenuSceneCleaner : MonoBehaviour
             {
                 if (es != EventSystem.current)
                 {
-                    Destroy(es.gameObject); // Xoá cái EventSystem thừa
+                    Destroy(es.gameObject); 
                 }
             }
         }

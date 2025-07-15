@@ -16,19 +16,19 @@ public class GameController : MonoBehaviour
     CharacterController charScript;
     public CharacterController CharScript { get { return charScript; } }
 
-    [Header("For enemy")]
-    //enemy
-    public GameObject _enemyPrefab;
-    public Transform _enemyHolder;
-    //public float _spawnTime = 0f;
-    //public float _minSpawnTime = 1f;
-    //public float _spawnTimeCD = 3f;
+    // [Header("For enemy")]
+    // //enemy
+     //public GameObject _enemyPrefab;
+     public Transform _enemyHolder;
+    // //public float _spawnTime = 0f;
+    // //public float _minSpawnTime = 1f;
+    // //public float _spawnTimeCD = 3f;
 
-    public int maxCountDemo;
-    public int maxCountInGame;
-    public int numEnemySpawnDemo;
-    public int numEnemySpawnInGame;
-    public int _maxCount = 10000;
+    // public int maxCountDemo;
+    // public int maxCountInGame;
+    // public int numEnemySpawnDemo;
+    // public int numEnemySpawnInGame;
+    // public int _maxCount = 10000;
     //public int _spawnCount = 0;
     //public int _enemyCount = 0;
 
@@ -216,18 +216,18 @@ public class GameController : MonoBehaviour
 
         }
 
-        _maxCount = demo ? maxCountDemo : maxCountInGame;
+        // _maxCount = demo ? maxCountDemo : maxCountInGame;
 
-        if (WaveManager.instance != null)
-        {
-            WaveManager.instance.waves.Clear(); // Xoá nếu cần
-            WaveManager.instance.waves.Add(new WaveData
-            {
-                enemyCount = demo ? numEnemySpawnDemo : numEnemySpawnInGame,
-                spawnInterval = 0.5f,
-                enemyPrefab = _enemyPrefab
-            });
-        }
+        // if (WaveManager.instance != null)
+        // {
+        //     WaveManager.instance.waves.Clear(); // Xoá nếu cần
+        //     WaveManager.instance.waves.Add(new WaveData
+        //     {
+        //         enemyCount = demo ? numEnemySpawnDemo : numEnemySpawnInGame,
+        //         spawnInterval = 0.5f,
+        //         enemyPrefab = _enemyPrefab
+        //     });
+        // }
 
         // int initEnemySpawn = demo ? numEnemySpawnDemo : numEnemySpawnInGame;
         // _maxCount = demo ? maxCountDemo : maxCountInGame;
