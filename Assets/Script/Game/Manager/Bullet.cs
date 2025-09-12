@@ -7,13 +7,15 @@ public class Bullet : MonoBehaviour
 {
     public bool spinBullet;
     int spatialGroup = 0;
-    public static Bullet instance;
+    //public static Bullet instance;
     Vector2 movementDirection = Vector2.zero;
     public Vector2 MovementDirection
     {
         get { return movementDirection; }
         set { movementDirection = value; }
     }
+
+    private List<IBulletEffect> effects = new();
 
     public float bulletDmg;
     public float bulletSpeed;
@@ -27,20 +29,21 @@ public class Bullet : MonoBehaviour
     public delegate void BulletSpawnAction();
     public event BulletSpawnAction OnBulletSpawn;
     //on travel
-    public delegate void BulletTravelAction(Transform parrentBullet);
+    public delegate void BulletTravelAction(Transform parentBullet);
     public event BulletTravelAction OnBulletTravel;
     //on destroy
-    public delegate void BulletDestructionAction(Transform parrentBullet);
+    public delegate void BulletDestructionAction(Transform parentBullet);
     public event BulletDestructionAction OnDestroy;
     //on contact with enemy
-    public delegate void BulletContactAction(Transform parrentBullet);
+    public delegate void BulletContactAction(Transform parentBullet);
     public event BulletContactAction OnContactEnemy;
     Enemy enemy;
     bool isDestroy = false;
-    void Awake()
-    {
-        instance = this;
-    }
+
+    // void Awake()
+    // {
+    //     instance = this;
+    // }
 
     void Start()
     {
@@ -157,14 +160,27 @@ public class Bullet : MonoBehaviour
     //     }
     // }
 
+    public void AddEffect(IBulletEffect effect)
+    {
+        effects.Add(effect);
+    }
+
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("enemy")) // đảm bảo enemy có tag là "enemy"
         {
             if (collision.TryGetComponent<Enemy>(out var enemy))
             {
+
                 OnContactEnemy?.Invoke(transform);
+
                 enemy.ChangeHealth(bulletDmg);
+
+                foreach (var effect in effects)
+                {
+                    effect.Apply(enemy, this);
+                }
+
                 DestroyBullet(); // Gây sát thương và huỷ đạn
             }
         }

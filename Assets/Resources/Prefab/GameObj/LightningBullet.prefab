@@ -77,7 +77,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_Sprite: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847, type: 3}
-  m_Color: {r: 0.16509432, g: 0.5204115, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.8391136, b: 0.0990566, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -98,6 +98,7 @@ GameObject:
   - component: {fileID: 3493068328679929458}
   - component: {fileID: 1580726736099421881}
   - component: {fileID: 6824521573064924634}
+  - component: {fileID: 3319058921009829126}
   m_Layer: 0
   m_Name: LightningBullet
   m_TagString: Untagged
@@ -184,3 +185,23 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &3319058921009829126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4946990297529389802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8266c632faf783d48a9fa6caee42f2f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spinBullet: 0
+  bulletDmg: 3
+  bulletSpeed: 1
+  bulletHitBoxRadius: 0.47
+  modelTransfrom: {fileID: 3493068328679929458}
+  maxChains: 13
+  chainRadius: 4.88
+  chainDmgMultiplier: 0.88

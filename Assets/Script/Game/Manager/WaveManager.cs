@@ -20,7 +20,7 @@ public class WaveData
 public class WaveManager : MonoBehaviour
 {
     public static WaveManager instance;
-    
+
     [Header("Wave Settings")]
     public List<WaveData> waves;
     public Transform enemyHolder;

@@ -129,18 +129,18 @@ public class BuffLibrary : MonoBehaviour
         }, "FB2");
 
         // //  Lightning Spell Buff 
-        // AllBuffs["LS1"] = new Buff("LS1", "Ice Spell 1", "Using Ice Spell +1", dummyIcon, () =>
-        // {
+        AllBuffs["LS1"] = new Buff("LS1", "Lightning Spell 1", "Using Lightning Spell +1", dummyIcon, () =>
+        {
+            Character.instance.isLightningBulletOn = true;
+        });
+        AllBuffs["LS2"] = new Buff("LS2", "Lightning Spell 2", "Using Lightning Spell +1", dummyIcon, () =>
+        {
 
-        // });
-        // AllBuffs["LS2"] = new Buff("LS2", "Ice Spell 2", "Using Ice Spell +1", dummyIcon, () =>
-        // {
-
-        // }, "IS1");
-        // AllBuffs["LS3"] = new Buff("LS3", "Ice Spell 3", "Using Ice Spell +1", dummyIcon, () =>
-        // {
-
-        // }, "LS2");
+        }, "LS1");
+        AllBuffs["LS3"] = new Buff("LS3", "Lightning Spell 3", "Using Lightning Spell +1", dummyIcon, () =>
+        {
+            
+        }, "LS2");
 
         //  Ice Spell Buff 
         AllBuffs["IS1"] = new Buff("IS1", "Ice Spell 1", "Using Ice Spell +1", dummyIcon, () =>

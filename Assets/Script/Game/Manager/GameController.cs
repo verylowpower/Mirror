@@ -18,8 +18,8 @@ public class GameController : MonoBehaviour
 
     // [Header("For enemy")]
     // //enemy
-     //public GameObject _enemyPrefab;
-     public Transform _enemyHolder;
+    //public GameObject _enemyPrefab;
+    public Transform _enemyHolder;
     // //public float _spawnTime = 0f;
     // //public float _minSpawnTime = 1f;
     // //public float _spawnTimeCD = 3f;
@@ -493,6 +493,27 @@ public class GameController : MonoBehaviour
     {
         enemySpatialGroups[spatialGroupId].Remove(enemy);
         // Debug.Log($"[Spatial] Removed enemy from group {spatialGroupId}");
+    }
+
+    public List<Enemy> GetEnemiesInRange(Vector2 position, float range)
+    {
+        List<Enemy> result = new List<Enemy>();
+
+        foreach (var group in enemySpatialGroups.Values)
+        {
+            foreach (Enemy enemy in group)
+            {
+                if (enemy == null) continue;
+
+                float dist = Vector2.Distance(position, enemy.transform.position);
+                if (dist <= range)
+                {
+                    result.Add(enemy);
+                }
+            }
+        }
+
+        return result;
     }
 
     public bool CheckInsideCamera(Vector2 positon) //check camera area

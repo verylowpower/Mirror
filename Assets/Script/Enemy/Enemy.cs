@@ -25,8 +25,6 @@ public class Enemy : MonoBehaviour
     Vector3 velocity = Vector3.zero;
     Vector3 targetDirection;
 
-
-
     public int spatialGroup = 0;
     [SerializeField] private SpriteRenderer spriteRender;
     [SerializeField] private Color flashColor = Color.white;
@@ -97,8 +95,6 @@ public class Enemy : MonoBehaviour
         PushEnemyNearby();
     }
 
-
-
     private void PushEnemyNearby()
     {
         List<Enemy> currAreaEnemy = GameController.instance.enemySpatialGroups[spatialGroup].ToList();
@@ -152,7 +148,6 @@ public class Enemy : MonoBehaviour
 
     public void KillEnemy()
     {
-
         GameController.instance.UpdateEnemyOnUnitDeath("enemy", batchId);
         GameController.instance.enemySpatialGroups[spatialGroup].Remove(this);
         GameController.instance.RemoveFromSpatialGroup(spatialGroup, this);
@@ -203,13 +198,11 @@ public class Enemy : MonoBehaviour
         isSlowed = false;
     }
 
-
     public IEnumerator FlashWhenHit(SpriteRenderer renderer, Color originColor, Color flashColor, float flashTime)
     {
         renderer.color = flashColor;
         yield return new WaitForSeconds(flashTime);
         renderer.color = originColor;
     }
-
 
 }

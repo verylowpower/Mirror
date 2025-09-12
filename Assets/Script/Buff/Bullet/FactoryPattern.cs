@@ -19,6 +19,9 @@ public class FactoryPattern
                 case "ice":
                     prefab = Resources.Load<GameObject>("Prefab/GameObj/IceBullet");
                     break;
+                case "lightning":
+                    prefab = Resources.Load<GameObject>("Prefab/GameObj/LightningBullet");
+                    break;
             }
 
             if (prefab == null)

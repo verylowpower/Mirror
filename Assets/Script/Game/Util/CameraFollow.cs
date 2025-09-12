@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class _CameraFollow : MonoBehaviour
+public class CameraFollow : MonoBehaviour
 {
     [SerializeField] private Camera _camera;
     [SerializeField] private GameObject _target;

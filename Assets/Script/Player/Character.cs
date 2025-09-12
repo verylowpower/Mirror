@@ -79,6 +79,12 @@ public class Character : MonoBehaviour
     public float burnDmg;
     public float burnTime;
 
+    [Header("Lightning Settings")]
+    public int chainCount = 3;
+    public float chainRange = 5f;
+
+    public bool isLightningBulletOn = false;
+
     [Header("Ice Spell")]
     public bool isIceSpellOn = false;
     public float iceSlowNumber;
@@ -209,7 +215,7 @@ public class Character : MonoBehaviour
                 }
                 else
                 {
-                    shootDir = Vector2.right; // hoặc Vector2.down, Vector2.up...
+                    shootDir = Vector2.right; 
                 }
 
                 ShootAutoBullet(shootDir);
@@ -473,7 +479,6 @@ public class Character : MonoBehaviour
     //shoot logic
     void ShootBullet(Vector2 direction)
     {
-
         StartCoroutine(ShootCombined(direction));
     }
 
@@ -481,7 +486,6 @@ public class Character : MonoBehaviour
     {
         for (int seq = 0; seq < bulletPerShoot; seq++)
         {
-            // Tính toán và bắn các viên xoè (spread)
             int spreadCount = bulletPerShootSpread;
             float totalSpreadAngle = spreadAngle;
             float angleStep = (spreadCount > 1) ? totalSpreadAngle / (spreadCount - 1) : 0f;
@@ -503,101 +507,40 @@ public class Character : MonoBehaviour
 
     void ShootSingleBullet(Vector2 direction)
     {
-        if (isFireBulletOn)
-        {
-            ShootFireBullet(direction);
-        }
-        else
-        {
-            ShootNormalBullet(direction);
-        }
-    }
-
-    void ShootNormalBullet(Vector2 direction)
-    {
-
-        GameObject bulletGO = FactoryPattern.BulletFactory.CreateBullet
-        (
-        "normal",
-        firePoint.position,
-        Quaternion.identity,
-        bulletHolder.transform
+        GameObject bulletGO = FactoryPattern.BulletFactory.CreateBullet(
+            "normal",
+            firePoint.position,
+            Quaternion.identity,
+            bulletHolder.transform
         );
 
-
         Bullet bullet = bulletGO.GetComponent<Bullet>();
-
         bullet.MovementDirection = direction;
-
         bullet.bulletSpeed = CurrentBulletSpeed;
         bullet.bulletDmg = CurrentBulletDmg;
 
-        // Debug.Log("Current bullet speed: " + CurrentBulletSpeed);
-        // Debug.Log("Current bullet dmg: " + CurrentBulletDmg);
+        if (isFireBulletOn)
+        {
+            bullet.AddEffect(new BurnEffect(burnDmg, burnTime));
+        }
+
+        if (isLightningBulletOn)
+        {
+            bullet.AddEffect(new LightningEffect(chainCount, chainRange));
+        }
+
+        if (isIceSpellOn)
+        {
+            bullet.AddEffect(new SlowEffect(iceSlowNumber, iceSlowTime));
+        }
 
         RegisterBulletToSpatialGroup(bullet);
     }
 
-    void ShootFireBullet(Vector2 direction)
-    {
-        GameObject bulletGO = FactoryPattern.BulletFactory.CreateBullet
-        (
-        "fire",
-        firePoint.position,
-        Quaternion.identity,
-        bulletHolder.transform
-        );
-
-        FireBullet fireBullet = bulletGO.GetComponent<FireBullet>();
-
-        fireBullet.MovementDirection = direction;
-
-        fireBullet.burnDmg = burnDmg;
-
-        fireBullet.burnTime = burnTime;
-
-        RegisterBulletToSpatialGroup(fireBullet);
-    }
-
-
     void ShootAutoBullet(Vector2 direction)
     {
-        switch (autoBulletType)
-        {
-            case "ice":
-                ShootIceSpell(direction);
-                break;
-            case "fire":
-                ShootFireBullet(direction);
-                break;
-            default:
-                ShootNormalBullet(direction);
-                break;
-        }
+        ShootBullet(direction);
     }
-
-
-    void ShootIceSpell(Vector2 direction)
-    {
-        GameObject bulletGO = FactoryPattern.BulletFactory.CreateBullet
-        (
-        "ice",
-        firePoint.position,
-        Quaternion.identity,
-        bulletHolder.transform
-        );
-
-        IceSpell iceSpell = bulletGO.GetComponent<IceSpell>();
-
-        iceSpell.MovementDirection = direction;
-
-        iceSpell.slowDownNumber = iceSlowNumber;
-
-        iceSpell.slowDuration = iceSlowTime;
-
-        RegisterBulletToSpatialGroup(iceSpell);
-    }
-
 
     void RegisterBulletToSpatialGroup(Bullet bullet)
     {
@@ -608,7 +551,6 @@ public class Character : MonoBehaviour
         }
         GameController.instance.bulletSpatialGroups[group].Add(bullet); // Add to HashSet
     }
-
 
 
     void OnDrawGizmosSelected()
@@ -624,10 +566,6 @@ public class Character : MonoBehaviour
 
         Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(transform.position, CollectRadious);
-
-
-
-
 
         //  if (GameController.instance != null)
         // {
