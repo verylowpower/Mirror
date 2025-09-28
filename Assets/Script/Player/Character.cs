@@ -215,7 +215,7 @@ public class Character : MonoBehaviour
                 }
                 else
                 {
-                    shootDir = Vector2.right; 
+                    shootDir = Vector2.right;
                 }
 
                 ShootAutoBullet(shootDir);
@@ -519,23 +519,33 @@ public class Character : MonoBehaviour
         bullet.bulletSpeed = CurrentBulletSpeed;
         bullet.bulletDmg = CurrentBulletDmg;
 
+        SpriteRenderer sr = bulletGO.transform.Find("Model").GetComponent<SpriteRenderer>();
+
+        Color bulletColor = Color.white;
+
         if (isFireBulletOn)
         {
             bullet.AddEffect(new BurnEffect(burnDmg, burnTime));
+            bulletColor += Color.red;
         }
 
         if (isLightningBulletOn)
         {
             bullet.AddEffect(new LightningEffect(chainCount, chainRange));
+            bulletColor += Color.yellow;
         }
 
         if (isIceSpellOn)
         {
             bullet.AddEffect(new SlowEffect(iceSlowNumber, iceSlowTime));
+            bulletColor += Color.cyan;
         }
+
+        sr.color = bulletColor == Color.white ? Color.white : bulletColor / 2f;
 
         RegisterBulletToSpatialGroup(bullet);
     }
+
 
     void ShootAutoBullet(Vector2 direction)
     {

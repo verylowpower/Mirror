@@ -54,7 +54,7 @@ public class BossArea : MonoBehaviour
 
         Debug.Log($"[BossArea] Created boss area at {bossOuterBounds.center} | Size = {bossOuterBounds.size}");
 
-        DrawBorder();  // 👈 Vẽ viền tự động
+        DrawBorder(); 
     }
 
     private Bounds CalculateBounds(List<int> groups)
@@ -88,14 +88,14 @@ public class BossArea : MonoBehaviour
 
     private void DrawBorder()
     {
-        // Xóa viền cũ nếu có
+     
         foreach (var line in borderLines)
         {
             if (line != null) Destroy(line.gameObject);
         }
         borderLines.Clear();
 
-        // Tạo 4 cạnh viền
+    
         Vector2 min = bossOuterBounds.min;
         Vector2 max = bossOuterBounds.max;
 
@@ -105,7 +105,7 @@ public class BossArea : MonoBehaviour
         corners[2] = new Vector3(max.x, max.y, 0); // top right
         corners[3] = new Vector3(max.x, min.y, 0); // bottom right
 
-        // Tạo 4 LineRenderer tương ứng 4 cạnh
+    
         for (int i = 0; i < 4; i++)
         {
             GameObject lineObj = new GameObject("BorderLine_" + i);
@@ -120,7 +120,7 @@ public class BossArea : MonoBehaviour
             line.material = new Material(Shader.Find("Sprites/Default"));
             line.startColor = borderColor;
             line.endColor = borderColor;
-            line.sortingOrder = 100; // vẽ lên trên cùng
+            line.sortingOrder = 100; 
 
             borderLines.Add(line);
         }
