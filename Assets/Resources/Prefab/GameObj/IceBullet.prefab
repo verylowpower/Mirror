@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3493068328679929458}
   - component: {fileID: 4102539509127908528}
-  - component: {fileID: -2390183296630438869}
   m_Layer: 0
   m_Name: IceBullet
   m_TagString: Untagged
@@ -80,25 +79,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &-2390183296630438869
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4946990297529389802}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c522fdac4b21e942a525399d98da3af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spinBullet: 0
-  bulletDmg: 13
-  bulletSpeed: 10
-  bulletHitBoxRadius: 0.83
-  modelTransfrom: {fileID: 3694559847635736266}
-  slowDownNumber: 0.5
-  slowDuration: 3
 --- !u!1 &9049506063900886264
 GameObject:
   m_ObjectHideFlags: 0

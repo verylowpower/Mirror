@@ -46,7 +46,7 @@ public class GameController : MonoBehaviour
     float runLogicTimer = 0f;
     float runLogicTimerCD = 1f;
 
-    //spatial patitioning
+    //spatial partitioning
     int spatialGroupWidth = 100; //split map to cell to handle
     public int SpatialGroupWidth { get { return spatialGroupWidth; } }
     int spatialGroupHeight = 100;
@@ -285,91 +285,6 @@ public class GameController : MonoBehaviour
         }
     }
 
-
-    // void SpawnEnemies()
-    // {
-    //     int initEnemySpawn = demo ? numEnemySpawnDemo : numEnemySpawnInGame;
-    //     _spawnTime += Time.deltaTime;
-
-    //     if (_spawnTime > _spawnTimeCD && _enemyHolder.childCount < _maxCount)
-    //     {
-    //         for (int i = 0; i < initEnemySpawn; i++)
-    //         {
-    //             SpawnEnemy();
-    //             _enemyCount++;
-    //         }
-    //         _spawnTime = 0;
-    //     }
-    // }
-
-
-    // void SpawnEnemy()
-    // {
-    //     int batchToAdd = GetBestBatch("enemy");
-
-    //     if (batchToAdd == -1 || !enemyBatch.ContainsKey(batchToAdd))
-    //     {
-    //         //Debug.LogError("[Spawn] ERROR: Invalid batch ID received.");
-    //         return;
-    //     }
-
-    //     int charQuadrant = GetSpatialGroupDynamic(character.position.x, character.position.y, spatialGroupHeight, spatialGroupWidth, numberOfPartitions);
-
-    //     List<int> expandedSpatialGroup = Helper.GetExpandedSpatialGroups(charQuadrant, 25);
-
-    //     expandedSpatialGroup.Remove(charQuadrant);
-
-    //     if (expandedSpatialGroup.Count == 0)
-    //     {
-    //         //Debug.LogWarning("[Spawn] WARNING: No valid expanded spatial groups.");
-    //         return;
-    //     }
-
-    //     int randomSpatialGroup = expandedSpatialGroup[Random.Range(0, expandedSpatialGroup.Count)];
-
-    //     Vector2 centerOfSpatialGroup = GetPatitionCenterDynamic(randomSpatialGroup, spatialGroupWidth, spatialGroupHeight, numberOfPartitions);
-    //     float sizeOfOneSpatialGroup = spatialGroupWidth / 5;
-
-    //     Vector3 spawnPos;
-
-    //     int maxTry = 20; // số lần thử vị trí spawn không nằm trong camera
-    //     int tryCount = 0;
-
-    //     do
-    //     {
-    //         float valX = Random.Range(centerOfSpatialGroup.x - sizeOfOneSpatialGroup / 2,
-    //                                  centerOfSpatialGroup.x + sizeOfOneSpatialGroup / 2);
-    //         float valY = Random.Range(centerOfSpatialGroup.y - sizeOfOneSpatialGroup / 2,
-    //                                  centerOfSpatialGroup.y + sizeOfOneSpatialGroup / 2);
-
-    //         spawnPos = new Vector3(valX, valY, 0);
-    //         tryCount++;
-    //     }
-    //     while (CheckInsideCamera(spawnPos) && tryCount < maxTry);
-
-    //     if (tryCount >= maxTry && CheckInsideCamera(spawnPos))
-    //     {
-    //         // Không tìm được vị trí spawn ngoài camera, có thể bỏ qua spawn lần này hoặc spawn ở vị trí an toàn mặc định
-    //         return;
-    //     }
-
-    //     GameObject enemyGO = Instantiate(_enemyPrefab, _enemyHolder);
-
-    //     enemyGO.transform.position = spawnPos;
-    //     //enemyGO.transform.parent = _enemyHolder;
-
-    //     Enemy enemyScript = enemyGO.GetComponent<Enemy>();
-
-    //     int spatialGroup = GetSpatialGroup(enemyGO.transform.position.x, enemyGO.transform.position.y);
-    //     enemyScript.spatialGroup = spatialGroup;
-
-    //     AddToSpatialGroup(spatialGroup, enemyScript);
-
-    //     enemyScript.BatchID = batchToAdd;
-    //     enemyBatch[batchToAdd].Add(enemyScript);
-    //     // Debug.Log($"[Spawn] Spawned enemy in batch {batchToAdd} at group {spatialGroup} ({valX:F2}, {valY:F2})");
-
-    // }
 
     public void SpawnEnemy(GameObject prefabToSpawn)
     {

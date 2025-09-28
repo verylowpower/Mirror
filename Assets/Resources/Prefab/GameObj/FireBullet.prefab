@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3493068328679929458}
   - component: {fileID: 4102539509127908528}
-  - component: {fileID: 17521953779994211}
   m_Layer: 0
   m_Name: FireBullet
   m_TagString: Untagged
@@ -80,25 +79,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &17521953779994211
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4946990297529389802}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1bae87c668ba02949b21203c0fd2e5d7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spinBullet: 0
-  bulletDmg: 10
-  bulletSpeed: 12
-  bulletHitBoxRadius: 0.3
-  modelTransfrom: {fileID: 4909364517963488726}
-  burnDmg: 1
-  burnTime: 3
 --- !u!1 &9044122189473127230
 GameObject:
   m_ObjectHideFlags: 0

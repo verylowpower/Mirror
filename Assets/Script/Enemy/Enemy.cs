@@ -26,11 +26,11 @@ public class Enemy : MonoBehaviour
     Vector3 targetDirection;
 
     public int spatialGroup = 0;
-    [SerializeField] private SpriteRenderer spriteRender;
-    [SerializeField] private Color flashColor = Color.white;
+    [SerializeField] public SpriteRenderer spriteRender;
+    [SerializeField] public Color flashColor = Color.white;
     [SerializeField] private Color slowColor = Color.blue;
     [SerializeField] private int expDropAmount;
-    private Color originColor;
+    public Color originColor;
     [SerializeField] float health = 10;
     [SerializeField] int damage = 5;
     private bool isSlowed = false;
@@ -40,11 +40,12 @@ public class Enemy : MonoBehaviour
         set { damage = value; }
     }
     private FacePlayer facePlayer;
-    private void Awake()
+    protected virtual void Awake()
     {
         facePlayer = GetComponent<FacePlayer>();
     }
-    void Start()
+
+    protected virtual void Start()
     {
         instance = this;
         rb = GetComponent<Rigidbody2D>();
@@ -59,7 +60,7 @@ public class Enemy : MonoBehaviour
         RunLightLogic();
     }
 
-    public void RunHeavyLogic()
+    public virtual void RunHeavyLogic()
     {
         Vector3 targetPosition = GameController.instance.character.position;
         targetDirection = (targetPosition - transform.position).normalized;
@@ -67,7 +68,7 @@ public class Enemy : MonoBehaviour
         facePlayer?.FaceTowardsPlayer();
     }
 
-    public void RunLightLogic()
+    public virtual void RunLightLogic()
     {
         if (rb == null) return;
 
@@ -126,7 +127,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public void ChangeHealth(float amount)
+    public virtual void ChangeHealth(float amount)
     {
         //int maxHealth = health;
         health -= amount;
@@ -146,7 +147,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public void KillEnemy()
+    public virtual void KillEnemy()
     {
         GameController.instance.UpdateEnemyOnUnitDeath("enemy", batchId);
         GameController.instance.enemySpatialGroups[spatialGroup].Remove(this);
@@ -163,12 +164,12 @@ public class Enemy : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public void ApplyBurn(float dmgPerSec, float duration)
+    public virtual void ApplyBurn(float dmgPerSec, float duration)
     {
         StartCoroutine(DmgOverTime(dmgPerSec, duration));
     }
 
-    public void ApplySlow(float slowDownNumber, float duration)
+    public virtual void ApplySlow(float slowDownNumber, float duration)
     {
         StartCoroutine(SlowSpeed(slowDownNumber, duration));
     }

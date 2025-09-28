@@ -221,6 +221,90 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2388743384596507211, guid: eb1ade51b1d53a045820d96182e8dfb0, type: 3}
   m_PrefabInstance: {fileID: 45777959}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &108418820
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 108418821}
+  m_Layer: 0
+  m_Name: AreaCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &108418821
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 108418820}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 190988200}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &190988198
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 190988200}
+  - component: {fileID: 190988199}
+  m_Layer: 0
+  m_Name: BossArea
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &190988199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190988198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 213590530d8c5244bb785250112818a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showGizmos: 1
+  innerRadius: 5
+  outerRadius: 6
+  dmgBound: 2
+  slowSpeed: 0.5
+  borderColor: {r: 1, g: 0, b: 0, a: 1}
+  borderWidth: 0.1
+--- !u!4 &190988200
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190988198}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 10.002469, y: 0.98642164, z: -32.846092}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1404176126}
+  - {fileID: 108418821}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &259620734
 GameObject:
   m_ObjectHideFlags: 0
@@ -1215,7 +1299,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &499150882
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2386,7 +2470,6 @@ GameObject:
   - component: {fileID: 1069716622}
   - component: {fileID: 1069716628}
   - component: {fileID: 1069716621}
-  - component: {fileID: 1069716623}
   - component: {fileID: 1069716624}
   - component: {fileID: 1069716626}
   - component: {fileID: 1069716625}
@@ -2435,52 +2518,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &1069716623
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1069716620}
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: -0.038001537, y: -0.08360356}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 4.178746, y: 3.2879767}
-  m_EdgeRadius: 0
 --- !u!114 &1069716624
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2551,31 +2588,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6389d89849008c9449214a85ab7b151e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bossArea: {fileID: 190988199}
   waves:
   - enemySpawnInfoList:
     - prefab: {fileID: 2322608764563794003, guid: 2db7ff8a18655634eaffa3230844b9d1, type: 3}
-      count: 10
-    - prefab: {fileID: 2322608764563794003, guid: 2db7ff8a18655634eaffa3230844b9d1, type: 3}
-      count: 10
-    - prefab: {fileID: 2322608764563794003, guid: 2db7ff8a18655634eaffa3230844b9d1, type: 3}
-      count: 10
+      count: 50
     spawnInterval: 1
   - enemySpawnInfoList:
     - prefab: {fileID: 2322608764563794003, guid: ad13ba11fc76fec4689ee01608755a4c, type: 3}
-      count: 10
+      count: 40
     - prefab: {fileID: 2322608764563794003, guid: 2db7ff8a18655634eaffa3230844b9d1, type: 3}
-      count: 10
+      count: 40
     spawnInterval: 1
   - enemySpawnInfoList:
+    - prefab: {fileID: 2322608764563794003, guid: 0e1e912e5d811f34e89289d47dbe5daa, type: 3}
+      count: 50
     - prefab: {fileID: 2322608764563794003, guid: ad13ba11fc76fec4689ee01608755a4c, type: 3}
-      count: 5
-    - prefab: {fileID: 2322608764563794003, guid: 2db7ff8a18655634eaffa3230844b9d1, type: 3}
-      count: 15
-    - prefab: {fileID: 2322608764563794003, guid: ad13ba11fc76fec4689ee01608755a4c, type: 3}
-      count: 8
+      count: 40
     spawnInterval: 1
+  - enemySpawnInfoList:
+    - prefab: {fileID: 2322608764563794003, guid: 611951b4a8c487745ab4b26522ff1a07, type: 3}
+      count: 50
+    - prefab: {fileID: 2322608764563794003, guid: 0e1e912e5d811f34e89289d47dbe5daa, type: 3}
+      count: 50
+    spawnInterval: 1
+  - enemySpawnInfoList:
+    - prefab: {fileID: 2322608764563794003, guid: 611951b4a8c487745ab4b26522ff1a07, type: 3}
+      count: 50
+    - prefab: {fileID: 2322608764563794003, guid: 2db7ff8a18655634eaffa3230844b9d1, type: 3}
+      count: 50
+    spawnInterval: 1
+  - enemySpawnInfoList:
+    - prefab: {fileID: 808252311705171517, guid: 06974d58d55bb5f44a8f0067184459c5, type: 3}
+      count: 1
+    spawnInterval: 1
+  bossWave: 5
+  timeBetweenWaves: 30
   enemyHolder: {fileID: 1620215859}
-  timeBetweenWaves: 60
   waveText: {fileID: 1434605657}
 --- !u!1 &1115695562
 GameObject:
@@ -408791,6 +408840,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1404176125
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1404176126}
+  m_Layer: 0
+  m_Name: BossSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1404176126
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1404176125}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 190988200}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1408057272
 GameObject:
   m_ObjectHideFlags: 0
@@ -409023,7 +409103,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1495573336
 Transform:
   m_ObjectHideFlags: 0
@@ -411007,7 +411087,7 @@ MonoBehaviour:
   nextFireTime: 0.5
   baseBulletSpeed: 15
   bulletSpeedMultiplier: 1
-  baseBulletDmg: 10
+  baseBulletDmg: 5
   bulletDmgMultiplier: 1
   bulletPerShoot: 1
   bulletPerShootSpread: 1
@@ -412583,3 +412663,4 @@ SceneRoots:
   - {fileID: 1644978729}
   - {fileID: 1882403667}
   - {fileID: 1035633763}
+  - {fileID: 190988200}

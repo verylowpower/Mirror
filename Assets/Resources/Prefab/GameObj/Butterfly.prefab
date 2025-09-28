@@ -181,13 +181,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb04a95e88e142d479813b955ca8456c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 1.5
+  movementSpeed: 3
   rb: {fileID: 4978881550584770520}
   spatialGroup: 0
   spriteRender: {fileID: 7473473553290258956}
   flashColor: {r: 1, g: 0, b: 0, a: 1}
   slowColor: {r: 0.60275006, g: 0.60275006, b: 0.990566, a: 1}
   expDropAmount: 3
+  originColor: {r: 0, g: 0, b: 0, a: 0}
   health: 20
   damage: 3
 --- !u!61 &6853659762500492370

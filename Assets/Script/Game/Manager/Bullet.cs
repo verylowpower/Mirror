@@ -37,6 +37,12 @@ public class Bullet : MonoBehaviour
     //on contact with enemy
     public delegate void BulletContactAction(Transform parentBullet);
     public event BulletContactAction OnContactEnemy;
+
+    protected void InvokeOnContactEnemy(Transform t)
+    {
+        OnContactEnemy?.Invoke(t);
+    }
+
     Enemy enemy;
     bool isDestroy = false;
 
@@ -86,7 +92,7 @@ public class Bullet : MonoBehaviour
         }
         else if (modelTransfrom != null)
         {
-            modelTransfrom.Rotate(0, 0, 10f); // chỉ dùng khi muốn xoay liên tục như viên đạn lốc xoáy
+            modelTransfrom.Rotate(0, 0, 10f); 
         }
 
         if (modelTransfrom == transform)
@@ -167,7 +173,7 @@ public class Bullet : MonoBehaviour
 
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("enemy")) // đảm bảo enemy có tag là "enemy"
+        if (collision.CompareTag("enemy"))
         {
             if (collision.TryGetComponent<Enemy>(out var enemy))
             {
@@ -181,25 +187,10 @@ public class Bullet : MonoBehaviour
                     effect.Apply(enemy, this);
                 }
 
-                DestroyBullet(); // Gây sát thương và huỷ đạn
+                DestroyBullet();
             }
         }
     }
-
-    // void OnCollisonEnter2D(Collider2D collision)
-    // {
-    //     if (collision.CompareTag("enemy")) // đảm bảo enemy có tag là "enemy"
-    //     {
-    //         if (collision.TryGetComponent<Enemy>(out var enemy))
-    //         {
-    //             OnContactEnemy?.Invoke(transform);
-    //             enemy.ChangeHealth(bulletDmg);
-    //             DestroyBullet(); // Gây sát thương và huỷ đạn
-    //         }
-    //     }
-    // }
-
-
 
     void DestroyIfOutOfBound()
     {
