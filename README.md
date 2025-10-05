@@ -6,6 +6,8 @@ Người chơi điều khiển nhân vật chính, di chuyển liên tục để
 
 Mục tiêu: **Sống sót càng lâu càng tốt** trước các đợt kẻ địch xuất hiện theo từng Wave.
 
+Demo: [Mirror Demo GamePlay](https://ye-loathsome.itch.io/mirror)
+
 ---
 
 ## 🕹️ Gameplay
@@ -48,6 +50,7 @@ Mục tiêu: **Sống sót càng lâu càng tốt** trước các đợt kẻ đ
 - **C#**
 - Hệ thống **Factory Pattern** cho Bullet
 - **Spatial Partitioning** để tối ưu va chạm
+
 
 
 
