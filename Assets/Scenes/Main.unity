@@ -2623,7 +2623,7 @@ MonoBehaviour:
       count: 1
     spawnInterval: 1
   bossWave: 5
-  timeBetweenWaves: 30
+  timeBetweenWaves: 20
   enemyHolder: {fileID: 1620215859}
   waveText: {fileID: 1434605657}
 --- !u!1 &1115695562
